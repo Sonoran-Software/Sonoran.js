@@ -51,4 +51,4 @@ instance.cms.verifyWhitelist({
 ```
 
 ## Further Documentation
-More documentation for Sonoran CAD specific methods and usage can be found here and Sonoran CMS specific methods and usage can be found here.
+More documentation for Sonoran CAD specific methods and usage can be found [here](/docs/CAD-Methods-and-Usage.md), Sonoran CMS specific methods and usage can be found [here](/docs/CMS-Methods-and-Usage.md), and usage information for the REST class [here](/docs/REST-Methods-and-Usage.md).
