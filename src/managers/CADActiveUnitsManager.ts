@@ -45,5 +45,6 @@ export class CADActiveUnitsManager extends CacheManager<number, CADActiveUnit, C
       serverId: this.serverId,
       includeOffline
     });
+    console.log(data);
   }
 }

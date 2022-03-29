@@ -1,11 +1,15 @@
 {
-  "name": "sonoran",
+  "name": "@sonoransoftware/sonoran.js",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sonoran.js is a library that allows you to interact with the Sonoran CAD and Sonoran CMS API. Based off of and utilizes several Discord.js library techniques for ease of use.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sonoran-Software/Sonoran.js.git"
   },
   "keywords": [],
   "author": "",
