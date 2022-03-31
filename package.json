@@ -1,11 +1,13 @@
 {
   "name": "@sonoransoftware/sonoran.js",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Sonoran.js is a library that allows you to interact with the Sonoran CAD and Sonoran CMS API. Based off of and utilizes several Discord.js library techniques for ease of use.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "build": "rimraf ./dist && tsc"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,7 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-prettier": "^4.0.0",
     "prettier": "^2.5.1",
+    "rimraf": "^3.0.2",
     "ts-loader": "^9.2.7",
     "ts-node": "^10.7.0",
     "tslint": "^6.1.3",
@@ -38,5 +41,6 @@
     "@sapphire/async-queue": "^1.3.0",
     "@sapphire/snowflake": "^3.2.0",
     "node-fetch": "^2.6.5"
-  }
+  },
+  "prepublish": "npm run build"
 }
