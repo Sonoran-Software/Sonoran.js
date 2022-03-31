@@ -1,4 +1,4 @@
-import Instance from '../instance/Instance';
+import { Instance } from '../instance/Instance';
 import { CADSubscriptionVersionEnum } from '../constants';
 import { APIError, DefaultCADRestOptions, REST } from '../libs/rest/src';
 import { BaseManager } from './BaseManager';
@@ -29,6 +29,7 @@ export class CADManager extends BaseManager {
       if (this.version >= globalTypes.CADSubscriptionVersionEnum.STANDARD) {
         this.servers = new CADServerManager(instance, this);
       }
+      instance.isCADSuccessful = true;
     } catch (err) {
       console.log(err);
     }

@@ -1,4 +1,4 @@
-import Instance from '../instance/Instance';
+import { Instance } from '../instance/Instance';
 import { CMSSubscriptionVersionEnum } from '../constants';
 import { APIError, DefaultCMSRestOptions, REST } from '../libs/rest/src';
 import { BaseManager } from './BaseManager';
@@ -31,7 +31,10 @@ export class CMSManager extends BaseManager {
         this.servers = new CMSServerManager(instance, this);
       }
       mutableThis.ready = true;
+      instance.isCMSSuccessful = true;
+      instance.emit('CMS_SETUP_SUCCESSFUL');
     } catch (err) {
+      instance.emit('CMS_SETUP_UNSUCCESSFUL', err);
       throw err;
     }
   }

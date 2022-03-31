@@ -1,4 +1,4 @@
-import EventEmitter from 'node:events';
+import EventEmitter from 'events';
 
 import * as globalTypes from '../constants';
 import * as InstanceTypes from './instance.types';
@@ -6,7 +6,7 @@ import { CADManager } from '../managers/CADManager';
 import { CMSManager } from '../managers/CMSManager';
 import { debugLog } from '../utils';
 
-export default class Instance extends EventEmitter {
+export class Instance extends EventEmitter {
   public cadCommunityId: string | undefined;
   public cadApiKey: string | undefined;
   public cadApiUrl: string = 'https://api.sonorancad.com';

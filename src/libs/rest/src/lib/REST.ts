@@ -1,4 +1,4 @@
-import { EventEmitter } from 'node:events';
+import { EventEmitter } from 'events';
 import {
 	InternalRequestData,
 	// RequestMethod,
@@ -11,7 +11,7 @@ import { productEnums, uuidRegex } from '../../../../constants';
 import type { AgentOptions } from 'node:https';
 import type { RequestInit, Response } from 'node-fetch';
 // import type Collection from '@discordjs/collection';
-import Instance from '../../../../instance/Instance';
+import { Instance } from '../../../../instance/Instance';
 import { CADManager } from '../../../../managers/CADManager';
 import { convertSubNumToName } from './utils/Utils';
 import { CMSManager } from '../../../../managers/CMSManager';

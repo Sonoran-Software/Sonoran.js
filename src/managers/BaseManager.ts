@@ -1,4 +1,4 @@
-import Instance from '../instance/Instance';
+import { Instance } from '../instance/Instance';
 
 /**
  * Manages the API methods of a data model or a specific product methods.

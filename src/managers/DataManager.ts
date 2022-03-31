@@ -1,4 +1,4 @@
-import Instance from '../instance/Instance';
+import { Instance } from '../instance/Instance';
 import { BaseManager } from './BaseManager';
 import { GenericError } from '../errors';
 import { Constructable } from '../constants';

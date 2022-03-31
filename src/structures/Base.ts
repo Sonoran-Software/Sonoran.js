@@ -1,4 +1,4 @@
-import Instance from '../instance/Instance';
+import { Instance } from '../instance/Instance';
 import { flatten } from '../utils';
 
 export abstract class Base {

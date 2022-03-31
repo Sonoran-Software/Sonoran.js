@@ -1,4 +1,4 @@
-import Instance from '../instance/Instance';
+import { Instance } from '../instance/Instance';
 import { Base } from './Base';
 
 export interface CMSServerData {

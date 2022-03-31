@@ -1,4 +1,4 @@
-import Instance from '../instance/Instance';
+import { Instance } from '../instance/Instance';
 import { CMSServerAPIStruct } from '../libs/rest/src';
 import { CMSServer } from '../structures/CMSServer';
 import { CacheManager } from './CacheManager';

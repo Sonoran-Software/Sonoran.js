@@ -1,4 +1,4 @@
-import Instance from '../instance/Instance';
+import { Instance } from '../instance/Instance';
 // import { CADActiveUnitsManager } from '../managers/CADActiveUnitsManager';
 import { Base } from './Base';
 

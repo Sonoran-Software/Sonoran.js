@@ -1,4 +1,4 @@
-import Instance from '../instance/Instance';
+import { Instance } from '../instance/Instance';
 import { CADServerAPIStruct } from '../libs/rest/src';
 import { CADServer } from '../structures/CADServer';
 import { CacheManager } from './CacheManager';

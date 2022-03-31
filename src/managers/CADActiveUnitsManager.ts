@@ -1,7 +1,7 @@
 // Work in progress still...
 
 // import { CADActiveUnitFetchOptions } from '../constants';
-import Instance from '../instance/Instance';
+import { Instance } from '../instance/Instance';
 import { CADActiveUnit, CADActiveUnitResolvable, CADActiveUnitStruct } from '../structures/CADActiveUnit';
 import { CacheManager } from './CacheManager';
 

@@ -1,9 +1,9 @@
 import Collection from '@discordjs/collection';
 // import { DiscordSnowflake } from '@sapphire/snowflake';
-import { EventEmitter } from 'node:events';
+import { EventEmitter } from 'events';
 // import type { RequestInit, BodyInit } from 'node-fetch';
 
-import type Instance from '../../../../instance/Instance';
+import type { Instance } from '../../../../instance/Instance';
 import { RESTOptions, RateLimitData, RestEvents } from './REST';
 import { DefaultCADRestOptions, DefaultCMSRestOptions, AllAPITypes/**, RESTTypedAPIDataStructs, PossibleRequestData*/ } from './utils/constants';
 import { productEnums } from '../../../../constants';
