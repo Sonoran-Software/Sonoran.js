@@ -174,6 +174,11 @@ export class REST extends EventEmitter {
 					serverId: args[2]
 				}
 			}
+			case 'FULL_WHITELIST': {
+				return {
+					serverId: args[0]
+				}
+			}
 			case 'GET_COM_ACCOUNT': {
 				return {
 					apiId: args[0],
