@@ -1,6 +1,6 @@
 {
   "name": "@sonoransoftware/sonoran.js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Sonoran.js is a library that allows you to interact with the Sonoran CAD and Sonoran CMS API. Based off of and utilizes several Discord.js library techniques for ease of use.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
