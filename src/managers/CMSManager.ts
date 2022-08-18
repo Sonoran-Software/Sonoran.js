@@ -68,6 +68,26 @@ export class CMSManager extends BaseManager {
   }
 
   /**
+   * Gets a full whitelist allowed list for a specific server.
+   * @param {number} serverId (Optional) Server ID to get the whole allow list for, if not specified it will grab the default server ID that is set.
+   * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed and the account data object if found.
+   */
+  public async getFullWhitelist(serverId?: number): Promise<globalTypes.CMSGetFullWhitelistPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const getFullWhitelistRequest: any = await this.rest?.request('FULL_WHITELIST', serverId ?? this.instance.cmsDefaultServerId);
+        resolve({ success: true, data: getFullWhitelistRequest });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
    * Gets a community account by `accId`, `apiId`, or `username`.
    * @param {Object} params The object that contains parameters to get a community account.
    * @param {string} [data.accId] The account id to find a community account.
@@ -91,10 +111,33 @@ export class CMSManager extends BaseManager {
   }
 
   /**
+   * Gets a community account by `accId`, `apiId`, or `username`.
+   * @param {Object} params The object that contains parameters to get a community account.
+   * @param {string} [data.accId] (Optional) The account id to find a community account.
+   * @param {string} [data.apiId] (Optional) The api id to find a community account.
+   * @param {string} [data.username] (Optional) The username to find a community account.
+   * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed and the account data object if found.
+   */
+  public async getAccountRanks(params: { accId?: string, apiId?: string, username?: string }): Promise<globalTypes.CMSGetAccountRanksPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const getAccountRanksRequest: any = await this.rest?.request('GET_ACCOUNT_RANKS', params.apiId, params.username, params.accId);
+        resolve({ success: true, data: getAccountRanksRequest });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
    * Clocks in or out an account by `accId` or `apiId`.
    * @param {Object} data The object that contains critical data to clock in or out an account.
-   * @param {string} [data.accId] The account id to clock in or out.
-   * @param {string} [data.apiId] The api id to clock in or out.
+   * @param {string} [data.accId] (Optional) The account id to clock in or out.
+   * @param {string} [data.apiId] (Optional) The api id to clock in or out.
    * @param {boolean} [data.forceClockIn] If true, it will override any current clock in with a new clock in at the time of the request.
    * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed.
    */

@@ -74,26 +74,41 @@ export interface CMSVerifyWhitelistPromiseResult {
 	reason?: string;
 }
 
+export interface CMSGetFullWhitelistPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: {
+		name: string;
+		apiIds: string[];
+	}[];
+}
+
+export interface CMSGetAccountRanksPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: string[];
+}
+
 export interface CMSGetComAccountPromiseResult {
 	success: boolean;
 	reason?: string;
 	data?: {
 		accId: string;
-		active: boolean;
-		accName: string;
-		comName: string;
+		sysStatus: boolean;
+		comStatus: boolean;
+		joinDate: string;
+		lastLogin: string;
+		owner: boolean;
+		banned: boolean;
+		activeApiIds: string[];
 		primaryIdentifier: string;
-		secondaryIdentifiers: string[];
+		secondaryIdentifiers: {
+			identifiers: { id: string; label: string; }[];
+		}
 		primaryRank: string;
 		secondaryRanks: string[];
 		primaryDepartment: string;
 		secondaryDepartments: string[];
-		joinDate: string;
-		totalRankPower: number;
-		comOwner: boolean;
-		isBanned: boolean;
-		lastLogin: string;
-		activeApiIds: string[];
 	}
 }
 
@@ -142,6 +157,7 @@ export interface CADGetAccountPromiseResult {
 			polEditUnit: boolean;
 			polEditOtherUnit: boolean;
 			selfDispatch: boolean;
+			liveMap: boolean;
 			medRecAdd: boolean;
 			medRecEdit: boolean;
 			medRecRemove: boolean;
@@ -154,6 +170,7 @@ export interface CADGetAccountPromiseResult {
 			dmvRecEdit: boolean;
 			dmvRecRemove: boolean;
 			dmvSuper: boolean;
+			modifyStreetSigns: boolean;
 			lawRecAdd: boolean;
 			lawRecEdit: boolean;
 			lawRecRemove: boolean;
