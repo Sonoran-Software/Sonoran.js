@@ -3,15 +3,14 @@ import { CMSSubscriptionVersionEnum } from '../constants';
 import { APIError, DefaultCMSRestOptions, REST } from '../libs/rest/src';
 import { BaseManager } from './BaseManager';
 import * as globalTypes from '../constants';
-import type { Mutable } from '../constants';
 import { CMSServerManager } from './CMSServerManager';
 
 /**
  * Manages all Sonoran CMS data and methods to interact with the public API.
  */
 export class CMSManager extends BaseManager {
-  public readonly ready: boolean = false;
-  public readonly version: CMSSubscriptionVersionEnum = 0;
+  private _ready: boolean = false;
+  private _version: CMSSubscriptionVersionEnum = 0;
   public rest: REST | undefined;
   public servers: CMSServerManager | undefined;
 
@@ -22,15 +21,23 @@ export class CMSManager extends BaseManager {
     this.buildManager(instance);
   }
 
+  get version(): number {
+    return this._version;
+  }
+
+  get ready(): boolean {
+    return this._ready;
+  }
+
   protected async buildManager(instance: Instance) {
     try {
       const versionResp: any = await this.rest?.request('GET_SUB_VERSION');
-      const mutableThis = this as Mutable<CMSManager>;
-      mutableThis.version = Number.parseInt(versionResp.replace(/(^\d+)(.+$)/i,'$1'));
-      if (this.version >= globalTypes.CMSSubscriptionVersionEnum.STANDARD) {
+      const version = Number.parseInt(versionResp.replace(/(^\d+)(.+$)/i,'$1'));
+      if (version >= globalTypes.CMSSubscriptionVersionEnum.STANDARD) {
         this.servers = new CMSServerManager(instance, this);
       }
-      mutableThis.ready = true;
+      this._ready = true;
+      this._version = version;
       instance.isCMSSuccessful = true;
       instance.emit('CMS_SETUP_SUCCESSFUL');
     } catch (err) {
