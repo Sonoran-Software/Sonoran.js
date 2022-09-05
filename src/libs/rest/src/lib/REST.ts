@@ -183,7 +183,16 @@ export class REST extends EventEmitter {
 				return {
 					apiId: args[0],
 					username: args[1],
-					accId: args[2]
+					accId: args[2],
+					discord: args[3]
+				};
+			}
+			case 'GET_ACCOUNT_RANKS': {
+				return {
+					apiId: args[0],
+					username: args[1],
+					accId: args[2],
+					discord: args[3]
 				};
 			}
 			case 'CLOCK_IN_OUT': {
@@ -196,6 +205,14 @@ export class REST extends EventEmitter {
 			case 'CHECK_COM_APIID': {
 				return {
 					apiId: args[0]
+				};
+			}
+			case 'SET_ACCOUNT_RANKS': {
+				return {
+					accountId: args[0],
+					set: args[1].set,
+					add: args[1].add,
+					remove: args[1].remove,
 				};
 			}
 			default: {
