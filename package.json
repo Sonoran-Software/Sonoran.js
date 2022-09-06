@@ -18,7 +18,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^17.0.21",
-    "@types/node-fetch": "^2.6.1",
+    "@types/node-fetch": "^2.6.2",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.25.4",

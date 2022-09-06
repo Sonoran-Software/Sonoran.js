@@ -9,8 +9,8 @@ import { CMSServerManager } from './CMSServerManager';
  * Manages all Sonoran CMS data and methods to interact with the public API.
  */
 export class CMSManager extends BaseManager {
-  private _ready: boolean = false;
-  private _version: CMSSubscriptionVersionEnum = 0;
+  public readonly ready: boolean = false;
+  public readonly version: CMSSubscriptionVersionEnum = 0;
   public rest: REST | undefined;
   public servers: CMSServerManager | undefined;
 
@@ -21,23 +21,19 @@ export class CMSManager extends BaseManager {
     this.buildManager(instance);
   }
 
-  get version(): number {
-    return this._version;
-  }
-
-  get ready(): boolean {
-    return this._ready;
-  }
-
   protected async buildManager(instance: Instance) {
     try {
       const versionResp: any = await this.rest?.request('GET_SUB_VERSION');
       const version = Number.parseInt(versionResp.replace(/(^\d+)(.+$)/i,'$1'));
+      const mutableThis = this as globalTypes.Mutable<CMSManager>;
       if (version >= globalTypes.CMSSubscriptionVersionEnum.STANDARD) {
         this.servers = new CMSServerManager(instance, this);
       }
-      this._ready = true;
-      this._version = version;
+      mutableThis.ready = true;
+      mutableThis.version = version;
+      console.log(mutableThis.version);
+      console.log(this.version);
+      console.log(version);
       instance.isCMSSuccessful = true;
       instance.emit('CMS_SETUP_SUCCESSFUL');
     } catch (err) {
