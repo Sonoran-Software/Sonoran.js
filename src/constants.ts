@@ -132,6 +132,56 @@ export interface CMSCheckComApiIdPromiseResult {
 	username?: string;
 }
 
+export interface CMSGetDepartmentsPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSDepartment[];
+}
+
+export interface CMSSetAccountRanksPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: {
+		accId: string;
+		sysStatus: boolean;
+		comStatus: boolean;
+		joinDate: string;
+		lastLogin: string;
+		owner: boolean;
+		banned: boolean;
+		activeApiIds: string[];
+		primaryIdentifier: string;
+		secondaryIdentifiers: {
+			identifiers: { id: string; label: string; }[];
+		}
+		primaryRank: string;
+		secondaryRanks: string[];
+		primaryDepartment: string;
+		secondaryDepartments: string[];
+	}
+}
+
+export interface CMSSetAccountRanksChangesObject {
+	set?: {
+		primary?: string | null;
+		secondary?: string[];
+	}
+	add: string[];
+	remove: string[];
+}
+
+export interface CMSDepartment {
+	uuid: string;
+	label: string;
+	labelTwo: string;
+	ranks: {
+		id: string;
+		label: string;
+		primaryOnly: boolean;
+		secondaryOnly: boolean;
+	}[];
+}
+
 export interface CADGetAccountPromiseResult {
 	success: boolean;
 	reason?: string;
@@ -188,4 +238,12 @@ export interface CADGetAccountPromiseResult {
 		},
 		apiIds: string[];
 	}
+}
+
+export interface clockInOutRequest {
+	id: number;
+	notes: any[];
+	endTime: string;
+	completed: boolean;
+	startTime: string;
 }

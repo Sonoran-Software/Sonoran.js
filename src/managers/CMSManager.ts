@@ -3,7 +3,6 @@ import { CMSSubscriptionVersionEnum } from '../constants';
 import { APIError, DefaultCMSRestOptions, REST } from '../libs/rest/src';
 import { BaseManager } from './BaseManager';
 import * as globalTypes from '../constants';
-import type { Mutable } from '../constants';
 import { CMSServerManager } from './CMSServerManager';
 
 /**
@@ -25,12 +24,16 @@ export class CMSManager extends BaseManager {
   protected async buildManager(instance: Instance) {
     try {
       const versionResp: any = await this.rest?.request('GET_SUB_VERSION');
-      const mutableThis = this as Mutable<CMSManager>;
-      mutableThis.version = Number.parseInt(versionResp.replace(/(^\d+)(.+$)/i,'$1'));
-      if (this.version >= globalTypes.CMSSubscriptionVersionEnum.STANDARD) {
+      const version = Number.parseInt(versionResp.replace(/(^\d+)(.+$)/i,'$1'));
+      const mutableThis = this as globalTypes.Mutable<CMSManager>;
+      if (version >= globalTypes.CMSSubscriptionVersionEnum.STANDARD) {
         this.servers = new CMSServerManager(instance, this);
       }
       mutableThis.ready = true;
+      mutableThis.version = version;
+      console.log(mutableThis.version);
+      console.log(this.version);
+      console.log(version);
       instance.isCMSSuccessful = true;
       instance.emit('CMS_SETUP_SUCCESSFUL');
     } catch (err) {
@@ -95,10 +98,10 @@ export class CMSManager extends BaseManager {
    * @param {string} [data.username] The username to find a community account.
    * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed and the account data object if found.
    */
-  public async getComAccount(params: { accId?: string, apiId?: string, username?: string }): Promise<globalTypes.CMSGetComAccountPromiseResult> {
+  public async getComAccount(params: { accId?: string, apiId?: string, username?: string, discord?: string }): Promise<globalTypes.CMSGetComAccountPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
-        const getAccountRequest: any = await this.rest?.request('GET_COM_ACCOUNT', params.apiId, params.username, params.accId);
+        const getAccountRequest: any = await this.rest?.request('GET_COM_ACCOUNT', params.apiId, params.username, params.accId, params.discord);
         resolve({ success: true, data: getAccountRequest });
       } catch (err) {
         if (err instanceof APIError) {
@@ -118,10 +121,10 @@ export class CMSManager extends BaseManager {
    * @param {string} [data.username] (Optional) The username to find a community account.
    * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed and the account data object if found.
    */
-  public async getAccountRanks(params: { accId?: string, apiId?: string, username?: string }): Promise<globalTypes.CMSGetAccountRanksPromiseResult> {
+  public async getAccountRanks(params: { accId?: string, apiId?: string, username?: string, discord?: string }): Promise<globalTypes.CMSGetAccountRanksPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
-        const getAccountRanksRequest: any = await this.rest?.request('GET_ACCOUNT_RANKS', params.apiId, params.username, params.accId);
+        const getAccountRanksRequest: any = await this.rest?.request('GET_ACCOUNT_RANKS', params.apiId, params.username, params.accId, params.discord);
         resolve({ success: true, data: getAccountRanksRequest });
       } catch (err) {
         if (err instanceof APIError) {
@@ -144,9 +147,10 @@ export class CMSManager extends BaseManager {
   public async clockInOut(data: { accId?: string, apiId?: string, forceClockIn?: boolean }): Promise<globalTypes.CMSClockInOutPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
-        const clockInOutRequest: any = await this.rest?.request('CLOCK_IN_OUT', data.apiId, data.accId, !!data.forceClockIn);
-        const clockInOutRequestString: string = clockInOutRequest as string;
-        resolve({ success: true, clockedIn: clockInOutRequestString.includes('CLOCKED IN') });
+        const clockInOutRequest = await this.rest?.request('CLOCK_IN_OUT', data.apiId, data.accId, !!data.forceClockIn);
+        const clockInOutResponse = clockInOutRequest as globalTypes.clockInOutRequest;
+        if (!clockInOutResponse) resolve({ success: false, reason: clockInOutRequest as string });
+        resolve({ success: true, clockedIn: clockInOutResponse.completed });
       } catch (err) {
         if (err instanceof APIError) {
           resolve({ success: false, reason: err.response });
@@ -167,6 +171,51 @@ export class CMSManager extends BaseManager {
       try {
         const checkComApiIdRequest: any = await this.rest?.request('CHECK_COM_APIID', apiId);
         resolve({ success: true, username: checkComApiIdRequest as string });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Gets all department information within the community CMS.
+   * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed.
+   */
+  public async getDepartments(): Promise<globalTypes.CMSGetDepartmentsPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const getDepartmentsRequest: any = await this.rest?.request('GET_DEPARTMENTS');
+        resolve({ success: true, data: getDepartmentsRequest });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Sets a community account's ranks for the CMS community.
+   * @param {string} accountId The object that contains critical data to clock in or out an account.
+   * @param {Object} changes The object that contains change data for setting account ranks.
+   * @param {Object} [changes.set] (Optional) The object that contains primary and secondary data for setting account ranks.
+   * @param {string} [changes.set.primary] (Optional) The primary rank ID wanting to set to the account.
+   * @param {string} [changes.set.secondary] (Optional) The secondary rank ID(s) wanting to set to the account.
+   * @param {Array} [changes.add] (Optional) The secondary rank IDs wanting to add to the account.
+   * @param {Array} [changes.remove] (Optional) The secondary rank IDs wanting to remove to the account.
+   * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed.
+   */
+  public async setAccountRanks(accountId: string, changes: globalTypes.CMSSetAccountRanksChangesObject): Promise<globalTypes.CMSSetAccountRanksPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const setAccountRanksRequest: any = await this.rest?.request('SET_ACCOUNT_RANKS', accountId, changes.set, changes.add, changes.remove);
+        resolve({ success: true, data: setAccountRanksRequest });
       } catch (err) {
         if (err instanceof APIError) {
           resolve({ success: false, reason: err.response });
