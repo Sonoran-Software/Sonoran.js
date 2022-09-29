@@ -147,9 +147,10 @@ export class CMSManager extends BaseManager {
   public async clockInOut(data: { accId?: string, apiId?: string, forceClockIn?: boolean }): Promise<globalTypes.CMSClockInOutPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
-        const clockInOutRequest: any = await this.rest?.request('CLOCK_IN_OUT', data.apiId, data.accId, !!data.forceClockIn);
-        const clockInOutRequestString: string = clockInOutRequest as string;
-        resolve({ success: true, clockedIn: clockInOutRequestString.includes('CLOCKED IN') });
+        const clockInOutRequest = await this.rest?.request('CLOCK_IN_OUT', data.apiId, data.accId, !!data.forceClockIn);
+        const clockInOutResponse = clockInOutRequest as globalTypes.clockInOutRequest;
+        if (!clockInOutResponse) resolve({ success: false, reason: clockInOutRequest as string });
+        resolve({ success: true, clockedIn: clockInOutResponse.completed });
       } catch (err) {
         if (err instanceof APIError) {
           resolve({ success: false, reason: err.response });

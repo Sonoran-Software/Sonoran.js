@@ -239,3 +239,11 @@ export interface CADGetAccountPromiseResult {
 		apiIds: string[];
 	}
 }
+
+export interface clockInOutRequest {
+	id: number;
+	notes: any[];
+	endTime: string;
+	completed: boolean;
+	startTime: string;
+}
