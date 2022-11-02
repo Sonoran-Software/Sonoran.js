@@ -210,9 +210,9 @@ export class REST extends EventEmitter {
 			case 'SET_ACCOUNT_RANKS': {
 				return {
 					accountId: args[0],
-					set: args[1].set,
-					add: args[1].add,
-					remove: args[1].remove,
+					set: args[1],
+					add: args[2],
+					remove: args[3],
 				};
 			}
 			default: {
