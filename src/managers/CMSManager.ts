@@ -11,6 +11,7 @@ import { CMSServerManager } from './CMSServerManager';
 export class CMSManager extends BaseManager {
   public readonly ready: boolean = false;
   public readonly version: CMSSubscriptionVersionEnum = 0;
+  public readonly failReason: unknown = null;
   public rest: REST | undefined;
   public servers: CMSServerManager | undefined;
 
@@ -22,21 +23,19 @@ export class CMSManager extends BaseManager {
   }
 
   protected async buildManager(instance: Instance) {
+    const mutableThis = this as globalTypes.Mutable<CMSManager>;
     try {
       const versionResp: any = await this.rest?.request('GET_SUB_VERSION');
       const version = Number.parseInt(versionResp.replace(/(^\d+)(.+$)/i,'$1'));
-      const mutableThis = this as globalTypes.Mutable<CMSManager>;
       if (version >= globalTypes.CMSSubscriptionVersionEnum.STANDARD) {
         this.servers = new CMSServerManager(instance, this);
       }
       mutableThis.ready = true;
       mutableThis.version = version;
-      console.log(mutableThis.version);
-      console.log(this.version);
-      console.log(version);
       instance.isCMSSuccessful = true;
       instance.emit('CMS_SETUP_SUCCESSFUL');
     } catch (err) {
+      mutableThis.failReason = err;
       instance.emit('CMS_SETUP_UNSUCCESSFUL', err);
       throw err;
     }
