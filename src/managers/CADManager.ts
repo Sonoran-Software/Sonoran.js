@@ -10,7 +10,9 @@ import { CADServerManager } from './CADServerManager';
  * Manages all Sonoran CAD data and methods to interact with the public API.
  */
 export class CADManager extends BaseManager {
+  public readonly ready = false;
   public readonly version: CADSubscriptionVersionEnum = 0;
+  public readonly failReason: unknown = null;
   public rest: REST | undefined;
   public servers: CADServerManager | undefined;
 
@@ -22,16 +24,19 @@ export class CADManager extends BaseManager {
   }
 
   protected async buildManager(instance: Instance) {
+    const mutableThis = this as Mutable<CADManager>;
     try {
       const versionResp: any = await this.rest?.request('GET_VERSION');
-      const mutableThis = this as Mutable<CADManager>;
       mutableThis.version = Number.parseInt(versionResp.replace(/(^\d+)(.+$)/i,'$1'));
       if (this.version >= globalTypes.CADSubscriptionVersionEnum.STANDARD) {
         this.servers = new CADServerManager(instance, this);
       }
       instance.isCADSuccessful = true;
+      instance.emit('CAD_SETUP_SUCCESSFUL');
     } catch (err) {
-      console.log(err);
+      mutableThis.failReason = err;
+      instance.emit('CAD_SETUP_UNSUCCESSFUL', err);
+      throw err;
     }
   }
 
