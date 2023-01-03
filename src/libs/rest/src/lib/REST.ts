@@ -215,6 +215,11 @@ export class REST extends EventEmitter {
 					remove: args[3],
 				};
 			}
+			case 'VERIFY_SECRET': {
+				return {
+					secret: args[0],
+				};
+			}
 			default: {
 				return args;
 			}

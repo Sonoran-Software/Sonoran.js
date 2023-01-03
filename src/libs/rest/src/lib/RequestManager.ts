@@ -155,6 +155,10 @@ export class RequestManager extends EventEmitter {
           break;
         }
         case 'SET_API_ID': {
+          apiData.data.data = { secret: clonedData.data[0] };
+          break;
+        }
+        case 'VERIFY_SECRET': {
           apiData.data.data = clonedData.data;
           break;
         }
