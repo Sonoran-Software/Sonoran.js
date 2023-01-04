@@ -151,35 +151,35 @@ export class RequestManager extends EventEmitter {
           break;
         }
         case 'SET_PENAL_CODES': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'SET_API_ID': {
-          apiData.data.data = { secret: clonedData.data[0] };
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'NEW_RECORD': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'EDIT_RECORD': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'LOOKUP_INT': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'LOOKUP': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'SET_ACCOUNT_PERMISSIONS': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'BAN_USER': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'AUTH_STREETSIGNS': {
@@ -187,43 +187,43 @@ export class RequestManager extends EventEmitter {
           break;
         }
         case 'SET_POSTALS': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'NEW_CHARACTER': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'EDIT_CHARACTER': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'MODIFY_IDENTIFIER': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'ADD_BLIP': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'MODIFY_BLIP': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'GET_CALLS': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'GET_ACTIVE_UNITS': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'NEW_DISPATCH': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         case 'UNIT_LOCATION': {
-          apiData.data.data = clonedData.data;
+          apiData.data.data = [clonedData[0]];
           break;
         }
         default: {
