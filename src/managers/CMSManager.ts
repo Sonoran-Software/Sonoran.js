@@ -57,7 +57,7 @@ export class CMSManager extends BaseManager {
         if (typeof whitelistRequest === 'string') {
           resolve({ success: true, reason: whitelistRequest });
         } else {
-          resolve({ success: false, reason: whitelistRequest });
+          resolve({ success: false, reason: whitelistRequest.message });
         }
       } catch (err) {
         if (err instanceof APIError) {
