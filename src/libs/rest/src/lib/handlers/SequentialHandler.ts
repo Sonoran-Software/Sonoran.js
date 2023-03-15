@@ -114,6 +114,8 @@ export class SequentialHandler implements IHandler {
 		const timeout = setTimeout(() => controller.abort(), 30000).unref();
 		let res: Response;
 
+		void this.manager.debug(`[${url} Request] - ${JSON.stringify({ url, options, data })}`);
+
 		try {
 			// node-fetch typings are a bit weird, so we have to cast to any to get the correct signature
 			// Type 'AbortSignal' is not assignable to type 'import('discord.js-modules/node_modules/@types/node-fetch/externals').AbortSignal'
@@ -125,12 +127,13 @@ export class SequentialHandler implements IHandler {
 			clearTimeout(timeout);
 		}
 
+		void this.manager.debug(`[${url} Response] - ${JSON.stringify(res)}`);
+
 		if (res.ok) {
 			const parsedRes = await SequentialHandler.parseResponse(res);
 			return parsedRes;
 		} else if (res.status === 400 || res.status === 401 || res.status === 404) {
 			const parsedRes = await SequentialHandler.parseResponse(res);
-			// throw new HTTPError(String(parsedRes), res.constructor.name, res.status, data.method, url);
 			throw new APIError(parsedRes as string, data.type, data.fullUrl, res.status, data);
 		} else if (res.status === 429) {
 			const timeout = setTimeout(() => {

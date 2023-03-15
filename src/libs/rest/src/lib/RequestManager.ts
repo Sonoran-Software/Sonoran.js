@@ -253,4 +253,8 @@ export class RequestManager extends EventEmitter {
 
     return apiData;
   }
+
+  debug(log: string) {
+    return this.instance._debugLog(log);
+  }
 }
