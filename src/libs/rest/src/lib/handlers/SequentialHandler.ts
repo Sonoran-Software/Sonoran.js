@@ -127,13 +127,13 @@ export class SequentialHandler implements IHandler {
 			clearTimeout(timeout);
 		}
 
-		void this.manager.debug(`[${url} Response] - ${JSON.stringify(res)}`);
+		const parsedRes = await SequentialHandler.parseResponse(res);
+
+		void this.manager.debug(`[${url} Response] - ${JSON.stringify({ body: parsedRes, res, status: res.status, headers: res.headers })}`);
 
 		if (res.ok) {
-			const parsedRes = await SequentialHandler.parseResponse(res);
 			return parsedRes;
 		} else if (res.status === 400 || res.status === 401 || res.status === 404) {
-			const parsedRes = await SequentialHandler.parseResponse(res);
 			throw new APIError(parsedRes as string, data.type, data.fullUrl, res.status, data);
 		} else if (res.status === 429) {
 			const timeout = setTimeout(() => {
