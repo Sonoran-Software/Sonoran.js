@@ -1,4 +1,4 @@
-import Collection from '@discordjs/collection';
+import { Collection } from '@discordjs/collection';
 import { CADDispatchOriginEnums, CADDispatchStatusEnums } from './libs/rest/src';
 import { DataManager } from './managers/DataManager';
 import { CADActiveUnitsManager } from './managers/CADActiveUnitsManager';
