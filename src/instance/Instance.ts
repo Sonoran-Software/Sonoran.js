@@ -22,11 +22,15 @@ export class Instance extends EventEmitter {
   public cms: CMSManager | undefined;
 
   public debug: boolean = false;
+  public apiHeaders: HeadersInit = {};
 
   constructor(options: InstanceTypes.InstanceOptions) {
     super({ captureRejections: true });
     if (options.debug) {
       this.debug = options.debug;
+    }
+    if (Object.prototype.hasOwnProperty.call(options, 'apiHeaders') && options.apiHeaders !== undefined) {
+      this.apiHeaders = options.apiHeaders;
     }
     if (Object.prototype.hasOwnProperty.call(options, 'apiKey') && Object.prototype.hasOwnProperty.call(options, 'communityId')) {
       if (Object.prototype.hasOwnProperty.call(options, 'product')) {

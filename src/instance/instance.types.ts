@@ -14,4 +14,5 @@ export type InstanceOptions = {
   cmsApiUrl?: string;
   cmsDefaultServerId?: number;
   debug?: boolean;
+  apiHeaders?: HeadersInit ;
 };

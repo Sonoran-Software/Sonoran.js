@@ -3,7 +3,7 @@ import { BaseManager } from './BaseManager';
 import { GenericError } from '../errors';
 import { Constructable } from '../constants';
 
-import Collection from '@discordjs/collection';
+import { Collection } from '@discordjs/collection';
 
 interface DataManagerInstanceObject {
   id: string;
@@ -39,7 +39,7 @@ export class DataManager<_K, Holds, _R> extends BaseManager {
    * @param idOrInstance The id or instance of something in this Manager
    * @returns {?Object} An instance from this Manager
    */
-   public resolve(idOrInstance: string | object): object | null {
+  public resolve(idOrInstance: string | object): object | null {
     if (this.cache instanceof Collection) {
       if (typeof idOrInstance === 'object') return idOrInstance;
       if (typeof idOrInstance === 'string') return this.cache.get(idOrInstance) ?? null;

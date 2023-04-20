@@ -13,7 +13,7 @@ import type { RequestInit, Response } from 'node-fetch';
 // import type Collection from '@discordjs/collection';
 import { Instance } from '../../../../instance/Instance';
 import { CADManager } from '../../../../managers/CADManager';
-import { convertSubNumToName } from './utils/Utils';
+import { convertSubNumToName } from './utils/utils';
 import { CMSManager } from '../../../../managers/CMSManager';
 
 /**
@@ -177,6 +177,13 @@ export class REST extends EventEmitter {
 			case 'FULL_WHITELIST': {
 				return {
 					serverId: args[0]
+				}
+			}
+			case 'RSVP': {
+				return {
+					eventId: args[0],
+					apiId: args[1],
+					accId: args[2],
 				}
 			}
 			case 'GET_COM_ACCOUNT': {
