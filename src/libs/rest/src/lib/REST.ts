@@ -153,7 +153,7 @@ export class REST extends EventEmitter {
 			}
 		}
 		if (!communityId || !apiKey) throw new Error(`Community ID or API Key could not be found for request. P${apiType.product}`);
-		if (apiType.minVersion > this.manager.version) throw new Error(`[${type}] Subscription version too low for this API type request. Current Version: ${convertSubNumToName(this.manager.version)} Needed Version: ${convertSubNumToName(apiType.minVersion)}`);
+		// if (apiType.minVersion > this.manager.version) throw new Error(`[${type}] Subscription version too low for this API type request. Current Version: ${convertSubNumToName(this.manager.version)} Needed Version: ${convertSubNumToName(apiType.minVersion)}`);  // Verifies API Subscription Level Requirement which is deprecated currently
 		const formattedData = this.formatDataArguments(apiType.type, args);
 		const options: InternalRequestData = {
 			id: communityId,
