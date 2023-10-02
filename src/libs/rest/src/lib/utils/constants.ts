@@ -382,6 +382,12 @@ export const GeneralCMSAPITypes: APITypeData[] = [
 		path: 'general/clock_in_out',
 		method: 'POST',
 		minVersion: 3
+	},
+	{
+		type: 'BAN_USER',
+		path: 'general/ban_user',
+		method: 'POST',
+		minVersion: 3
 	}
 ];
 
