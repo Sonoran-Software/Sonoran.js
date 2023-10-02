@@ -13,7 +13,6 @@ import type { RequestInit, Response } from 'node-fetch';
 // import type Collection from '@discordjs/collection';
 import { Instance } from '../../../../instance/Instance';
 import { CADManager } from '../../../../managers/CADManager';
-import { convertSubNumToName } from './utils/utils';
 import { CMSManager } from '../../../../managers/CMSManager';
 
 /**
