@@ -384,8 +384,14 @@ export const GeneralCMSAPITypes: APITypeData[] = [
 		minVersion: 3
 	},
 	{
-		type: 'BAN_USER',
-		path: 'general/ban_user',
+		type: 'KICK_ACCOUNT',
+		path: 'general/kick_account',
+		method: 'POST',
+		minVersion: 3
+	},
+	{
+		type: 'BAN_ACCOUNT',
+		path: 'general/ban_account',
 		method: 'POST',
 		minVersion: 3
 	}
