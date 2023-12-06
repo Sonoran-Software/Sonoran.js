@@ -141,8 +141,8 @@ export class REST extends EventEmitter {
 		let apiKey: string | undefined;
 		switch (apiType.product) {
 			case productEnums.CAD: {
-				communityId = this.instance.cadCommunityId;	
-				apiKey = this.instance.cadApiKey;	
+				communityId = this.instance.cadCommunityId;
+				apiKey = this.instance.cadApiKey;
 				break;
 			}
 			case productEnums.CMS: {
@@ -224,6 +224,13 @@ export class REST extends EventEmitter {
 			case 'VERIFY_SECRET': {
 				return {
 					secret: args[0],
+				};
+			}
+			case 'CHANGE_FORM_STAGE': {
+				return {
+					accId: args[0],
+					formId: args[1],
+					newStageId: args[2],
 				};
 			}
 			default: {
