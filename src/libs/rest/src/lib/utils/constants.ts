@@ -430,7 +430,7 @@ export const EventsCMSAPITypes: APITypeData[] = [
 export const FormsCMSAPITypes: APITypeData[] = [
 	{
 		type: 'CHANGE_FORM_STAGE',
-		path: '/forms/change/stage',
+		path: 'forms/change/stage',
 		method: 'POST',
 		minVersion: 0
 	}
