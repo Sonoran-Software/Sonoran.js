@@ -233,6 +233,18 @@ export class REST extends EventEmitter {
 					newStageId: args[2],
 				};
 			}
+			case 'BAN_ACCOUNT': {
+				return {
+					apiId: args[0],
+					accId: args[1],
+				};
+			}
+			case 'KICK_ACCOUNT': {
+				return {
+					apiId: args[0],
+					accId: args[1],
+				};
+			}
 			default: {
 				return args;
 			}
