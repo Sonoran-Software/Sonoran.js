@@ -245,6 +245,12 @@ export class REST extends EventEmitter {
 					accId: args[1],
 				};
 			}
+			case 'LOOKUP': {
+				return {
+					id: args[0],
+					uuid: args[1]
+				}
+			}
 			default: {
 				return args;
 			}
