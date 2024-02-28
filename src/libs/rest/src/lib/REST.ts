@@ -184,7 +184,8 @@ export class REST extends EventEmitter {
 					eventId: args[0],
 					apiId: args[1],
 					accId: args[2],
-					discord: args[3]
+					discord: args[3],
+					uniqueId: args[4]
 				}
 			}
 			case 'GET_COM_ACCOUNT': {
@@ -192,7 +193,8 @@ export class REST extends EventEmitter {
 					apiId: args[0],
 					username: args[1],
 					accId: args[2],
-					discord: args[3]
+					discord: args[3],
+					uniqueId: args[4]
 				};
 			}
 			case 'GET_ACCOUNT_RANKS': {
@@ -200,7 +202,8 @@ export class REST extends EventEmitter {
 					apiId: args[0],
 					username: args[1],
 					accId: args[2],
-					discord: args[3]
+					discord: args[3],
+					uniqueId: args[4]
 				};
 			}
 			case 'CLOCK_IN_OUT': {
@@ -208,7 +211,8 @@ export class REST extends EventEmitter {
 					apiId: args[0],
 					accId: args[1],
 					forceClockIn: args[2],
-					discord: args[3]
+					discord: args[3],
+					uniqueId: args[4]
 				};
 			}
 			case 'CHECK_COM_APIID': {
@@ -242,6 +246,7 @@ export class REST extends EventEmitter {
 					apiId: args[0],
 					accId: args[1],
 					discord: args[2],
+					uniqueId: args[3]
 				};
 			}
 			case 'KICK_ACCOUNT': {
@@ -249,12 +254,23 @@ export class REST extends EventEmitter {
 					apiId: args[0],
 					accId: args[1],
 					discord: args[2],
+					uniqueId: args[3]
 				};
 			}
 			case 'LOOKUP': {
 				return {
 					id: args[0],
 					uuid: args[1]
+				}
+			}
+			case 'EDIT_ACC_PROFLIE_FIELDS': {
+				return {
+					apiId: args[0],
+					username: args[1],
+					accId: args[2],
+					discord: args[3],
+					uniqueId: args[4],
+					profileFields: args[5]
 				}
 			}
 			default: {

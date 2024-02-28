@@ -395,6 +395,12 @@ export const GeneralCMSAPITypes: APITypeData[] = [
 		method: 'POST',
 		minVersion: 3
 	},
+	{
+		type: 'EDIT_ACC_PROFLIE_FIELDS',
+		path: 'general/edit_acc_profile_fields',
+		method: 'POST',
+		minVersion: 0
+	}
 ];
 
 export const ServersCMSAPITypes: APITypeData[] = [
@@ -456,7 +462,7 @@ function formatForAll(array: APITypeData[], product: productEnums): AllAPITypeDa
 
 export const AllAPITypes: AllAPITypeData[] = [ ...formatForAll(GeneralCADAPITypes, productEnums.CAD), ...formatForAll(CivilianCADAPITypes, productEnums.CAD), ...formatForAll(EmergencyCADAPITypes, productEnums.CAD), ...formatForAll(GeneralCMSAPITypes, productEnums.CMS), ...formatForAll(ServersCMSAPITypes, productEnums.CMS), ...formatForAll(EventsCMSAPITypes, productEnums.CMS),  ...formatForAll(FormsCMSAPITypes, productEnums.CMS), ...formatForAll(CommunitiesCMSAPITypes, productEnums.CMS) ];
 
-export type AllAPITypesType = 'GET_SERVERS' | 'SET_SERVERS' | 'GET_VERSION' | 'SET_PENAL_CODES' | 'SET_API_ID' | 'GET_TEMPLATES' | 'NEW_RECORD' | 'EDIT_RECORD' | 'REMOVE_RECORD' | 'LOOKUP_INT' | 'LOOKUP' | 'GET_ACCOUNT' | 'CHECK_APIID' | 'APPLY_PERMISSION_KEY' | 'SET_ACCOUNT_PERMISSIONS' | 'BAN_USER' | 'VERIFY_SECRET' | 'AUTH_STREETSIGNS' | 'SET_POSTALS' | 'SEND_PHOTO' | 'GET_CHARACTERS' | 'NEW_CHARACTER' | 'EDIT_CHARACTER' | 'REMOVE_CHARACTER' | 'GET_IDENTIFIERS' | 'MODIFY_IDENTIFIER' | 'SET_IDENTIFIER' | 'UNIT_PANIC' | 'UNIT_STATUS' | 'GET_BLIPS' | 'ADD_BLIP' | 'MODIFY_BLIP' | 'REMOVE_BLIP' | '911_CALL' | 'REMOVE_911' | 'GET_CALLS' | 'GET_ACTIVE_UNITS' | 'KICK_UNIT' | 'NEW_DISPATCH' | 'ATTACH_UNIT' | 'DETACH_UNIT' | 'SET_CALL_POSTAL' | 'SET_CALL_PRIMARY' | 'ADD_CALL_NOTE' | 'CLOSE_CALL' | 'UNIT_LOCATION' | 'SET_STREETSIGN_CONFIG' | 'UPDATE_STREETSIGN' | 'GET_COM_ACCOUNT' | 'GET_DEPARTMENTS' | 'GET_SUB_VERSION' | 'CHECK_COM_APIID' | 'VERIFY_WHITELIST' | 'CLOCK_IN_OUT' | 'FULL_WHITELIST' | 'GET_ACCOUNT_RANKS' | 'SET_ACCOUNT_RANKS' | 'RSVP' | 'CHANGE_FORM_STAGE' | 'KICK_ACCOUNT' | 'BAN_ACCOUNT' | 'LOOKUP';
+export type AllAPITypesType = 'GET_SERVERS' | 'SET_SERVERS' | 'GET_VERSION' | 'SET_PENAL_CODES' | 'SET_API_ID' | 'GET_TEMPLATES' | 'NEW_RECORD' | 'EDIT_RECORD' | 'REMOVE_RECORD' | 'LOOKUP_INT' | 'LOOKUP' | 'GET_ACCOUNT' | 'CHECK_APIID' | 'APPLY_PERMISSION_KEY' | 'SET_ACCOUNT_PERMISSIONS' | 'BAN_USER' | 'VERIFY_SECRET' | 'AUTH_STREETSIGNS' | 'SET_POSTALS' | 'SEND_PHOTO' | 'GET_CHARACTERS' | 'NEW_CHARACTER' | 'EDIT_CHARACTER' | 'REMOVE_CHARACTER' | 'GET_IDENTIFIERS' | 'MODIFY_IDENTIFIER' | 'SET_IDENTIFIER' | 'UNIT_PANIC' | 'UNIT_STATUS' | 'GET_BLIPS' | 'ADD_BLIP' | 'MODIFY_BLIP' | 'REMOVE_BLIP' | '911_CALL' | 'REMOVE_911' | 'GET_CALLS' | 'GET_ACTIVE_UNITS' | 'KICK_UNIT' | 'NEW_DISPATCH' | 'ATTACH_UNIT' | 'DETACH_UNIT' | 'SET_CALL_POSTAL' | 'SET_CALL_PRIMARY' | 'ADD_CALL_NOTE' | 'CLOSE_CALL' | 'UNIT_LOCATION' | 'SET_STREETSIGN_CONFIG' | 'UPDATE_STREETSIGN' | 'GET_COM_ACCOUNT' | 'GET_DEPARTMENTS' | 'GET_SUB_VERSION' | 'CHECK_COM_APIID' | 'VERIFY_WHITELIST' | 'CLOCK_IN_OUT' | 'FULL_WHITELIST' | 'GET_ACCOUNT_RANKS' | 'SET_ACCOUNT_RANKS' | 'RSVP' | 'CHANGE_FORM_STAGE' | 'KICK_ACCOUNT' | 'BAN_ACCOUNT' | 'LOOKUP' | 'EDIT_ACC_PROFLIE_FIELDS';
 
 export interface CMSServerAPIStruct {
 	id: number;
@@ -722,6 +728,10 @@ export interface CADUnitLocationStruct {
 	location: string;
 }
 
+export interface CMSProfileField {
+	id: string;
+	value: string;
+}
 export interface RESTTypedAPIDataStructs {
 	// CAD - General
 	GET_SERVERS: [];
@@ -847,6 +857,7 @@ export interface RESTTypedAPIDataStructs {
 		username?: string,
 		accId?: string,
 		discord?: string,
+		uniqueId?: string
 	];
 	GET_SUB_VERSION: [];
 	CHECK_COM_APIID: [apiId: string];
@@ -854,7 +865,8 @@ export interface RESTTypedAPIDataStructs {
 		apiId?: string,
 		accId?: string,
 		forceClockIn?: boolean,
-		discord?: string
+		discord?: string,
+		uniqueId?: string
 	];
 	GET_DEPARTMENTS: [];
 	GET_ACCOUNT_RANKS: [
@@ -862,6 +874,7 @@ export interface RESTTypedAPIDataStructs {
 		username?: string,
 		accId?: string,
 		discord?: string,
+		uniqueId?: string,
 	],
 	SET_ACCOUNT_RANKS: [
 		set?: string[],
@@ -888,7 +901,16 @@ export interface RESTTypedAPIDataStructs {
 		eventId: string,
 		apiId: string | undefined,
 		accId: string | undefined,
-		discord: string | undefined
+		discord: string | undefined,
+		uniqueId: string | undefined
+	],
+	EDIT_ACC_PROFLIE_FIELDS : [
+		apiId: string,
+		username: string,
+		accId: string,
+		discord: string,
+		uniqueId: string,
+		profileFields : CMSProfileField[]
 	]
 	// CMS - Forms
 	CHANGE_FORM_STAGE: [
