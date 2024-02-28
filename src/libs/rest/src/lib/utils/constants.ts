@@ -853,7 +853,8 @@ export interface RESTTypedAPIDataStructs {
 	CLOCK_IN_OUT: [
 		apiId?: string,
 		accId?: string,
-		forceClockIn?: boolean
+		forceClockIn?: boolean,
+		discord?: string
 	];
 	GET_DEPARTMENTS: [];
 	GET_ACCOUNT_RANKS: [
@@ -863,20 +864,22 @@ export interface RESTTypedAPIDataStructs {
 		discord?: string,
 	],
 	SET_ACCOUNT_RANKS: [
-		accountId: string,
-		set?: {
-			primary?: string | null,
-			secondary?: string[]
-		},
+		set?: string[],
 		add?: string[],
 		remove?: string[],
+		apiId?: string,
+		username?: string,
+		accId?: string,
+		discord?: string,
+		uniqueId?: string,
 	],
 	// CMS - Servers
 	GET_GAME_SERVERS: [];
 	VERIFY_WHITELIST: [
 		apiId: string | undefined,
 		accId: string | undefined,
-		serverId: number
+		serverId: number,
+		discord: string | undefined
 	];
 	FULL_WHITELIST: [
 		serverId?: number,
@@ -885,6 +888,7 @@ export interface RESTTypedAPIDataStructs {
 		eventId: string,
 		apiId: string | undefined,
 		accId: string | undefined,
+		discord: string | undefined
 	]
 	// CMS - Forms
 	CHANGE_FORM_STAGE: [

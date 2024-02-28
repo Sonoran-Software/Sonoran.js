@@ -170,7 +170,8 @@ export class REST extends EventEmitter {
 				return {
 					apiId: args[0],
 					accId: uuidRegex.test(args[1]) ? args[1] : undefined,
-					serverId: args[2]
+					serverId: args[2],
+					discord: args[3]
 				}
 			}
 			case 'FULL_WHITELIST': {
@@ -183,6 +184,7 @@ export class REST extends EventEmitter {
 					eventId: args[0],
 					apiId: args[1],
 					accId: args[2],
+					discord: args[3]
 				}
 			}
 			case 'GET_COM_ACCOUNT': {
@@ -205,7 +207,8 @@ export class REST extends EventEmitter {
 				return {
 					apiId: args[0],
 					accId: args[1],
-					forceClockIn: args[2]
+					forceClockIn: args[2],
+					discord: args[3]
 				};
 			}
 			case 'CHECK_COM_APIID': {
@@ -215,10 +218,11 @@ export class REST extends EventEmitter {
 			}
 			case 'SET_ACCOUNT_RANKS': {
 				return {
-					accountId: args[0],
+					accId: args[0],
 					set: args[1],
 					add: args[2],
 					remove: args[3],
+					discord: args[4]
 				};
 			}
 			case 'VERIFY_SECRET': {
@@ -237,12 +241,14 @@ export class REST extends EventEmitter {
 				return {
 					apiId: args[0],
 					accId: args[1],
+					discord: args[2],
 				};
 			}
 			case 'KICK_ACCOUNT': {
 				return {
 					apiId: args[0],
 					accId: args[1],
+					discord: args[2],
 				};
 			}
 			case 'LOOKUP': {

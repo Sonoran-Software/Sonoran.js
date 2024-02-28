@@ -162,12 +162,9 @@ export interface CMSSetAccountRanksPromiseResult {
 }
 
 export interface CMSSetAccountRanksChangesObject {
-	set?: {
-		primary?: string | null;
-		secondary?: string[];
-	}
-	add: string[];
-	remove: string[];
+	set?: string[];
+	add?: string[];
+	remove?: string[];
 }
 
 export interface CMSDepartment {
