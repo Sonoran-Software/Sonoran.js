@@ -49,11 +49,11 @@ export class CMSManager extends BaseManager {
    * @param {string} [data.serverId] The username to find a community account.
    * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed and the account data object if found.
    */
-  public async verifyWhitelist(data: { accId?: string, apiId?: string, serverId?: number } | string): Promise<globalTypes.CMSVerifyWhitelistPromiseResult> {
+  public async verifyWhitelist(data: { accId?: string, apiId?: string, username?: string, discord?: string, uniqueId?: number, serverId?: number } | string): Promise<globalTypes.CMSVerifyWhitelistPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
         const isString = typeof data === 'string';
-        const whitelistRequest: any = await this.rest?.request('VERIFY_WHITELIST', isString ? data : data.apiId, isString ? data : data.accId, isString ? this.instance.cmsDefaultServerId : data.serverId ?? this.instance.cmsDefaultServerId);
+        const whitelistRequest: any = await this.rest?.request('VERIFY_WHITELIST', isString ? data : data.apiId, isString ? data : data.accId, isString ? this.instance.cmsDefaultServerId : data.serverId ?? this.instance.cmsDefaultServerId, isString ? undefined : data.username, isString ? undefined : data.discord, isString ? undefined : data.uniqueId);
         if (typeof whitelistRequest === 'string') {
           resolve({ success: true, reason: whitelistRequest });
         } else {
@@ -215,7 +215,7 @@ export class CMSManager extends BaseManager {
   public async setAccountRanks(changes: globalTypes.CMSSetAccountRanksChangesObject, apiId?: string, accId?: string, username?: string, discord?: string, uniqueId?: string): Promise<globalTypes.CMSSetAccountRanksPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
-        const setAccountRanksRequest: any = await this.rest?.request('SET_ACCOUNT_RANKS', changes.set, changes.add, changes.remove, apiId, accId, username, discord, uniqueId);
+        const setAccountRanksRequest: any = await this.rest?.request('SET_ACCOUNT_RANKS', accId, changes.set, changes.add, changes.remove, apiId, username, discord, uniqueId);
         resolve({ success: true, data: setAccountRanksRequest });
       } catch (err) {
         if (err instanceof APIError) {

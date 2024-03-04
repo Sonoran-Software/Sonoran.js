@@ -877,12 +877,12 @@ export interface RESTTypedAPIDataStructs {
 		uniqueId?: string,
 	],
 	SET_ACCOUNT_RANKS: [
+		accId?: string,
 		set?: string[],
 		add?: string[],
 		remove?: string[],
 		apiId?: string,
 		username?: string,
-		accId?: string,
 		discord?: string,
 		uniqueId?: string,
 	],
@@ -892,7 +892,9 @@ export interface RESTTypedAPIDataStructs {
 		apiId: string | undefined,
 		accId: string | undefined,
 		serverId: number,
-		discord: string | undefined
+		username: string | undefined,
+		discord: string | undefined,
+		uniqueId: number | undefined,
 	];
 	FULL_WHITELIST: [
 		serverId?: number,
@@ -916,7 +918,11 @@ export interface RESTTypedAPIDataStructs {
 	CHANGE_FORM_STAGE: [
 		accId: string,
 		formId: number,
-		newStageId: string
+		newStageId: string,
+		apiId: string,
+		username: string,
+		discord: string,
+		uniqueId: number,
 	]
 }
 

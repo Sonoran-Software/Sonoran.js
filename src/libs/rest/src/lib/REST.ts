@@ -226,7 +226,10 @@ export class REST extends EventEmitter {
 					set: args[1],
 					add: args[2],
 					remove: args[3],
-					discord: args[4]
+					apiId: args[4],
+					username: args[5],
+					discord: args[6],
+					uniqueId: args[7],
 				};
 			}
 			case 'VERIFY_SECRET': {
@@ -239,6 +242,10 @@ export class REST extends EventEmitter {
 					accId: args[0],
 					formId: args[1],
 					newStageId: args[2],
+					apiId: args[3],
+					username: args[4],
+					discord: args[5],
+					uniqueId: args[6],
 				};
 			}
 			case 'BAN_ACCOUNT': {
