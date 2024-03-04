@@ -46,14 +46,14 @@ export class CMSManager extends BaseManager {
    * @param {Object | string} data The object or [accId | apiId as a string] that contains data to get a community account to verify if it has whitelist to the specified server. *If given as a string it will default to the set or default cms server id (1).
    * @param {string} [data.accId] The account id to find a community account.
    * @param {string} [data.apiId] The api id to find a community account.
-   * @param {string} [data.serverId] The username to find a community account. 
+   * @param {string} [data.serverId] The username to find a community account.
    * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed and the account data object if found.
    */
-  public async verifyWhitelist(data: { accId?: string, apiId?: string, serverId?: number } | string): Promise<globalTypes.CMSVerifyWhitelistPromiseResult> {
+  public async verifyWhitelist(data: { accId?: string, apiId?: string, username?: string, discord?: string, uniqueId?: number, serverId?: number } | string): Promise<globalTypes.CMSVerifyWhitelistPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
         const isString = typeof data === 'string';
-        const whitelistRequest: any = await this.rest?.request('VERIFY_WHITELIST', isString ? data : data.apiId, isString ? data : data.accId, isString ? this.instance.cmsDefaultServerId : data.serverId ?? this.instance.cmsDefaultServerId);
+        const whitelistRequest: any = await this.rest?.request('VERIFY_WHITELIST', isString ? data : data.apiId, isString ? data : data.accId, isString ? this.instance.cmsDefaultServerId : data.serverId ?? this.instance.cmsDefaultServerId, isString ? undefined : data.username, isString ? undefined : data.discord, isString ? undefined : data.uniqueId);
         if (typeof whitelistRequest === 'string') {
           resolve({ success: true, reason: whitelistRequest });
         } else {
@@ -97,10 +97,10 @@ export class CMSManager extends BaseManager {
    * @param {string} [data.username] The username to find a community account.
    * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed and the account data object if found.
    */
-  public async getComAccount(params: { accId?: string, apiId?: string, username?: string, discord?: string }): Promise<globalTypes.CMSGetComAccountPromiseResult> {
+  public async getComAccount(params: { accId?: string, apiId?: string, username?: string, discord?: string, uniqueId?: string }): Promise<globalTypes.CMSGetComAccountPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
-        const getAccountRequest: any = await this.rest?.request('GET_COM_ACCOUNT', params.apiId, params.username, params.accId, params.discord);
+        const getAccountRequest: any = await this.rest?.request('GET_COM_ACCOUNT', params.apiId, params.username, params.accId, params.discord, params.uniqueId);
         resolve({ success: true, data: getAccountRequest });
       } catch (err) {
         if (err instanceof APIError) {
@@ -120,10 +120,10 @@ export class CMSManager extends BaseManager {
    * @param {string} [data.username] (Optional) The username to find a community account.
    * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed and the account data object if found.
    */
-  public async getAccountRanks(params: { accId?: string, apiId?: string, username?: string, discord?: string }): Promise<globalTypes.CMSGetAccountRanksPromiseResult> {
+  public async getAccountRanks(params: { accId?: string, apiId?: string, username?: string, discord?: string, uniqueId?: string }): Promise<globalTypes.CMSGetAccountRanksPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
-        const getAccountRanksRequest: any = await this.rest?.request('GET_ACCOUNT_RANKS', params.apiId, params.username, params.accId, params.discord);
+        const getAccountRanksRequest: any = await this.rest?.request('GET_ACCOUNT_RANKS', params.apiId, params.username, params.accId, params.discord, params.uniqueId);
         resolve({ success: true, data: getAccountRanksRequest });
       } catch (err) {
         if (err instanceof APIError) {
@@ -141,12 +141,13 @@ export class CMSManager extends BaseManager {
    * @param {string} [data.accId] (Optional) The account id to clock in or out.
    * @param {string} [data.apiId] (Optional) The api id to clock in or out.
    * @param {boolean} [data.forceClockIn] If true, it will override any current clock in with a new clock in at the time of the request.
+   * @param {string} [data.discord] (Optional) The discord ID to clock in or out.
    * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed.
    */
-  public async clockInOut(data: { accId?: string, apiId?: string, forceClockIn?: boolean }): Promise<globalTypes.CMSClockInOutPromiseResult> {
+  public async clockInOut(data: { accId?: string, apiId?: string, forceClockIn?: boolean, discord?: string, uniqueId?: string }): Promise<globalTypes.CMSClockInOutPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
-        const clockInOutRequest = await this.rest?.request('CLOCK_IN_OUT', data.apiId, data.accId, !!data.forceClockIn);
+        const clockInOutRequest = await this.rest?.request('CLOCK_IN_OUT', data.apiId, data.accId, !!data.forceClockIn, data.discord, data.uniqueId);
         const clockInOutResponse = clockInOutRequest as globalTypes.clockInOutRequest;
         if (!clockInOutResponse) resolve({ success: false, reason: clockInOutRequest as string });
         resolve({ success: true, clockedIn: clockInOutResponse.completed });
@@ -201,19 +202,20 @@ export class CMSManager extends BaseManager {
 
   /**
    * Sets a community account's ranks for the CMS community.
-   * @param {string} accountId The object that contains critical data to clock in or out an account.
+   * @param {string} accId The object that contains critical data to clock in or out an account.
    * @param {Object} changes The object that contains change data for setting account ranks.
    * @param {Object} [changes.set] (Optional) The object that contains primary and secondary data for setting account ranks.
    * @param {string} [changes.set.primary] (Optional) The primary rank ID wanting to set to the account.
    * @param {string} [changes.set.secondary] (Optional) The secondary rank ID(s) wanting to set to the account.
    * @param {Array} [changes.add] (Optional) The secondary rank IDs wanting to add to the account.
    * @param {Array} [changes.remove] (Optional) The secondary rank IDs wanting to remove to the account.
+   * @param {string} [discord] (Optional) The discord ID to set the ranks for.
    * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed.
    */
-  public async setAccountRanks(accountId: string, changes: globalTypes.CMSSetAccountRanksChangesObject): Promise<globalTypes.CMSSetAccountRanksPromiseResult> {
+  public async setAccountRanks(changes: globalTypes.CMSSetAccountRanksChangesObject, apiId?: string, accId?: string, username?: string, discord?: string, uniqueId?: string): Promise<globalTypes.CMSSetAccountRanksPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
-        const setAccountRanksRequest: any = await this.rest?.request('SET_ACCOUNT_RANKS', accountId, changes.set, changes.add, changes.remove);
+        const setAccountRanksRequest: any = await this.rest?.request('SET_ACCOUNT_RANKS', accId, changes.set, changes.add, changes.remove, apiId, username, discord, uniqueId);
         resolve({ success: true, data: setAccountRanksRequest });
       } catch (err) {
         if (err instanceof APIError) {
