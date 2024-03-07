@@ -50,5 +50,37 @@ instance.cms.verifyWhitelist({
 });
 ```
 
+## CAD Functions
+### getAccount
+Returns the user account object.
+#### Argument `params`
+##### Type: `object` `{apiId?, username?}`
+```js
+const params = {
+ apiId: '',
+ username: 'SomeUser',
+};
+const account = await instance.cad.getAccount(params);
+```
+
+## CMS Functions
+### verifyWhitelist
+Verifies that a user is whitelisted in the specified server.
+#### Arugment `data`
+##### Type `object` `{accId?: string, apiId?: string, username?: string, discord?: string, uniqueId?: number, serverId?}`
+##### Type `string` (Account UUID or API ID as a string)
+*Note: If passing a `string` for data (Account UUID or API ID) the `serverId` will default to `1`*
+```js
+const data = {
+ accId: '',
+ apiId: '',
+ username: '',
+ discord: '',
+ uniqueId: 1234,
+ serverId: 1
+};
+const isWhitelisted = await instance.cad.verifyWhitelist(data);
+```
+
 ## Further Documentation
 More documentation for Sonoran CAD specific methods and usage can be found [here](/docs/CAD-Methods-and-Usage.md), Sonoran CMS specific methods and usage can be found [here](/docs/CMS-Methods-and-Usage.md), and usage information for the REST class [here](/docs/REST-Methods-and-Usage.md).
