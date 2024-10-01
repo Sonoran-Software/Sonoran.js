@@ -226,4 +226,30 @@ export class CMSManager extends BaseManager {
       }
     });
   }
+
+  /**
+ * Sets a community account's name for the CMS community.
+ * @param {Object} data The object that contains critical data to set an account's name.
+ * @param {string} [data.apiId] (Optional) The api id to set the account name.
+ * @param {string} [data.username] (Optional) The username to set the account name.
+ * @param {string} [data.accId] (Optional) The account id to set the account name.
+ * @param {string} [data.discordId] (Optional) The discord id to set the account name.
+ * @param {string} [data.uniqueId] (Optional) The unique id to set the account name.
+ * @param {string} [data.newName] (Optional) The new name to set the account name.
+ * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed.
+ */
+public async setAccountName(apiId: string | undefined, username: string | undefined, accId: string | undefined, discordId: string | undefined, uniqueId: string | undefined, newName: string ): Promise<globalTypes.CMSSetAccountNamePromiseResult> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const setAccountNameRequest: any = await this.rest?.request('SET_ACCOUNT_NAME', apiId, username, accId, discordId, uniqueId, newName);
+      resolve({ success: true, data: setAccountNameRequest });
+    } catch (err) {
+      if (err instanceof APIError) {
+        resolve({ success: false, reason: err.response });
+      } else {
+        reject(err);
+      }
+    }
+  });
+}
 }
