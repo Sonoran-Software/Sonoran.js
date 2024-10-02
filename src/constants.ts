@@ -246,10 +246,7 @@ export interface clockInOutRequest {
 }
 
 export interface CMSSetAccountNamePromiseResult {
-	success?: boolean;
-	data?: {
-		accId: string;
-		username: string;
-	},
+	success: boolean;
+	data?: string;
 	reason?: string;
 }
