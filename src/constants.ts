@@ -244,3 +244,9 @@ export interface clockInOutRequest {
 	completed: boolean;
 	startTime: string;
 }
+
+export interface CMSSetAccountNamePromiseResult {
+	success: boolean;
+	data?: string;
+	reason?: string;
+}

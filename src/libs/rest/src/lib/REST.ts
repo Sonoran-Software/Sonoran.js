@@ -280,6 +280,16 @@ export class REST extends EventEmitter {
 					profileFields: args[5]
 				}
 			}
+			case 'SET_ACCOUNT_NAME': {
+				return {
+					apiId: args[0],
+					username: args[1],
+					accId: args[2],
+					discordId: args[3],
+					uniqueId: args[4],
+					newName: args[5]
+				}
+			}
 			default: {
 				return args;
 			}
