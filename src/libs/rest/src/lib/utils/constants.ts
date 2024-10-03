@@ -896,7 +896,7 @@ export interface RESTTypedAPIDataStructs {
 		apiId: string | undefined,
 		username: string | undefined,
 		accId: string | undefined,
-		discordId: string | undefined,
+		discord: string | undefined,
 		uniqueId: string | undefined,
 		newName: string,
 	],
