@@ -285,7 +285,7 @@ export class REST extends EventEmitter {
 					apiId: args[0],
 					username: args[1],
 					accId: args[2],
-					discordId: args[3],
+					discord: args[3],
 					uniqueId: args[4],
 					newName: args[5]
 				}
