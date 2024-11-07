@@ -251,17 +251,19 @@ export class REST extends EventEmitter {
 			case 'BAN_ACCOUNT': {
 				return {
 					apiId: args[0],
-					accId: args[1],
-					discord: args[2],
-					uniqueId: args[3]
+					username: args[1],
+					accId: args[2],
+					discord: args[3],
+					uniqueId: args[4]
 				};
 			}
 			case 'KICK_ACCOUNT': {
 				return {
 					apiId: args[0],
-					accId: args[1],
-					discord: args[2],
-					uniqueId: args[3]
+					username: args[1],
+					accId: args[2],
+					discord: args[3],
+					uniqueId: args[4]
 				};
 			}
 			case 'LOOKUP': {

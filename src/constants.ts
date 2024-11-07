@@ -250,3 +250,13 @@ export interface CMSSetAccountNamePromiseResult {
 	data?: string;
 	reason?: string;
 }
+
+export interface CMSKickAccountPromiseResult {
+	success: boolean;
+	reason?: string;
+}
+
+export interface CMSBanAccountPromiseResult {
+	success: boolean;
+	reason?: string;
+}
