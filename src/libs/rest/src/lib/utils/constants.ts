@@ -387,13 +387,13 @@ export const GeneralCMSAPITypes: APITypeData[] = [
 		type: 'KICK_ACCOUNT',
 		path: 'general/kick_account',
 		method: 'POST',
-		minVersion: 3
+		minVersion: 0
 	},
 	{
 		type: 'BAN_ACCOUNT',
 		path: 'general/ban_account',
 		method: 'POST',
-		minVersion: 3
+		minVersion: 0
 	},
 	{
 		type: 'EDIT_ACC_PROFLIE_FIELDS',
@@ -937,6 +937,20 @@ export interface RESTTypedAPIDataStructs {
 		username: string,
 		discord: string,
 		uniqueId: number,
+	]
+	BAN_ACCOUNT: [
+		apiId: string | undefined,
+		username: string | undefined,
+		accId: string | undefined,
+		discord: string | undefined,
+		uniqueId: string | undefined,
+	]
+	KICK_ACCOUNT: [
+		apiId: string | undefined,
+		username: string | undefined,
+		accId: string | undefined,
+		discord: string | undefined,
+		uniqueId: string | undefined,
 	]
 }
 

@@ -252,4 +252,54 @@ export class CMSManager extends BaseManager {
       }
     });
   }
+
+  /**
+   *
+   * @param {Object} params The object that contains parameters to ban an account.
+   * @param {string} [params.apiId] (Optional) The api id to ban the account.
+   * @param {string} [params.username] (Optional) The username to ban the account.
+   * @param {string} [params.accId] (Optional) The account id to ban the account.
+   * @param {string} [params.discord] (Optional) The discord id to ban the account.
+   * @param {string} [params.uniqueId] (Optional) The unique id to ban the account.
+   * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed.
+   */
+  public async cmsBanAccount(params: {apiId?: string, username?: string, accId?: string, discord?: string, uniqueId?: string}): Promise<globalTypes.CMSBanAccountPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const banAccountRequest: any = await this.rest?.request('BAN_ACCOUNT', params.apiId, params.username, params.accId, params.discord, params.uniqueId);
+        resolve({ success: true, reason: banAccountRequest });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   *
+   * @param {Object} params The object that contains parameters to kick an account.
+   * @param {string} [params.apiId] (Optional) The api id to kick the account.
+   * @param {string} [params.username] (Optional) The username to kick the account.
+   * @param {string} [params.accId] (Optional) The account id to kick the account.
+   * @param {string} [params.discord] (Optional) The discord id to kick the account.
+   * @param {string} [params.uniqueId] (Optional) The unique id to kick the account.
+   * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed.
+   */
+  public async cmsKickAccount(params: {apiId?: string, username?: string, accId?: string, discord?: string, uniqueId?: string}): Promise<globalTypes.CMSKickAccountPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const kickAccountRequest: any = await this.rest?.request('KICK_ACCOUNT', params.apiId, params.username, params.accId, params.discord, params.uniqueId);
+        resolve({ success: true, reason: kickAccountRequest });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
 }
