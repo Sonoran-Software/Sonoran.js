@@ -302,4 +302,29 @@ export class CMSManager extends BaseManager {
       }
     });
   }
+
+  /**
+   *
+   * @param {Object} params The object that contains parameters to kick an account.
+   * @param {string} [params.apiId] (Optional) The api id to kick the account.
+   * @param {string} [params.username] (Optional) The username to kick the account.
+   * @param {string} [params.accId] (Optional) The account id to kick the account.
+   * @param {string} [params.discordId] (Optional) The discord id to kick the account.
+   * @param {string} [params.uniqueId] (Optional) The unique id to kick the account.
+   * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed.
+   */
+  public async forceSync(params: {apiId?: string, username?: string, accId?: string, discordId?: string, uniqueId?: string}): Promise<globalTypes.CMSForceSyncPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const forceSyncRequest: any = await this.rest?.request('FORCE_SYNC', params.apiId, params.username, params.accId, params.discordId, params.uniqueId);
+        resolve({ success: true, reason: forceSyncRequest });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
 }
