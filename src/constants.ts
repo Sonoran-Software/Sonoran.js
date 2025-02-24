@@ -260,3 +260,8 @@ export interface CMSBanAccountPromiseResult {
 	success: boolean;
 	reason?: string;
 }
+
+export interface CMSForceSyncPromiseResult {
+	success: boolean;
+	reason?: string;
+}

@@ -292,6 +292,15 @@ export class REST extends EventEmitter {
 					newName: args[5]
 				}
 			}
+			case 'FORCE_SYNC': {
+				return {
+					apiId: args[0],
+					username: args[1],
+					accId: args[2],
+					discordId: args[3],
+					uniqueId: args[4],
+				}
+			}
 			default: {
 				return args;
 			}
