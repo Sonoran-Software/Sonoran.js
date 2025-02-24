@@ -406,6 +406,12 @@ export const GeneralCMSAPITypes: APITypeData[] = [
 		path: 'general/set_account_name',
 		method: 'POST',
 		minVersion: 0
+	},
+	{
+		type: 'FORCE_SYNC',
+		path: 'general/force_sync',
+		method: 'POST',
+		minVersion: 0
 	}
 ];
 
