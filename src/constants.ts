@@ -72,6 +72,7 @@ export type Mutable<T> = {
 export interface CMSVerifyWhitelistPromiseResult {
 	success: boolean;
 	reason?: string;
+	backendError?: boolean;
 }
 
 export interface CMSGetFullWhitelistPromiseResult {

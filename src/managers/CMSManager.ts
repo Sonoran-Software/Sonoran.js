@@ -61,7 +61,7 @@ export class CMSManager extends BaseManager {
         }
       } catch (err) {
         if (err instanceof APIError) {
-          resolve({ success: false, reason: err.response });
+          resolve({ success: false, reason: err.response, backendError: true });
         } else {
           reject(err);
         }
