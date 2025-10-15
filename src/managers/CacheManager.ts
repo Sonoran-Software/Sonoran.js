@@ -1,4 +1,4 @@
-import Collection from '@discordjs/collection';
+import { Collection } from '@discordjs/collection';
 import { Instance } from '../instance/Instance';
 import { Constructable } from '../constants';
 import { DataManager } from './DataManager';

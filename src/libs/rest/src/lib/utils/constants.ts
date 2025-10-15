@@ -382,6 +382,36 @@ export const GeneralCMSAPITypes: APITypeData[] = [
 		path: 'general/clock_in_out',
 		method: 'POST',
 		minVersion: 3
+	},
+	{
+		type: 'KICK_ACCOUNT',
+		path: 'general/kick_account',
+		method: 'POST',
+		minVersion: 0
+	},
+	{
+		type: 'BAN_ACCOUNT',
+		path: 'general/ban_account',
+		method: 'POST',
+		minVersion: 0
+	},
+	{
+		type: 'EDIT_ACC_PROFLIE_FIELDS',
+		path: 'general/edit_acc_profile_fields',
+		method: 'POST',
+		minVersion: 0
+	},
+	{
+		type: 'SET_ACCOUNT_NAME',
+		path: 'general/set_account_name',
+		method: 'POST',
+		minVersion: 0
+	},
+	{
+		type: 'FORCE_SYNC',
+		path: 'general/force_sync',
+		method: 'POST',
+		minVersion: 0
 	}
 ];
 
@@ -406,6 +436,33 @@ export const ServersCMSAPITypes: APITypeData[] = [
 	}
 ];
 
+export const EventsCMSAPITypes: APITypeData[] = [
+	{
+		type: 'RSVP',
+		path: 'events/rsvp',
+		method: 'POST',
+		minVersion: 3
+	}
+];
+
+export const FormsCMSAPITypes: APITypeData[] = [
+	{
+		type: 'CHANGE_FORM_STAGE',
+		path: 'forms/change/stage',
+		method: 'POST',
+		minVersion: 0
+	}
+];
+
+export const CommunitiesCMSAPITypes: APITypeData[] = [
+	{
+		type: 'LOOKUP',
+		path: 'communities/lookup',
+		method: 'POST',
+		minVersion: 0
+	},
+];
+
 function formatForAll(array: APITypeData[], product: productEnums): AllAPITypeData[] {
 	return array.map((val) => {
 		return {
@@ -415,9 +472,9 @@ function formatForAll(array: APITypeData[], product: productEnums): AllAPITypeDa
 	});
 }
 
-export const AllAPITypes: AllAPITypeData[] = [ ...formatForAll(GeneralCADAPITypes, productEnums.CAD), ...formatForAll(CivilianCADAPITypes, productEnums.CAD), ...formatForAll(EmergencyCADAPITypes, productEnums.CAD), ...formatForAll(GeneralCMSAPITypes, productEnums.CMS), ...formatForAll(ServersCMSAPITypes, productEnums.CMS) ];
+export const AllAPITypes: AllAPITypeData[] = [ ...formatForAll(GeneralCADAPITypes, productEnums.CAD), ...formatForAll(CivilianCADAPITypes, productEnums.CAD), ...formatForAll(EmergencyCADAPITypes, productEnums.CAD), ...formatForAll(GeneralCMSAPITypes, productEnums.CMS), ...formatForAll(ServersCMSAPITypes, productEnums.CMS), ...formatForAll(EventsCMSAPITypes, productEnums.CMS),  ...formatForAll(FormsCMSAPITypes, productEnums.CMS), ...formatForAll(CommunitiesCMSAPITypes, productEnums.CMS) ];
 
-export type AllAPITypesType = 'GET_SERVERS' | 'SET_SERVERS' | 'GET_VERSION' | 'SET_PENAL_CODES' | 'SET_API_ID' | 'GET_TEMPLATES' | 'NEW_RECORD' | 'EDIT_RECORD' | 'REMOVE_RECORD' | 'LOOKUP_INT' | 'LOOKUP' | 'GET_ACCOUNT' | 'CHECK_APIID' | 'APPLY_PERMISSION_KEY' | 'SET_ACCOUNT_PERMISSIONS' | 'BAN_USER' | 'VERIFY_SECRET' | 'AUTH_STREETSIGNS' | 'SET_POSTALS' | 'SEND_PHOTO' | 'GET_CHARACTERS' | 'NEW_CHARACTER' | 'EDIT_CHARACTER' | 'REMOVE_CHARACTER' | 'GET_IDENTIFIERS' | 'MODIFY_IDENTIFIER' | 'SET_IDENTIFIER' | 'UNIT_PANIC' | 'UNIT_STATUS' | 'GET_BLIPS' | 'ADD_BLIP' | 'MODIFY_BLIP' | 'REMOVE_BLIP' | '911_CALL' | 'REMOVE_911' | 'GET_CALLS' | 'GET_ACTIVE_UNITS' | 'KICK_UNIT' | 'NEW_DISPATCH' | 'ATTACH_UNIT' | 'DETACH_UNIT' | 'SET_CALL_POSTAL' | 'SET_CALL_PRIMARY' | 'ADD_CALL_NOTE' | 'CLOSE_CALL' | 'UNIT_LOCATION' | 'SET_STREETSIGN_CONFIG' | 'UPDATE_STREETSIGN' | 'GET_COM_ACCOUNT' | 'GET_DEPARTMENTS' | 'GET_SUB_VERSION' | 'CHECK_COM_APIID' | 'VERIFY_WHITELIST' | 'CLOCK_IN_OUT' | 'FULL_WHITELIST' | 'GET_ACCOUNT_RANKS' | 'SET_ACCOUNT_RANKS';
+export type AllAPITypesType = 'GET_SERVERS' | 'SET_SERVERS' | 'GET_VERSION' | 'SET_PENAL_CODES' | 'SET_API_ID' | 'GET_TEMPLATES' | 'NEW_RECORD' | 'EDIT_RECORD' | 'REMOVE_RECORD' | 'LOOKUP_INT' | 'LOOKUP' | 'GET_ACCOUNT' | 'CHECK_APIID' | 'APPLY_PERMISSION_KEY' | 'SET_ACCOUNT_PERMISSIONS' | 'BAN_USER' | 'VERIFY_SECRET' | 'AUTH_STREETSIGNS' | 'SET_POSTALS' | 'SEND_PHOTO' | 'GET_CHARACTERS' | 'NEW_CHARACTER' | 'EDIT_CHARACTER' | 'REMOVE_CHARACTER' | 'GET_IDENTIFIERS' | 'MODIFY_IDENTIFIER' | 'SET_IDENTIFIER' | 'UNIT_PANIC' | 'UNIT_STATUS' | 'GET_BLIPS' | 'ADD_BLIP' | 'MODIFY_BLIP' | 'REMOVE_BLIP' | '911_CALL' | 'REMOVE_911' | 'GET_CALLS' | 'GET_ACTIVE_UNITS' | 'KICK_UNIT' | 'NEW_DISPATCH' | 'ATTACH_UNIT' | 'DETACH_UNIT' | 'SET_CALL_POSTAL' | 'SET_CALL_PRIMARY' | 'ADD_CALL_NOTE' | 'CLOSE_CALL' | 'UNIT_LOCATION' | 'SET_STREETSIGN_CONFIG' | 'UPDATE_STREETSIGN' | 'GET_COM_ACCOUNT' | 'GET_DEPARTMENTS' | 'GET_SUB_VERSION' | 'CHECK_COM_APIID' | 'VERIFY_WHITELIST' | 'CLOCK_IN_OUT' | 'FULL_WHITELIST' | 'GET_ACCOUNT_RANKS' | 'SET_ACCOUNT_RANKS' | 'RSVP' | 'CHANGE_FORM_STAGE' | 'KICK_ACCOUNT' | 'BAN_ACCOUNT' | 'LOOKUP' | 'EDIT_ACC_PROFLIE_FIELDS' | 'SET_ACCOUNT_NAME' | 'FORCE_SYNC';
 
 export interface CMSServerAPIStruct {
 	id: number;
@@ -683,6 +740,10 @@ export interface CADUnitLocationStruct {
 	location: string;
 }
 
+export interface CMSProfileField {
+	id: string;
+	value: string;
+}
 export interface RESTTypedAPIDataStructs {
 	// CAD - General
 	GET_SERVERS: [];
@@ -719,7 +780,7 @@ export interface RESTTypedAPIDataStructs {
 	];
 	// CAD - Civilian
 	GET_CHARACTERS: [apiId: string];
-	NEW_CHARACTER: [data: CADNewEditRecordOptionOneStruct | CADNewEditRecordOptionTwoStruct];	
+	NEW_CHARACTER: [data: CADNewEditRecordOptionOneStruct | CADNewEditRecordOptionTwoStruct];
 	EDIT_CHARACTER: [data: CADNewEditRecordOptionOneStruct | CADNewEditRecordOptionTwoStruct];
 	REMOVE_CHARACTER: [id: number];
 	// CAD - Emergency
@@ -808,13 +869,16 @@ export interface RESTTypedAPIDataStructs {
 		username?: string,
 		accId?: string,
 		discord?: string,
+		uniqueId?: string
 	];
 	GET_SUB_VERSION: [];
 	CHECK_COM_APIID: [apiId: string];
 	CLOCK_IN_OUT: [
 		apiId?: string,
 		accId?: string,
-		forceClockIn?: boolean
+		forceClockIn?: boolean,
+		discord?: string,
+		uniqueId?: string
 	];
 	GET_DEPARTMENTS: [];
 	GET_ACCOUNT_RANKS: [
@@ -822,30 +886,89 @@ export interface RESTTypedAPIDataStructs {
 		username?: string,
 		accId?: string,
 		discord?: string,
+		uniqueId?: string,
 	],
 	SET_ACCOUNT_RANKS: [
-		accountId: string,
-		set?: {
-			primary?: string | null,
-			secondary?: string[]
-		},
+		accId?: string,
+		set?: string[],
 		add?: string[],
 		remove?: string[],
+		apiId?: string,
+		username?: string,
+		discord?: string,
+		uniqueId?: string,
+	],
+	SET_ACCOUNT_NAME: [
+		apiId: string | undefined,
+		username: string | undefined,
+		accId: string | undefined,
+		discord: string | undefined,
+		uniqueId: string | undefined,
+		newName: string,
+	],
+	FORCE_SYNC: [
+		apiId: string | undefined,
+		username: string | undefined,
+		accId: string | undefined,
+		discordId: string | undefined,
+		uniqueId: string | undefined,
 	],
 	// CMS - Servers
 	GET_GAME_SERVERS: [];
 	VERIFY_WHITELIST: [
 		apiId: string | undefined,
 		accId: string | undefined,
-		serverId: number
+		serverId: number,
+		username: string | undefined,
+		discord: string | undefined,
+		uniqueId: number | undefined,
 	];
 	FULL_WHITELIST: [
 		serverId?: number,
 	]
+	RSVP : [
+		eventId: string,
+		apiId: string | undefined,
+		accId: string | undefined,
+		discord: string | undefined,
+		uniqueId: string | undefined
+	],
+	EDIT_ACC_PROFLIE_FIELDS : [
+		apiId: string,
+		username: string,
+		accId: string,
+		discord: string,
+		uniqueId: string,
+		profileFields : CMSProfileField[]
+	]
+	// CMS - Forms
+	CHANGE_FORM_STAGE: [
+		accId: string,
+		formId: number,
+		newStageId: string,
+		apiId: string,
+		username: string,
+		discord: string,
+		uniqueId: number,
+	]
+	BAN_ACCOUNT: [
+		apiId: string | undefined,
+		username: string | undefined,
+		accId: string | undefined,
+		discord: string | undefined,
+		uniqueId: string | undefined,
+	]
+	KICK_ACCOUNT: [
+		apiId: string | undefined,
+		username: string | undefined,
+		accId: string | undefined,
+		discord: string | undefined,
+		uniqueId: string | undefined,
+	]
 }
 
-export type PossibleRequestData = 
-	undefined | 
+export type PossibleRequestData =
+	undefined |
 	{
 		data: CADPenalCodeStruct[] | CADSetAPIIDStruct | CADNewEditRecordOptionOneStruct | CADNewEditRecordOptionTwoStruct | CADLookupByIntStruct | CADLookupStruct | CADModifyAccountPermsStruct | CADKickBanUserStruct | CADSetPostalStruct[] | CADModifyIdentifierStruct | CADAddBlipStruct[] | CADModifyBlipStruct[] | CADGetCallsStruct | CADGetActiveUnitsStruct | CADNewDispatchStruct
 	} |

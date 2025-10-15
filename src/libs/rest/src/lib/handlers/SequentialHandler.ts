@@ -134,7 +134,11 @@ export class SequentialHandler implements IHandler {
 		if (res.ok) {
 			return parsedRes;
 		} else if (res.status === 400 || res.status === 401 || res.status === 404) {
-			throw new APIError(parsedRes as string, data.type, data.fullUrl, res.status, data);
+			if (typeof parsedRes === 'object' && !(parsedRes as any)?.authorized) {
+				return parsedRes;
+			} else {
+				throw new APIError(parsedRes as string, data.type, data.fullUrl, res.status, data);
+			}
 		} else if (res.status === 429) {
 			const timeout = setTimeout(() => {
 				this.manager.removeRateLimit(data.requestTypeId);
@@ -155,7 +159,7 @@ export class SequentialHandler implements IHandler {
 		if (res.headers.get('Content-Type')?.startsWith('application/json')) {
 			return res.json();
 		}
-	
+
 		return res.text();
 	}
 }

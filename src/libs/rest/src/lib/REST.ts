@@ -13,7 +13,6 @@ import type { RequestInit, Response } from 'node-fetch';
 // import type Collection from '@discordjs/collection';
 import { Instance } from '../../../../instance/Instance';
 import { CADManager } from '../../../../managers/CADManager';
-import { convertSubNumToName } from './utils/Utils';
 import { CMSManager } from '../../../../managers/CMSManager';
 
 /**
@@ -142,8 +141,8 @@ export class REST extends EventEmitter {
 		let apiKey: string | undefined;
 		switch (apiType.product) {
 			case productEnums.CAD: {
-				communityId = this.instance.cadCommunityId;	
-				apiKey = this.instance.cadApiKey;	
+				communityId = this.instance.cadCommunityId;
+				apiKey = this.instance.cadApiKey;
 				break;
 			}
 			case productEnums.CMS: {
@@ -153,7 +152,7 @@ export class REST extends EventEmitter {
 			}
 		}
 		if (!communityId || !apiKey) throw new Error(`Community ID or API Key could not be found for request. P${apiType.product}`);
-		if (apiType.minVersion > this.manager.version) throw new Error(`[${type}] Subscription version too low for this API type request. Current Version: ${convertSubNumToName(this.manager.version)} Needed Version: ${convertSubNumToName(apiType.minVersion)}`);
+		// if (apiType.minVersion > this.manager.version) throw new Error(`[${type}] Subscription version too low for this API type request. Current Version: ${convertSubNumToName(this.manager.version)} Needed Version: ${convertSubNumToName(apiType.minVersion)}`);  // Verifies API Subscription Level Requirement which is deprecated currently
 		const formattedData = this.formatDataArguments(apiType.type, args);
 		const options: InternalRequestData = {
 			id: communityId,
@@ -171,7 +170,8 @@ export class REST extends EventEmitter {
 				return {
 					apiId: args[0],
 					accId: uuidRegex.test(args[1]) ? args[1] : undefined,
-					serverId: args[2]
+					serverId: args[2],
+					discord: args[3]
 				}
 			}
 			case 'FULL_WHITELIST': {
@@ -179,12 +179,22 @@ export class REST extends EventEmitter {
 					serverId: args[0]
 				}
 			}
+			case 'RSVP': {
+				return {
+					eventId: args[0],
+					apiId: args[1],
+					accId: args[2],
+					discord: args[3],
+					uniqueId: args[4]
+				}
+			}
 			case 'GET_COM_ACCOUNT': {
 				return {
 					apiId: args[0],
 					username: args[1],
 					accId: args[2],
-					discord: args[3]
+					discord: args[3],
+					uniqueId: args[4]
 				};
 			}
 			case 'GET_ACCOUNT_RANKS': {
@@ -192,14 +202,17 @@ export class REST extends EventEmitter {
 					apiId: args[0],
 					username: args[1],
 					accId: args[2],
-					discord: args[3]
+					discord: args[3],
+					uniqueId: args[4]
 				};
 			}
 			case 'CLOCK_IN_OUT': {
 				return {
 					apiId: args[0],
 					accId: args[1],
-					forceClockIn: args[2]
+					forceClockIn: args[2],
+					discord: args[3],
+					uniqueId: args[4]
 				};
 			}
 			case 'CHECK_COM_APIID': {
@@ -209,16 +222,84 @@ export class REST extends EventEmitter {
 			}
 			case 'SET_ACCOUNT_RANKS': {
 				return {
-					accountId: args[0],
+					accId: args[0],
 					set: args[1],
 					add: args[2],
 					remove: args[3],
+					apiId: args[4],
+					username: args[5],
+					discord: args[6],
+					uniqueId: args[7],
 				};
 			}
 			case 'VERIFY_SECRET': {
 				return {
 					secret: args[0],
 				};
+			}
+			case 'CHANGE_FORM_STAGE': {
+				return {
+					accId: args[0],
+					formId: args[1],
+					newStageId: args[2],
+					apiId: args[3],
+					username: args[4],
+					discord: args[5],
+					uniqueId: args[6],
+				};
+			}
+			case 'BAN_ACCOUNT': {
+				return {
+					apiId: args[0],
+					username: args[1],
+					accId: args[2],
+					discord: args[3],
+					uniqueId: args[4]
+				};
+			}
+			case 'KICK_ACCOUNT': {
+				return {
+					apiId: args[0],
+					username: args[1],
+					accId: args[2],
+					discord: args[3],
+					uniqueId: args[4]
+				};
+			}
+			case 'LOOKUP': {
+				return {
+					id: args[0],
+					uuid: args[1]
+				}
+			}
+			case 'EDIT_ACC_PROFLIE_FIELDS': {
+				return {
+					apiId: args[0],
+					username: args[1],
+					accId: args[2],
+					discord: args[3],
+					uniqueId: args[4],
+					profileFields: args[5]
+				}
+			}
+			case 'SET_ACCOUNT_NAME': {
+				return {
+					apiId: args[0],
+					username: args[1],
+					accId: args[2],
+					discord: args[3],
+					uniqueId: args[4],
+					newName: args[5]
+				}
+			}
+			case 'FORCE_SYNC': {
+				return {
+					apiId: args[0],
+					username: args[1],
+					accId: args[2],
+					discordId: args[3],
+					uniqueId: args[4],
+				}
 			}
 			default: {
 				return args;

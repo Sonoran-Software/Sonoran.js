@@ -1,4 +1,4 @@
-import Collection from '@discordjs/collection';
+import { Collection } from '@discordjs/collection';
 import { CADDispatchOriginEnums, CADDispatchStatusEnums } from './libs/rest/src';
 import { DataManager } from './managers/DataManager';
 import { CADActiveUnitsManager } from './managers/CADActiveUnitsManager';
@@ -72,6 +72,7 @@ export type Mutable<T> = {
 export interface CMSVerifyWhitelistPromiseResult {
 	success: boolean;
 	reason?: string;
+	backendError?: boolean;
 }
 
 export interface CMSGetFullWhitelistPromiseResult {
@@ -162,12 +163,9 @@ export interface CMSSetAccountRanksPromiseResult {
 }
 
 export interface CMSSetAccountRanksChangesObject {
-	set?: {
-		primary?: string | null;
-		secondary?: string[];
-	}
-	add: string[];
-	remove: string[];
+	set?: string[];
+	add?: string[];
+	remove?: string[];
 }
 
 export interface CMSDepartment {
@@ -246,4 +244,25 @@ export interface clockInOutRequest {
 	endTime: string;
 	completed: boolean;
 	startTime: string;
+}
+
+export interface CMSSetAccountNamePromiseResult {
+	success: boolean;
+	data?: string;
+	reason?: string;
+}
+
+export interface CMSKickAccountPromiseResult {
+	success: boolean;
+	reason?: string;
+}
+
+export interface CMSBanAccountPromiseResult {
+	success: boolean;
+	reason?: string;
+}
+
+export interface CMSForceSyncPromiseResult {
+	success: boolean;
+	reason?: string;
 }

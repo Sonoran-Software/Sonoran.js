@@ -1,4 +1,4 @@
-import Collection from '@discordjs/collection';
+import { Collection } from '@discordjs/collection';
 // import { DiscordSnowflake } from '@sapphire/snowflake';
 import { EventEmitter } from 'events';
 // import type { RequestInit, BodyInit } from 'node-fetch';
@@ -248,7 +248,8 @@ export class RequestManager extends EventEmitter {
     apiData.fetchOptions.body = JSON.stringify(apiData.data);
     apiData.fetchOptions.headers = {
       'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      ...instance.apiHeaders
     };
 
     return apiData;
