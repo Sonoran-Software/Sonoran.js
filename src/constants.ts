@@ -266,3 +266,20 @@ export interface CMSForceSyncPromiseResult {
 	success: boolean;
 	reason?: string;
 }
+
+export interface CMSERLCGetOnlinePlayersPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: {
+		Player: string;
+		Permission: string;
+		Callsingn?: string;
+		Team?: string;
+	}[];
+}
+
+export interface CMSERLCAddNewRecordPromiseResult {
+	success: boolean;
+	reason?: string;
+	logId?: string;
+}

@@ -327,4 +327,51 @@ export class CMSManager extends BaseManager {
       }
     });
   }
+
+  /**
+   * Gets a list of online ERLC players for the given roblox join code.
+   * @param {string} robloxJoinCode The roblox join code to get the online players for.
+   * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed and the list of online players if successful.
+   */
+  public async erlcGetOnlinePlayers(robloxJoinCode: string): Promise<globalTypes.CMSERLCGetOnlinePlayersPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const erlcGetOnlinePlayersRequest: any = await this.rest?.request('ERLC_GET_ONLINE_PLAYERS', robloxJoinCode);
+        resolve({ success: true, data: erlcGetOnlinePlayersRequest });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Adds a new ERLC record for a player.
+   * @param {Object} data The object that contains critical data to add a new ERLC record.
+   * @param {string} data.robloxJoinCode The roblox join code to add the record to.
+   * @param {string|number} data.executerDiscordId The discord ID of the person executing the record addition.
+   * @param {string} data.type The type of record being added (e.g., "Warning", "Infraction").
+   * @param {string} data.reason The reason for the record being added.
+   * @param {string|number} [data.playerDiscordId] (Optional) The discord ID of the player receiving the record.
+   * @param {string|number} [data.playerRobloxId] (Optional) The roblox ID of the player receiving the record.
+   * @param {number} [data.points] (Optional) The points associated with the record being added.
+   * @return {Promise} Promise object represents if the request was successful with reason for failure if needed.
+   * */
+  public async erlcAddNewRecord(data: { robloxJoinCode: string, executerDiscordId: string | number, type: string, reason: string, playerDiscordId?: string | number, playerRobloxId?: string | number, points?: number }): Promise<globalTypes.CMSERLCAddNewRecordPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const erlcAddNewRecordRequest: any = await this.rest?.request('ERLC_ADD_NEW_RECORD', data.robloxJoinCode, data.executerDiscordId, data.type, data.reason, data.playerDiscordId, data.playerRobloxId, data.points);
+        resolve({ success: true, reason: erlcAddNewRecordRequest });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
 }

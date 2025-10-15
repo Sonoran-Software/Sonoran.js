@@ -301,6 +301,22 @@ export class REST extends EventEmitter {
 					uniqueId: args[4],
 				}
 			}
+			case 'ERLC_GET_ONLINE_PLAYERS': {
+				return {
+					robloxJoinCode: args[0]
+				}
+			}
+			case 'ERLC_ADD_NEW_RECORD': {
+				return {
+					robloxJoinCode: args[0],
+					executerDiscordId: args[1],
+					type: args[2],
+					reason: args[3],
+					playerDiscordId: args[4],
+					playerRobloxId: args[5],
+					points: args[6],
+				}
+			}
 			default: {
 				return args;
 			}
