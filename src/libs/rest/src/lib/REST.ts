@@ -306,6 +306,11 @@ export class REST extends EventEmitter {
 					robloxJoinCode: args[0]
 				}
 			}
+			case 'ERLC_GET_PLAYER_QUEUE': {
+				return {
+					robloxJoinCode: args[0]
+				}
+			}
 			case 'ERLC_ADD_NEW_RECORD': {
 				return {
 					robloxJoinCode: args[0],
