@@ -349,6 +349,26 @@ export class CMSManager extends BaseManager {
   }
 
   /**
+   * Gets the current ERLC player queue count for the provided roblox join code.
+   * @param {string} robloxJoinCode The roblox join code to get the player queue size for.
+   * @returns {Promise} Promise object indicates success and includes the queue count when successful.
+   */
+  public async erlcGetPlayerQueue(robloxJoinCode: string): Promise<globalTypes.CMSERLCGetPlayerQueuePromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const erlcGetPlayerQueueRequest: any = await this.rest?.request('ERLC_GET_PLAYER_QUEUE', robloxJoinCode);
+        resolve({ success: true, data: erlcGetPlayerQueueRequest });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
    * Adds a new ERLC record for a player.
    * @param {Object} data The object that contains critical data to add a new ERLC record.
    * @param {string} data.robloxJoinCode The roblox join code to add the record to.

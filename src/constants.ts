@@ -278,6 +278,12 @@ export interface CMSERLCGetOnlinePlayersPromiseResult {
 	}[];
 }
 
+export interface CMSERLCGetPlayerQueuePromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: number;
+}
+
 export interface CMSERLCAddNewRecordPromiseResult {
 	success: boolean;
 	reason?: string;
