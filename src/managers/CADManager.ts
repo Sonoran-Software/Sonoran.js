@@ -61,4 +61,89 @@ export class CADManager extends BaseManager {
       }
     });
   }
+
+  /**
+   * Updates the CAD clock to match in-game time.
+   */
+  public async setClockTime(data: { serverId: number; currentUtc: string; currentGame: string; secondsPerHour: number }): Promise<globalTypes.CADSetClockTimePromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('SET_CLOCK', data);
+        resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Adds accounts to the community via the join community endpoint.
+   * NOTE: This endpoint is intended for internal CMS use and requires an internal key.
+   */
+  public async joinCommunity(internalKey: string, accounts: string | { account: string } | Array<string | { account: string }>): Promise<globalTypes.CADJoinCommunityPromiseResult> {
+    if (!internalKey) {
+      throw new Error('internalKey is required to join a community.');
+    }
+    const normalizedAccounts = this.normalizeAccountEntries(accounts);
+    if (normalizedAccounts.length === 0) {
+      throw new Error('At least one account must be provided to join the community.');
+    }
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('JOIN_COMMUNITY', { internalKey, accounts: normalizedAccounts });
+        resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Removes accounts from the community via the leave community endpoint.
+   * NOTE: This endpoint is intended for internal CMS use and requires an internal key.
+   */
+  public async leaveCommunity(internalKey: string, accounts: string | { account: string } | Array<string | { account: string }>): Promise<globalTypes.CADLeaveCommunityPromiseResult> {
+    if (!internalKey) {
+      throw new Error('internalKey is required to leave a community.');
+    }
+    const normalizedAccounts = this.normalizeAccountEntries(accounts);
+    if (normalizedAccounts.length === 0) {
+      throw new Error('At least one account must be provided to leave the community.');
+    }
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('LEAVE_COMMUNITY', { internalKey, accounts: normalizedAccounts });
+        resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  private normalizeAccountEntries(input: string | { account: string } | Array<string | { account: string }>): { account: string }[] {
+    const entries = Array.isArray(input) ? input : [input];
+    return entries
+      .filter((entry): entry is string | { account: string } => entry !== undefined && entry !== null)
+      .map((entry) => {
+        if (typeof entry === 'string') {
+          return { account: entry };
+        }
+        if ('account' in entry) {
+          return { account: entry.account };
+        }
+        throw new Error('Invalid account entry provided.');
+      });
+  }
 }

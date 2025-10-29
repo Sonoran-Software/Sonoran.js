@@ -1,0 +1,89 @@
+name: Auto PR for new branch (trigger Codex)
+
+on:
+  push:
+    branches:
+      - 'feat/**'
+      - 'fix/**'
+      - 'tweak/**'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  ensure-pr:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      BRANCH: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Auth gh
+        run: gh auth status || true
+
+      - name: Ensure PR exists
+        id: pr
+        run: |
+          PR_NUMBER=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+          if [ -n "$PR_NUMBER" ]; then
+            echo "PR exists: #$PR_NUMBER"
+            echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+            echo "created=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          TITLE="Auto Review: $BRANCH"
+          BODY_FILE="$(mktemp)"
+          {
+            echo "Auto-created to trigger Codex code review for branch **$BRANCH** targeting \`staging\`."
+            echo
+            echo "Codex instructions: .github/codex_instructions.md"
+          } > "$BODY_FILE"
+
+          gh pr create \
+            --head "$BRANCH" \
+            --base "staging" \
+            --title "$TITLE" \
+            --body-file "$BODY_FILE" \
+            --draft
+          PR_NUMBER=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+          if [ -z "$PR_NUMBER" ]; then
+            echo "Failed to determine PR number after creation" >&2
+            exit 1
+          fi
+          echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "created=true" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure auto-review label exists
+        if: steps.pr.outputs.number
+        run: |
+          if ! gh label list --json name --limit 100 | jq -e '.[] | select(.name == "auto-review")' > /dev/null; then
+            gh label create "auto-review" --color "0E8A16" --description "PRs ready for Codex auto review"
+          fi
+
+      - name: Label PR (optional)
+        if: steps.pr.outputs.number
+        run: |
+          gh pr edit "${{ steps.pr.outputs.number }}" --add-label "auto-review"
+
+      - name: Mark PR ready for review
+        if: steps.pr.outputs.created == 'true'
+        run: gh pr ready "${{ steps.pr.outputs.number }}"
+
+      - name: Trigger initial Codex review
+        if: steps.pr.outputs.created == 'true'
+        env:
+          PR: ${{ steps.pr.outputs.number }}
+          GH_TOKEN: ${{ secrets.CODEX_TRIGGER_TOKEN }}
+        run: |
+          TMP=$(mktemp)
+          {
+            echo "@codex review"
+            echo
+            echo "instructions: .github/codex_instructions.md"
+          } > "$TMP"
+
+          gh pr comment "$PR" --body-file "$TMP"
