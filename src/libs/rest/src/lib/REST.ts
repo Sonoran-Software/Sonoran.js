@@ -14,6 +14,7 @@ import type { RequestInit, Response } from 'node-fetch';
 import { Instance } from '../../../../instance/Instance';
 import { CADManager } from '../../../../managers/CADManager';
 import { CMSManager } from '../../../../managers/CMSManager';
+import { RadioManager } from '../../../../managers/RadioManager';
 
 /**
  * Options to be passed when creating the REST instance
@@ -106,7 +107,7 @@ export interface REST {
 		(<S extends string | symbol>(event?: Exclude<S, keyof RestEvents>) => this);
 }
 
-export type RestManagerTypes = CADManager | CMSManager;
+export type RestManagerTypes = CADManager | CMSManager | RadioManager;
 
 export class REST extends EventEmitter {
 	public readonly requestManager: RequestManager;
@@ -150,6 +151,11 @@ export class REST extends EventEmitter {
 				apiKey = this.instance.cmsApiKey;
 				break;
 			}
+			case productEnums.RADIO: {
+				communityId = this.instance.radioCommunityId;
+				apiKey = this.instance.radioApiKey;
+				break;
+			}
 		}
 		if (!communityId || !apiKey) throw new Error(`Community ID or API Key could not be found for request. P${apiType.product}`);
 		// if (apiType.minVersion > this.manager.version) throw new Error(`[${type}] Subscription version too low for this API type request. Current Version: ${convertSubNumToName(this.manager.version)} Needed Version: ${convertSubNumToName(apiType.minVersion)}`);  // Verifies API Subscription Level Requirement which is deprecated currently
@@ -179,6 +185,9 @@ export class REST extends EventEmitter {
 					serverId: args[0]
 				}
 			}
+			case 'SET_GAME_SERVERS': {
+				return args[0] ?? [];
+			}
 			case 'RSVP': {
 				return {
 					eventId: args[0],
@@ -204,6 +213,62 @@ export class REST extends EventEmitter {
 					accId: args[2],
 					discord: args[3],
 					uniqueId: args[4]
+				};
+			}
+			case 'GET_CURRENT_CLOCK_IN': {
+				return {
+					apiId: args[0],
+					username: args[1],
+					accId: args[2],
+					discord: args[3],
+					uniqueId: args[4]
+				};
+			}
+			case 'GET_ACCOUNTS': {
+				return args[0] ?? {};
+			}
+			case 'GET_PROFILE_FIELDS': {
+				return undefined;
+			}
+			case 'SET_CLOCK': {
+				if (args[0] && typeof args[0] === 'object' && !Array.isArray(args[0])) {
+					return args[0];
+				}
+				return {
+					serverId: args[0],
+					currentUtc: args[1],
+					currentGame: args[2],
+					secondsPerHour: args[3]
+				};
+			}
+			case 'JOIN_COMMUNITY':
+			case 'LEAVE_COMMUNITY': {
+				const payload = args[0] && typeof args[0] === 'object' && !Array.isArray(args[0]) && 'internalKey' in args[0]
+					? args[0]
+					: null;
+				const internalKey = payload ? payload.internalKey : args[0];
+				const accountsInput = payload ? payload.accounts : args[1];
+				let accounts: Array<{ account: string }> = [];
+				if (Array.isArray(accountsInput)) {
+					accounts = accountsInput.map((entry) => {
+						if (typeof entry === 'string') {
+							return { account: entry };
+						}
+						if (entry && typeof entry === 'object' && 'account' in entry) {
+							return entry as { account: string };
+						}
+						return { account: String(entry) };
+					});
+				} else if (accountsInput) {
+					if (typeof accountsInput === 'string') {
+						accounts = [{ account: accountsInput }];
+					} else if (typeof accountsInput === 'object' && 'account' in accountsInput) {
+						accounts = [accountsInput as { account: string }];
+					}
+				}
+				return {
+					internalKey,
+					accounts
 				};
 			}
 			case 'CLOCK_IN_OUT': {
@@ -235,6 +300,13 @@ export class REST extends EventEmitter {
 			case 'VERIFY_SECRET': {
 				return {
 					secret: args[0],
+				};
+			}
+			case 'GET_FORM_TEMPLATE_SUBMISSIONS': {
+				return {
+					templateId: args[0],
+					skip: args[1],
+					take: args[2],
 				};
 			}
 			case 'CHANGE_FORM_STAGE': {
@@ -320,6 +392,40 @@ export class REST extends EventEmitter {
 					playerDiscordId: args[4],
 					playerRobloxId: args[5],
 					points: args[6],
+				}
+			}
+			case 'RADIO_GET_COMMUNITY_CHANNELS':
+			case 'RADIO_GET_CONNECTED_USERS':
+			case 'RADIO_GET_SERVER_SUBSCRIPTION_FROM_IP': {
+				return undefined;
+			}
+			case 'RADIO_GET_CONNECTED_USER': {
+				return {
+					roomId: args[0],
+					identity: args[1]
+				}
+			}
+			case 'RADIO_SET_USER_CHANNELS': {
+				return {
+					identity: args[0],
+					options: args[1] ?? {}
+				}
+			}
+			case 'RADIO_SET_USER_DISPLAY_NAME': {
+				return {
+					accId: args[0],
+					displayName: args[1]
+				}
+			}
+			case 'RADIO_SET_SERVER_IP': {
+				return {
+					pushUrl: args[0]
+				}
+			}
+			case 'RADIO_SET_IN_GAME_SPEAKER_LOCATIONS': {
+				return {
+					locations: args[0],
+					token: args[1]
 				}
 			}
 			default: {

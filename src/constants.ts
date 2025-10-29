@@ -6,7 +6,8 @@ import { CADActiveUnit } from './structures/CADActiveUnit';
 
 export enum productEnums {
   CAD,
-  CMS
+  CMS,
+  RADIO
 }
 
 export interface CADNewDispatchBuilderOptions {
@@ -252,6 +253,31 @@ export interface CMSSetAccountNamePromiseResult {
 	reason?: string;
 }
 
+export interface CADSetClockTimePromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: unknown;
+}
+
+export interface CADJoinCommunityPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: unknown;
+}
+
+export interface CADLeaveCommunityPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: unknown;
+}
+
+export interface CMSProfileField {
+	id: string;
+	type: string;
+	label: string;
+	options: unknown;
+}
+
 export interface CMSKickAccountPromiseResult {
 	success: boolean;
 	reason?: string;
@@ -265,6 +291,84 @@ export interface CMSBanAccountPromiseResult {
 export interface CMSForceSyncPromiseResult {
 	success: boolean;
 	reason?: string;
+}
+
+export interface CMSGetCurrentClockInPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: clockInOutRequest | null;
+}
+
+export interface CMSAccountSummary {
+	accId: string;
+	accName: string;
+	activeApiIds: string[];
+	discordId?: string;
+	sysStatus: boolean;
+	comStatus: boolean;
+	archived: boolean;
+	banned: boolean;
+	[key: string]: unknown;
+}
+
+export interface CMSAccountsPage {
+	total: number;
+	skip: number;
+	take: number;
+	accounts: CMSAccountSummary[];
+}
+
+export interface CMSGetAccountsPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSAccountsPage;
+}
+
+export interface CMSGetProfileFieldsPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSProfileField[];
+}
+
+export interface CMSProfileFieldUpdate {
+	id: string;
+	value: unknown;
+}
+
+export interface CMSEditAccountProfileFieldsPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSProfileFieldUpdate[];
+}
+
+export interface CMSRsvpPromiseResult {
+	success: boolean;
+	reason?: string;
+	status?: string;
+	data?: unknown;
+}
+
+export interface CMSSetGameServerStruct {
+	id?: number;
+	name: string;
+	description?: string;
+	ip?: string;
+	port?: string;
+	allowedRanks?: string[];
+	blockedRanks?: string[];
+	[key: string]: unknown;
+}
+
+export interface CMSSetGameServersPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSSetGameServerStruct[];
+}
+
+export interface CMSGetFormSubmissionsPromiseResult<T = unknown> {
+	success: boolean;
+	reason?: string;
+	data?: T[];
 }
 
 export interface CMSERLCGetOnlinePlayersPromiseResult {
@@ -288,4 +392,131 @@ export interface CMSERLCAddNewRecordPromiseResult {
 	success: boolean;
 	reason?: string;
 	logId?: string;
+}
+
+export interface RadioChannelGroup {
+	id: number;
+	name: string;
+	orderIndex: number;
+}
+
+export interface RadioChannel {
+	id: number;
+	groupId: number;
+	displayName: string;
+	recvFreqMajor: number;
+	recvFreqMinor: number;
+	xmitFreqMajor: number;
+	xmitFreqMinor: number;
+	repeatsXmit: boolean;
+	status: boolean;
+	orderIndex: number;
+	talkoverProtection: boolean;
+	[key: string]: unknown;
+}
+
+export interface RadioConnectedUserMetadataScanList {
+	id: number;
+	name: string;
+	channelIds: number[];
+	[key: string]: unknown;
+}
+
+export interface RadioConnectedUserMetadataState {
+	primaryChId?: number;
+	scannedChIds?: number[];
+	scanLists?: RadioConnectedUserMetadataScanList[];
+	spec?: number;
+	[key: string]: unknown;
+}
+
+export interface RadioConnectedUserMetadata {
+	sonrad?: boolean;
+	state?: RadioConnectedUserMetadataState;
+	[key: string]: unknown;
+}
+
+export interface RadioConnectedUser {
+	identity: string;
+	name: string;
+	roomId?: number;
+	metadata: RadioConnectedUserMetadata;
+	[key: string]: unknown;
+}
+
+export interface RadioSpeakerLocation {
+	label: string;
+	id: string;
+}
+
+export interface RadioSetUserChannelsOptions {
+	transmit?: number;
+	scan?: number[];
+}
+
+export type RadioSubscriptionLevel = 0 | 1 | 2;
+
+export interface RadioGetCommunityChannelsPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: {
+		result: string;
+		groups: RadioChannelGroup[];
+		channels: RadioChannel[];
+		[key: string]: unknown;
+	};
+}
+
+export interface RadioGetConnectedUsersPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: {
+		result: string;
+		connectedUsers: RadioConnectedUser[];
+		[key: string]: unknown;
+	};
+}
+
+export interface RadioGetConnectedUserPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: {
+		result: string;
+		data: RadioConnectedUser;
+		[key: string]: unknown;
+	};
+}
+
+export interface RadioSetUserChannelsPromiseResult {
+	success: boolean;
+	reason?: string;
+	result?: string;
+}
+
+export interface RadioSetUserDisplayNamePromiseResult {
+	success: boolean;
+	reason?: string;
+	result?: string;
+}
+
+export interface RadioGetServerSubscriptionFromIpPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: {
+		result: string;
+		subscription: RadioSubscriptionLevel;
+		[key: string]: unknown;
+	};
+}
+
+export interface RadioSetServerIpPromiseResult {
+	success: boolean;
+	reason?: string;
+	result?: string;
+}
+
+export interface RadioSetInGameSpeakerLocationsPromiseResult {
+	success: boolean;
+	reason?: string;
+	result?: string;
 }

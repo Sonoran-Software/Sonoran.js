@@ -13,6 +13,9 @@ export type InstanceOptions = {
   cmsApiKey?: string;
   cmsApiUrl?: string;
   cmsDefaultServerId?: number;
+  radioCommunityId?: string;
+  radioApiKey?: string;
+  radioApiUrl?: string;
   debug?: boolean;
   apiHeaders?: HeadersInit ;
 };
