@@ -349,6 +349,127 @@ export class CMSManager extends BaseManager {
   }
 
   /**
+   * Toggles RSVP for the provided event and account.
+   */
+  public async rsvp(eventId: string, params: { apiId?: string, username?: string, accId?: string, discord?: string, uniqueId?: string } = {}): Promise<globalTypes.CMSRsvpPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('RSVP', eventId, params.apiId, params.accId, params.discord, params.uniqueId);
+        if (typeof response === 'string') {
+          resolve({ success: true, status: response });
+        } else {
+          resolve({ success: true, data: response });
+        }
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Retrieves submissions for a specific form template.
+   */
+  public async getFormSubmissions<T = unknown>(templateId: number, options: { skip?: number, take?: number } = {}): Promise<globalTypes.CMSGetFormSubmissionsPromiseResult<T>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('GET_FORM_TEMPLATE_SUBMISSIONS', templateId, options.skip, options.take);
+        resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Updates profile fields for the specified account.
+   */
+  public async editAccountProfileFields(params: { apiId?: string, username?: string, accId?: string, discord?: string, uniqueId?: string, profileFields: globalTypes.CMSProfileFieldUpdate[] }): Promise<globalTypes.CMSEditAccountProfileFieldsPromiseResult> {
+    if (!params.profileFields || params.profileFields.length === 0) {
+      throw new Error('profileFields array must include at least one value.');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('EDIT_ACC_PROFLIE_FIELDS', params.apiId, params.username, params.accId, params.discord, params.uniqueId, params.profileFields);
+        resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Gets the current clock in entry for a community member.
+   * @param {Object} params Identification parameters for the account.
+   */
+  public async getCurrentClockIn(params: { accId?: string, apiId?: string, username?: string, discord?: string, uniqueId?: string }): Promise<globalTypes.CMSGetCurrentClockInPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('GET_CURRENT_CLOCK_IN', params.apiId, params.username, params.accId, params.discord, params.uniqueId);
+        if (typeof response === 'string') {
+          resolve({ success: true, reason: response, data: null });
+        } else {
+          resolve({ success: true, data: response });
+        }
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Retrieves community accounts using optional pagination and status filters.
+   */
+  public async getAccounts(options: { skip?: number, take?: number, sysStatus?: boolean, comStatus?: boolean, banned?: boolean, archived?: boolean } = {}): Promise<globalTypes.CMSGetAccountsPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('GET_ACCOUNTS', options);
+        resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Retrieves configured profile fields for the community.
+   */
+  public async getProfileFields(): Promise<globalTypes.CMSGetProfileFieldsPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('GET_PROFILE_FIELDS');
+        resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
    * Gets the current ERLC player queue count for the provided roblox join code.
    * @param {string} robloxJoinCode The roblox join code to get the player queue size for.
    * @returns {Promise} Promise object indicates success and includes the queue count when successful.

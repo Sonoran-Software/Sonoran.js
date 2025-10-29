@@ -1,4 +1,4 @@
-import { productEnums } from '../../../../../constants';
+import { productEnums, RadioSetUserChannelsOptions, RadioSpeakerLocation, CMSProfileFieldUpdate, CMSSetGameServerStruct } from '../../../../../constants';
 import type { RESTOptions } from '../REST';
 
 export const DefaultUserAgent = 'Sonoran.js NPM Module';
@@ -13,6 +13,13 @@ export const DefaultCADRestOptions: Required<RESTOptions> = {
 export const DefaultCMSRestOptions: Required<RESTOptions> = {
 	agent: {},
 	api: 'https://api.sonorancms.com',
+	headers: {},
+	rejectOnRateLimit: true
+};
+
+export const DefaultRadioRestOptions: Required<RESTOptions> = {
+	agent: {},
+	api: 'https://api.sonoranradio.com',
 	headers: {},
 	rejectOnRateLimit: true
 };
@@ -163,6 +170,24 @@ export const GeneralCADAPITypes: APITypeData[] = [
 		path: 'general/send_photo',
 		method: 'POST',
 		minVersion: 4
+	},
+	{
+		type: 'SET_CLOCK',
+		path: 'general/set_clock',
+		method: 'POST',
+		minVersion: 3
+	},
+	{
+		type: 'JOIN_COMMUNITY',
+		path: 'sso/community',
+		method: 'POST',
+		minVersion: 0
+	},
+	{
+		type: 'LEAVE_COMMUNITY',
+		path: 'sso/community',
+		method: 'POST',
+		minVersion: 0
 	}
 ];
 
@@ -348,6 +373,18 @@ export const GeneralCMSAPITypes: APITypeData[] = [
 		minVersion: 3
 	},
 	{
+		type: 'GET_CURRENT_CLOCK_IN',
+		path: 'general/get_current_clock_in',
+		method: 'POST', // Would've been 'GET' but fetch doesn't allow body with GET requests.
+		minVersion: 0
+	},
+	{
+		type: 'GET_ACCOUNTS',
+		path: 'general/get_accounts',
+		method: 'POST', // Would've been 'GET' but fetch doesn't allow body with GET requests.
+		minVersion: 0
+	},
+	{
 		type: 'GET_ACCOUNT_RANKS',
 		path: 'general/get_account_ranks',
 		method: 'POST', // Would've been 'GET' but fetch doesn't allow body with GET requests.
@@ -364,6 +401,12 @@ export const GeneralCMSAPITypes: APITypeData[] = [
 		path: 'general/get_departments',
 		method: 'POST', // Would've been 'GET' but fetch doesn't allow body with GET requests.
 		minVersion: 2,
+	},
+	{
+		type: 'GET_PROFILE_FIELDS',
+		path: 'general/get_profile_fields',
+		method: 'POST', // Would've been 'GET' but fetch doesn't allow body with GET requests.
+		minVersion: 0
 	},
 	{
 		type: 'GET_SUB_VERSION',
@@ -423,6 +466,12 @@ export const ServersCMSAPITypes: APITypeData[] = [
 		minVersion: 2
 	},
 	{
+		type: 'SET_GAME_SERVERS',
+		path: 'servers/set_game_servers',
+		method: 'POST',
+		minVersion: 2
+	},
+	{
 		type: 'VERIFY_WHITELIST',
 		path: 'servers/verify_whitelist',
 		method: 'POST',
@@ -449,6 +498,12 @@ export const FormsCMSAPITypes: APITypeData[] = [
 	{
 		type: 'CHANGE_FORM_STAGE',
 		path: 'forms/change/stage',
+		method: 'POST',
+		minVersion: 0
+	},
+	{
+		type: 'GET_FORM_TEMPLATE_SUBMISSIONS',
+		path: 'forms/get_template_submissions',
 		method: 'POST',
 		minVersion: 0
 	}
@@ -484,6 +539,57 @@ export const ERLCMSAPITypes: APITypeData[] = [
 	}
 ];
 
+export const RadioAPITypes: APITypeData[] = [
+	{
+		type: 'RADIO_GET_COMMUNITY_CHANNELS',
+		path: 'api/radio/get-community-channels',
+		method: 'GET',
+		minVersion: 0
+	},
+	{
+		type: 'RADIO_GET_CONNECTED_USERS',
+		path: 'api/radio/get-connected-users',
+		method: 'GET',
+		minVersion: 0
+	},
+	{
+		type: 'RADIO_GET_CONNECTED_USER',
+		path: 'api/radio/get-connected-user',
+		method: 'GET',
+		minVersion: 0
+	},
+	{
+		type: 'RADIO_SET_USER_CHANNELS',
+		path: 'api/radio/set-user-channels',
+		method: 'POST',
+		minVersion: 0
+	},
+	{
+		type: 'RADIO_SET_USER_DISPLAY_NAME',
+		path: 'api/set-user-display-name',
+		method: 'POST',
+		minVersion: 0
+	},
+	{
+		type: 'RADIO_GET_SERVER_SUBSCRIPTION_FROM_IP',
+		path: 'radio/check-server-subscription',
+		method: 'GET',
+		minVersion: 0
+	},
+	{
+		type: 'RADIO_SET_SERVER_IP',
+		path: 'radio/set-server-ip',
+		method: 'POST',
+		minVersion: 0
+	},
+	{
+		type: 'RADIO_SET_IN_GAME_SPEAKER_LOCATIONS',
+		path: 'radio/set-server-speakers',
+		method: 'POST',
+		minVersion: 0
+	}
+];
+
 function formatForAll(array: APITypeData[], product: productEnums): AllAPITypeData[] {
 	return array.map((val) => {
 		return {
@@ -493,9 +599,9 @@ function formatForAll(array: APITypeData[], product: productEnums): AllAPITypeDa
 	});
 }
 
-export const AllAPITypes: AllAPITypeData[] = [ ...formatForAll(GeneralCADAPITypes, productEnums.CAD), ...formatForAll(CivilianCADAPITypes, productEnums.CAD), ...formatForAll(EmergencyCADAPITypes, productEnums.CAD), ...formatForAll(GeneralCMSAPITypes, productEnums.CMS), ...formatForAll(ServersCMSAPITypes, productEnums.CMS), ...formatForAll(EventsCMSAPITypes, productEnums.CMS),  ...formatForAll(FormsCMSAPITypes, productEnums.CMS), ...formatForAll(CommunitiesCMSAPITypes, productEnums.CMS), ...formatForAll(ERLCMSAPITypes, productEnums.CMS) ];
+export const AllAPITypes: AllAPITypeData[] = [ ...formatForAll(GeneralCADAPITypes, productEnums.CAD), ...formatForAll(CivilianCADAPITypes, productEnums.CAD), ...formatForAll(EmergencyCADAPITypes, productEnums.CAD), ...formatForAll(GeneralCMSAPITypes, productEnums.CMS), ...formatForAll(ServersCMSAPITypes, productEnums.CMS), ...formatForAll(EventsCMSAPITypes, productEnums.CMS),  ...formatForAll(FormsCMSAPITypes, productEnums.CMS), ...formatForAll(CommunitiesCMSAPITypes, productEnums.CMS), ...formatForAll(ERLCMSAPITypes, productEnums.CMS), ...formatForAll(RadioAPITypes, productEnums.RADIO) ];
 
-export type AllAPITypesType = 'GET_SERVERS' | 'SET_SERVERS' | 'GET_VERSION' | 'SET_PENAL_CODES' | 'SET_API_ID' | 'GET_TEMPLATES' | 'NEW_RECORD' | 'EDIT_RECORD' | 'REMOVE_RECORD' | 'LOOKUP_INT' | 'LOOKUP' | 'GET_ACCOUNT' | 'CHECK_APIID' | 'APPLY_PERMISSION_KEY' | 'SET_ACCOUNT_PERMISSIONS' | 'BAN_USER' | 'VERIFY_SECRET' | 'AUTH_STREETSIGNS' | 'SET_POSTALS' | 'SEND_PHOTO' | 'GET_CHARACTERS' | 'NEW_CHARACTER' | 'EDIT_CHARACTER' | 'REMOVE_CHARACTER' | 'GET_IDENTIFIERS' | 'MODIFY_IDENTIFIER' | 'SET_IDENTIFIER' | 'UNIT_PANIC' | 'UNIT_STATUS' | 'GET_BLIPS' | 'ADD_BLIP' | 'MODIFY_BLIP' | 'REMOVE_BLIP' | '911_CALL' | 'REMOVE_911' | 'GET_CALLS' | 'GET_ACTIVE_UNITS' | 'KICK_UNIT' | 'NEW_DISPATCH' | 'ATTACH_UNIT' | 'DETACH_UNIT' | 'SET_CALL_POSTAL' | 'SET_CALL_PRIMARY' | 'ADD_CALL_NOTE' | 'CLOSE_CALL' | 'UNIT_LOCATION' | 'SET_STREETSIGN_CONFIG' | 'UPDATE_STREETSIGN' | 'GET_COM_ACCOUNT' | 'GET_DEPARTMENTS' | 'GET_SUB_VERSION' | 'CHECK_COM_APIID' | 'VERIFY_WHITELIST' | 'CLOCK_IN_OUT' | 'FULL_WHITELIST' | 'GET_ACCOUNT_RANKS' | 'SET_ACCOUNT_RANKS' | 'RSVP' | 'CHANGE_FORM_STAGE' | 'KICK_ACCOUNT' | 'BAN_ACCOUNT' | 'LOOKUP' | 'EDIT_ACC_PROFLIE_FIELDS' | 'SET_ACCOUNT_NAME' | 'FORCE_SYNC' | "ERLC_GET_ONLINE_PLAYERS" | "ERLC_GET_PLAYER_QUEUE" | "ERLC_ADD_NEW_RECORD";
+export type AllAPITypesType = 'GET_SERVERS' | 'SET_SERVERS' | 'GET_VERSION' | 'SET_PENAL_CODES' | 'SET_API_ID' | 'GET_TEMPLATES' | 'NEW_RECORD' | 'EDIT_RECORD' | 'REMOVE_RECORD' | 'LOOKUP_INT' | 'LOOKUP' | 'GET_ACCOUNT' | 'CHECK_APIID' | 'APPLY_PERMISSION_KEY' | 'SET_ACCOUNT_PERMISSIONS' | 'BAN_USER' | 'VERIFY_SECRET' | 'AUTH_STREETSIGNS' | 'SET_POSTALS' | 'SEND_PHOTO' | 'SET_CLOCK' | 'JOIN_COMMUNITY' | 'LEAVE_COMMUNITY' | 'GET_CHARACTERS' | 'NEW_CHARACTER' | 'EDIT_CHARACTER' | 'REMOVE_CHARACTER' | 'GET_IDENTIFIERS' | 'MODIFY_IDENTIFIER' | 'SET_IDENTIFIER' | 'UNIT_PANIC' | 'UNIT_STATUS' | 'GET_BLIPS' | 'ADD_BLIP' | 'MODIFY_BLIP' | 'REMOVE_BLIP' | '911_CALL' | 'REMOVE_911' | 'GET_CALLS' | 'GET_ACTIVE_UNITS' | 'KICK_UNIT' | 'NEW_DISPATCH' | 'ATTACH_UNIT' | 'DETACH_UNIT' | 'SET_CALL_POSTAL' | 'SET_CALL_PRIMARY' | 'ADD_CALL_NOTE' | 'CLOSE_CALL' | 'UNIT_LOCATION' | 'SET_STREETSIGN_CONFIG' | 'UPDATE_STREETSIGN' | 'GET_COM_ACCOUNT' | 'GET_DEPARTMENTS' | 'GET_SUB_VERSION' | 'GET_CURRENT_CLOCK_IN' | 'GET_ACCOUNTS' | 'GET_PROFILE_FIELDS' | 'CHECK_COM_APIID' | 'VERIFY_WHITELIST' | 'CLOCK_IN_OUT' | 'FULL_WHITELIST' | 'GET_ACCOUNT_RANKS' | 'SET_ACCOUNT_RANKS' | 'RSVP' | 'CHANGE_FORM_STAGE' | 'GET_FORM_TEMPLATE_SUBMISSIONS' | 'KICK_ACCOUNT' | 'BAN_ACCOUNT' | 'LOOKUP' | 'EDIT_ACC_PROFLIE_FIELDS' | 'SET_ACCOUNT_NAME' | 'FORCE_SYNC' | 'SET_GAME_SERVERS' | 'ERLC_GET_ONLINE_PLAYERS' | 'ERLC_GET_PLAYER_QUEUE' | 'ERLC_ADD_NEW_RECORD' | 'RADIO_GET_COMMUNITY_CHANNELS' | 'RADIO_GET_CONNECTED_USERS' | 'RADIO_GET_CONNECTED_USER' | 'RADIO_SET_USER_CHANNELS' | 'RADIO_SET_USER_DISPLAY_NAME' | 'RADIO_GET_SERVER_SUBSCRIPTION_FROM_IP' | 'RADIO_SET_SERVER_IP' | 'RADIO_SET_IN_GAME_SPEAKER_LOCATIONS';
 
 export interface CMSServerAPIStruct {
 	id: number;
@@ -758,13 +864,9 @@ export interface CADStreetSignStruct {
 
 export interface CADUnitLocationStruct {
 	apiId: string;
-	location: string;
+location: string;
 }
 
-export interface CMSProfileField {
-	id: string;
-	value: string;
-}
 export interface RESTTypedAPIDataStructs {
 	// CAD - General
 	GET_SERVERS: [];
@@ -787,7 +889,7 @@ export interface RESTTypedAPIDataStructs {
 	];
 	CHECK_APIID: [apiId: string];
 	APPLY_PERMISSION_KEY: [
-		apiId: string,
+		apiId: string | undefined,
 		permissionKey: string
 	];
 	SET_ACCOUNT_PERMISSIONS: [data: CADModifyAccountPermsStruct];
@@ -796,8 +898,28 @@ export interface RESTTypedAPIDataStructs {
 	AUTH_STREETSIGNS: [serverId: number];
 	SET_POSTALS: [data: CADSetPostalStruct[]];
 	SEND_PHOTO: [
-		apiId: string,
+		apiId: string | undefined,
 		url: string
+	];
+	SET_CLOCK: [
+		data: {
+			serverId: number,
+			currentUtc: string,
+			currentGame: string,
+			secondsPerHour: number
+		}
+	];
+	JOIN_COMMUNITY: [
+		payload: {
+			internalKey: string,
+			accounts: Array<{ account: string }>
+		}
+	];
+	LEAVE_COMMUNITY: [
+		payload: {
+			internalKey: string,
+			accounts: Array<{ account: string }>
+		}
 	];
 	// CAD - Civilian
 	GET_CHARACTERS: [apiId: string];
@@ -808,15 +930,15 @@ export interface RESTTypedAPIDataStructs {
 	GET_IDENTIFIERS: [apiId: string];
 	MODIFY_IDENTIFIER: [data: CADModifyIdentifierStruct];
 	SET_IDENTIFIER: [
-		apiId: string,
+		apiId: string | undefined,
 		identId: number
 	];
 	UNIT_PANIC: [
-		apiId: string,
+		apiId: string | undefined,
 		isPanic: boolean
 	];
 	UNIT_STATUS: [
-		apiId: string,
+		apiId: string | undefined,
 		status: number,
 		serverId: number
 	];
@@ -828,7 +950,7 @@ export interface RESTTypedAPIDataStructs {
 	GET_CALLS: [data: CADGetCallsStruct];
 	GET_ACTIVE_UNITS: [data: CADGetActiveUnitsStruct];
 	KICK_UNIT: [
-		apiId: string,
+		apiId: string | undefined,
 		reason: string,
 		serverId: number
 	];
@@ -893,6 +1015,24 @@ export interface RESTTypedAPIDataStructs {
 		uniqueId?: string
 	];
 	GET_SUB_VERSION: [];
+	GET_CURRENT_CLOCK_IN: [
+		apiId?: string,
+		username?: string,
+		accId?: string,
+		discord?: string,
+		uniqueId?: string
+	];
+	GET_ACCOUNTS: [
+		options?: {
+			skip?: number,
+			take?: number,
+			sysStatus?: boolean,
+			comStatus?: boolean,
+			banned?: boolean,
+			archived?: boolean
+		}
+	];
+	GET_PROFILE_FIELDS: [];
 	CHECK_COM_APIID: [apiId: string];
 	CLOCK_IN_OUT: [
 		apiId?: string,
@@ -936,6 +1076,7 @@ export interface RESTTypedAPIDataStructs {
 	],
 	// CMS - Servers
 	GET_GAME_SERVERS: [];
+	SET_GAME_SERVERS: [servers: CMSSetGameServerStruct[]];
 	VERIFY_WHITELIST: [
 		apiId: string | undefined,
 		accId: string | undefined,
@@ -955,22 +1096,27 @@ export interface RESTTypedAPIDataStructs {
 		uniqueId: string | undefined
 	],
 	EDIT_ACC_PROFLIE_FIELDS : [
-		apiId: string,
-		username: string,
-		accId: string,
-		discord: string,
-		uniqueId: string,
-		profileFields : CMSProfileField[]
+		apiId: string | undefined,
+		username: string | undefined,
+		accId: string | undefined,
+		discord: string | undefined,
+		uniqueId: string | undefined,
+		profileFields : CMSProfileFieldUpdate[]
 	]
 	// CMS - Forms
 	CHANGE_FORM_STAGE: [
-		accId: string,
+		accId: string | undefined,
 		formId: number,
 		newStageId: string,
-		apiId: string,
-		username: string,
-		discord: string,
+		apiId: string | undefined,
+		username: string | undefined,
+		discord: string | undefined,
 		uniqueId: number,
+	]
+	GET_FORM_TEMPLATE_SUBMISSIONS: [
+		templateId: number,
+		skip?: number,
+		take?: number,
 	]
 	BAN_ACCOUNT: [
 		apiId: string | undefined,
@@ -1002,6 +1148,29 @@ export interface RESTTypedAPIDataStructs {
 		playerRobloxId?: string | number,
 		points?: number,
 	]
+	// Radio
+	RADIO_GET_COMMUNITY_CHANNELS: [];
+	RADIO_GET_CONNECTED_USERS: [];
+	RADIO_GET_CONNECTED_USER: [
+		roomId: number,
+		identity: string
+	];
+	RADIO_SET_USER_CHANNELS: [
+		identity: string,
+		options?: RadioSetUserChannelsOptions
+	];
+	RADIO_SET_USER_DISPLAY_NAME: [
+		accId: string | undefined,
+		displayName: string
+	];
+	RADIO_GET_SERVER_SUBSCRIPTION_FROM_IP: [];
+	RADIO_SET_SERVER_IP: [
+		pushUrl: string
+	];
+	RADIO_SET_IN_GAME_SPEAKER_LOCATIONS: [
+		locations: RadioSpeakerLocation[],
+		token?: string
+	];
 }
 
 export type PossibleRequestData =
@@ -1012,6 +1181,14 @@ export type PossibleRequestData =
 	{
 		servers: CADServerAPIStruct[];
 		deployMap: boolean;
+	} |
+	{
+		data: {
+			serverId: number;
+			currentUtc: string;
+			currentGame: string;
+			secondsPerHour: number;
+		}
 	} |
 	{
 		id: number;
@@ -1108,6 +1285,10 @@ export type PossibleRequestData =
 			text2: string;
 			text3: string;
 		}
+	} |
+	{
+		internalKey: string;
+		accounts: { account: string }[];
 	} |
 	{
 		apiId?: string;

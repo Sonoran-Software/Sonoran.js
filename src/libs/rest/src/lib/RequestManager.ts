@@ -5,7 +5,8 @@ import { EventEmitter } from 'events';
 
 import type { Instance } from '../../../../instance/Instance';
 import { RESTOptions, RateLimitData, RestEvents } from './REST';
-import { DefaultCADRestOptions, DefaultCMSRestOptions, AllAPITypes/**, RESTTypedAPIDataStructs, PossibleRequestData*/ } from './utils/constants';
+import { DefaultCADRestOptions, DefaultCMSRestOptions, DefaultRadioRestOptions, AllAPITypes/**, RESTTypedAPIDataStructs, PossibleRequestData*/ } from './utils/constants';
+import type { AllAPITypeData } from './utils/constants';
 import { productEnums } from '../../../../constants';
 // import { APIError, HTTPError } from './errors';
 import { IHandler } from './handlers/IHandler';
@@ -29,6 +30,7 @@ export interface RequestData {
   key: string;
   type: string;
   data: any;
+  internalKey?: string;
 }
 
 export interface InternalRequestData extends RequestData {
@@ -87,6 +89,10 @@ export class RequestManager extends EventEmitter {
         this.options = { ...DefaultCMSRestOptions, ...options };
         break;
       }
+      case productEnums.RADIO: {
+        this.options = { ...DefaultRadioRestOptions, ...options };
+        break;
+      }
       default: {
         throw new Error('No Product provided for RequestManager initialization');
       }
@@ -134,10 +140,16 @@ export class RequestManager extends EventEmitter {
       case productEnums.CMS:
         apiURL = instance.cmsApiUrl;
         break;
+      case productEnums.RADIO:
+        apiURL = instance.radioApiUrl;
+        break;
     }
 
     const findType = AllAPITypes.find((_type) => _type.type === type);
     if (findType) {
+      if (product === productEnums.RADIO) {
+        return RequestManager.resolveRadioRequest(instance, apiURL, findType, data, apiData);
+      }
       apiData.fullUrl = `${apiURL}/${findType.path}`;
       apiData.method = findType.method;
       apiData.fetchOptions.method = findType.method;
@@ -147,6 +159,10 @@ export class RequestManager extends EventEmitter {
 
       switch (findType.type) {
         case 'SET_SERVERS': {
+          apiData.data.data = clonedData;
+          break;
+        }
+        case 'SET_GAME_SERVERS': {
           apiData.data.data = clonedData;
           break;
         }
@@ -186,14 +202,37 @@ export class RequestManager extends EventEmitter {
           apiData.data.data = clonedData;
           break;
         }
-        case 'SET_POSTALS': {
-          apiData.data.data = [clonedData[0]];
-          break;
-        }
-        case 'NEW_CHARACTER': {
-          apiData.data.data = [clonedData[0]];
-          break;
-        }
+		case 'SET_POSTALS': {
+		  apiData.data.data = [clonedData[0]];
+		  break;
+		}
+		case 'SET_CLOCK': {
+		  apiData.data.data = Array.isArray(clonedData) ? clonedData : [clonedData];
+		  break;
+		}
+		case 'JOIN_COMMUNITY':
+		case 'LEAVE_COMMUNITY': {
+		  const internalKey = clonedData?.internalKey;
+		  if (internalKey !== undefined) {
+		    apiData.data.internalKey = internalKey;
+		  }
+		  const accountsSource = clonedData?.accounts;
+		  const accountsArray = Array.isArray(accountsSource) ? accountsSource : accountsSource ? [accountsSource] : [];
+		  apiData.data.data = accountsArray.map((entry: any) => {
+		    if (typeof entry === 'string') {
+		      return { account: entry };
+		    }
+		    if (entry && typeof entry === 'object' && 'account' in entry) {
+		      return entry;
+		    }
+		    return { account: String(entry) };
+		  });
+		  break;
+		}
+		case 'NEW_CHARACTER': {
+		  apiData.data.data = [clonedData[0]];
+		  break;
+		}
         case 'EDIT_CHARACTER': {
           apiData.data.data = [clonedData[0]];
           break;
@@ -252,6 +291,178 @@ export class RequestManager extends EventEmitter {
       ...instance.apiHeaders
     };
 
+    return apiData;
+  }
+
+  private static resolveRadioRequest(instance: Instance, apiURL: string | boolean, apiType: AllAPITypeData, request: RequestData, apiData: APIData): APIData {
+    if (!apiURL || typeof apiURL !== 'string') {
+      throw new Error('Radio API URL could not be resolved for request.');
+    }
+
+    const rawData = request.data;
+    const payload: any =
+      rawData == null ? {} : (typeof rawData === 'object' ? cloneObject(rawData) : rawData);
+    const headers: Record<string, string> = {
+      Accept: 'application/json'
+    };
+
+    const applyHeaders = (source: unknown) => {
+      if (!source) return;
+      if (Array.isArray(source)) {
+        for (const [key, value] of source) {
+          headers[key] = value;
+        }
+        return;
+      }
+      if (typeof source === 'object' && source !== null && 'forEach' in source && typeof (source as any).forEach === 'function') {
+        (source as any).forEach((value: string, key: string) => {
+          headers[key] = value;
+        });
+        return;
+      }
+      Object.assign(headers, source as Record<string, string>);
+    };
+
+    applyHeaders(instance.apiHeaders);
+
+    let method = apiType.method;
+    let path = apiType.path;
+    let body: unknown;
+
+    const ensureAuth = () => {
+      if (!request.id || !request.key) {
+        throw new Error('Community ID or API Key could not be found for request.');
+      }
+      return {
+        id: request.id,
+        key: request.key,
+        encodedId: encodeURIComponent(request.id),
+        encodedKey: encodeURIComponent(request.key)
+      };
+    };
+
+    const encodeSegment = (value: string | number) => encodeURIComponent(String(value));
+
+    switch (apiType.type) {
+      case 'RADIO_GET_COMMUNITY_CHANNELS': {
+        const auth = ensureAuth();
+        path = `${apiType.path}/${auth.encodedId}/${auth.encodedKey}`;
+        method = 'GET';
+        break;
+      }
+      case 'RADIO_GET_CONNECTED_USERS': {
+        const auth = ensureAuth();
+        path = `${apiType.path}/${auth.encodedId}/${auth.encodedKey}`;
+        method = 'GET';
+        break;
+      }
+      case 'RADIO_GET_CONNECTED_USER': {
+        const auth = ensureAuth();
+        const roomIdRaw = payload?.roomId ?? payload?.roomID;
+        if (roomIdRaw === undefined) {
+          throw new Error('roomId is required for RADIO_GET_CONNECTED_USER requests.');
+        }
+        const roomIdNumeric = typeof roomIdRaw === 'number' ? roomIdRaw : Number(roomIdRaw);
+        if (Number.isNaN(roomIdNumeric)) {
+          throw new Error('roomId must be a number for RADIO_GET_CONNECTED_USER requests.');
+        }
+        const identity = payload?.identity;
+        if (!identity) {
+          throw new Error('identity is required for RADIO_GET_CONNECTED_USER requests.');
+        }
+        path = `${apiType.path}/${auth.encodedId}/${auth.encodedKey}/${encodeSegment(roomIdNumeric)}/${encodeSegment(identity)}`;
+        method = 'GET';
+        break;
+      }
+      case 'RADIO_SET_USER_CHANNELS': {
+        const auth = ensureAuth();
+        const identity = payload?.identity;
+        if (!identity) {
+          throw new Error('identity is required for RADIO_SET_USER_CHANNELS requests.');
+        }
+        const options = payload?.options ?? {};
+        path = `${apiType.path}/${auth.encodedId}/${auth.encodedKey}/${encodeSegment(identity)}`;
+        method = 'POST';
+        const requestBody: Record<string, unknown> = {};
+        if (options?.transmit !== undefined) {
+          requestBody.transmit = options.transmit;
+        }
+        if (options?.scan !== undefined) {
+          requestBody.scan = options.scan;
+        }
+        body = requestBody;
+        break;
+      }
+      case 'RADIO_SET_USER_DISPLAY_NAME': {
+        const auth = ensureAuth();
+        const accId = payload?.accId;
+        const displayName = payload?.displayName;
+        if (!accId || !displayName) {
+          throw new Error('accId and displayName are required for RADIO_SET_USER_DISPLAY_NAME requests.');
+        }
+        method = 'POST';
+        body = {
+          id: auth.id,
+          key: auth.key,
+          accId,
+          displayName
+        };
+        path = apiType.path;
+        break;
+      }
+      case 'RADIO_GET_SERVER_SUBSCRIPTION_FROM_IP': {
+        method = 'GET';
+        path = apiType.path;
+        break;
+      }
+      case 'RADIO_SET_SERVER_IP': {
+        const auth = ensureAuth();
+        const pushUrl = payload?.pushUrl;
+        if (!pushUrl) {
+          throw new Error('pushUrl is required for RADIO_SET_SERVER_IP requests.');
+        }
+        method = 'POST';
+        body = {
+          id: auth.id,
+          key: auth.key,
+          pushUrl
+        };
+        path = apiType.path;
+        break;
+      }
+      case 'RADIO_SET_IN_GAME_SPEAKER_LOCATIONS': {
+        const auth = ensureAuth();
+        const locations = payload?.locations;
+        if (!Array.isArray(locations)) {
+          throw new Error('locations array is required for RADIO_SET_IN_GAME_SPEAKER_LOCATIONS requests.');
+        }
+        method = 'POST';
+        body = {
+          id: auth.id,
+          key: auth.key,
+          locations
+        };
+        const token = payload?.token ?? auth.key;
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+        path = apiType.path;
+        break;
+      }
+      default: {
+        throw new Error(`Unsupported radio API type received: ${apiType.type}`);
+      }
+    }
+
+    apiData.typePath = path;
+    apiData.fullUrl = `${apiURL}/${path}`;
+    apiData.method = method;
+    apiData.fetchOptions.method = method;
+    if (body !== undefined) {
+      headers['Content-Type'] = 'application/json';
+      apiData.fetchOptions.body = JSON.stringify(body);
+    }
+    apiData.fetchOptions.headers = headers;
     return apiData;
   }
 
