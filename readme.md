@@ -64,6 +64,36 @@ const params = {
 const account = await instance.cad.getAccount(params);
 ```
 
+### setClockTime
+Synchronizes the CAD clock with your in-game time.
+#### Argument `params`
+##### Type: `object` `{ serverId: number, currentUtc: string, currentGame: string, secondsPerHour: number }`
+```js
+await instance.cad.setClockTime({
+  serverId: 1,
+  currentUtc: new Date().toISOString(),
+  currentGame: '2025-07-04T18:00:00Z',
+  secondsPerHour: 60
+});
+```
+
+### joinCommunity
+Adds one or more accounts to the community using an internal key.
+```js
+await instance.cad.joinCommunity('internal-key', [
+  { account: '1234567890' },
+  '0987654321'
+]);
+```
+
+### leaveCommunity
+Removes one or more accounts from the community using an internal key.
+```js
+await instance.cad.leaveCommunity('internal-key', [
+  { account: '1234567890' }
+]);
+```
+
 ## CMS Functions
 ### verifyWhitelist(obj)
 Verifies that a user is whitelisted in the specified server.
@@ -174,6 +204,146 @@ const params = {
 // Add and Remove are undefined as we don't want to call them here
 // Sets account ranks by the discord ID parameter
 const setRanks = await instance.cms.setAccountRanks(params, undefined, undefined, undefined, '12345678', undefined);
+```
+
+### setAccountName(apiId, username, accId, discord, uniqueId, newName)
+Sets the display name used in CMS for an account.
+```js
+await instance.cms.setAccountName(undefined, undefined, 'account-uuid', undefined, undefined, 'New Display Name');
+```
+
+### cmsBanAccount(params)
+Adds a ban flag to the targeted account.
+```js
+await instance.cms.cmsBanAccount({ apiId: '1234' });
+```
+
+### cmsKickAccount(params)
+Performs a CMS kick request for the targeted account.
+```js
+await instance.cms.cmsKickAccount({ discord: '1234567890' });
+```
+
+### forceSync(params)
+Manually triggers a CMS force-sync for the targeted identifiers.
+```js
+await instance.cms.forceSync({ username: 'SomeUser' });
+```
+
+### getCurrentClockIn(params)
+Fetches the current clock-in entry for the account if one exists.
+```js
+const currentEntry = await instance.cms.getCurrentClockIn({ apiId: '1234' });
+```
+
+### getAccounts(options)
+Retrieves CMS accounts with optional pagination and status filters.
+```js
+const accounts = await instance.cms.getAccounts({ take: 50, banned: false });
+```
+
+### getProfileFields()
+Returns profile field definitions configured for the community.
+```js
+const profileFields = await instance.cms.getProfileFields();
+```
+
+### rsvp(eventId, params)
+Toggles RSVP for an event for the provided account identifiers.
+```js
+await instance.cms.rsvp('event-id', { accId: 'account-uuid' });
+```
+
+### getFormSubmissions(templateId, options)
+Retrieves form submissions with optional pagination.
+```js
+const submissions = await instance.cms.getFormSubmissions(42, { skip: 0, take: 25 });
+```
+
+### editAccountProfileFields(params)
+Updates profile fields for an account.
+```js
+await instance.cms.editAccountProfileFields({
+  accId: 'account-uuid',
+  profileFields: [
+    { fieldId: 10, value: 'Value' }
+  ]
+});
+```
+
+### erlcGetOnlinePlayers(robloxJoinCode)
+Returns the current ERLC player list for the join code.
+```js
+const players = await instance.cms.erlcGetOnlinePlayers('join-code');
+```
+
+### erlcGetPlayerQueue(robloxJoinCode)
+Returns the current ERLC player queue count for the join code.
+```js
+const queue = await instance.cms.erlcGetPlayerQueue('join-code');
+```
+
+### erlcAddNewRecord(data)
+Adds a moderation record for a player in ERLC.
+```js
+await instance.cms.erlcAddNewRecord({
+  robloxJoinCode: 'join-code',
+  executerDiscordId: '1234567890',
+  type: 'Warning',
+  reason: 'Reckless driving'
+});
+```
+
+## Radio Functions
+### getCommunityChannels()
+Retrieves configured community channel groups and channels.
+```js
+const channels = await instance.radio.getCommunityChannels();
+```
+
+### getConnectedUsers()
+Lists all connected radio users in the community.
+```js
+const users = await instance.radio.getConnectedUsers();
+```
+
+### getConnectedUser(roomId, identity)
+Fetches a specific connected radio user by room and identity.
+```js
+const user = await instance.radio.getConnectedUser(1, 'account-uuid');
+```
+
+### setUserChannels(identity, options)
+Updates a user's transmit or scan channels.
+```js
+await instance.radio.setUserChannels('account-uuid', { transmit: 12, scan: [10, 11, 12] });
+```
+
+### setUserDisplayName(accId, displayName)
+Sets the user's radio display name.
+```js
+await instance.radio.setUserDisplayName('account-uuid', 'Dispatch 101');
+```
+
+### getServerSubscriptionFromIp()
+Resolves the community's subscription level for the calling server IP.
+```js
+const subscription = await instance.radio.getServerSubscriptionFromIp();
+```
+
+### setServerIp(pushUrl)
+Registers the push event URL for radio webhooks.
+```js
+await instance.radio.setServerIp('https://example.com/sonoran-radio');
+```
+
+### setInGameSpeakerLocations(locations, token?)
+Publishes available in-game speaker locations for tone routing.
+```js
+await instance.radio.setInGameSpeakerLocations(
+  [{ name: 'Station 1', x: 123.4, y: 567.8, z: 90.1 }],
+  'optional-bearer-token'
+);
 ```
 
 ## Further Documentation
