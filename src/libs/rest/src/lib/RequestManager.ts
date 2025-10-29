@@ -299,7 +299,9 @@ export class RequestManager extends EventEmitter {
       throw new Error('Radio API URL could not be resolved for request.');
     }
 
-    const payload: any = cloneObject(request.data) ?? {};
+    const rawData = request.data;
+    const payload: any =
+      rawData == null ? {} : (typeof rawData === 'object' ? cloneObject(rawData) : rawData);
     const headers: Record<string, string> = {
       Accept: 'application/json'
     };

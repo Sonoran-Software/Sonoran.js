@@ -228,7 +228,7 @@ export class REST extends EventEmitter {
 				return args[0] ?? {};
 			}
 			case 'GET_PROFILE_FIELDS': {
-				return undefined;
+				return {};
 			}
 			case 'SET_CLOCK': {
 				if (args[0] && typeof args[0] === 'object' && !Array.isArray(args[0])) {
