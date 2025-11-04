@@ -8,28 +8,39 @@ import { CMSManager } from './CMSManager';
 export class CMSServerManager extends CacheManager<number, CMSServer, CMSServerAPIStruct> {
   constructor(instance: Instance, private readonly manager: CMSManager) {
     super(instance, CMSServer, []);
-    (async () => {
-      const managerRef = this.manager;
-      while(!managerRef.ready) {
-        await new Promise((resolve) => {
-          setTimeout(resolve, 100);
-        });
-      } 
-      try {
-        const serversRes: any = await managerRef.rest?.request('GET_GAME_SERVERS');
-        const servers = serversRes.servers;
-        servers.forEach((server: CMSServerAPIStruct) => {
-          const serverStruct = {
-            id: server.id,
-            config: server
-          };
-          this._add(serverStruct, true, server.id);
-        });
-        console.log(`Found ${servers.length} servers`);
-      } catch (err) {
-        throw new Error(String(err));
-      }
-    })();
+    void this.initialize();
+  }
+
+  /**
+   * Retrieves the CMS game servers belonging to the community.
+   */
+  public async getGameServers(): Promise<CMSServerAPIStruct[]> {
+    const serversRes: any = await this.manager.rest?.request('GET_GAME_SERVERS');
+    const parsed = typeof serversRes === 'string' ? JSON.parse(serversRes) : serversRes;
+    const servers = Array.isArray(parsed?.servers) ? parsed.servers : [];
+    return servers;
+  }
+
+  private async initialize(): Promise<void> {
+    const managerRef = this.manager;
+    while(!managerRef.ready) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100);
+      });
+    }
+    try {
+      const servers = await this.getGameServers();
+      servers.forEach((server: CMSServerAPIStruct) => {
+        const serverStruct = {
+          id: server.id,
+          config: server
+        };
+        this._add(serverStruct, true, server.id);
+      });
+      console.log(`Found ${servers.length} servers`);
+    } catch (err) {
+      throw new Error(String(err));
+    }
   }
 
   public async setGameServers(servers: globalTypes.CMSSetGameServerStruct[]): Promise<globalTypes.CMSSetGameServersPromiseResult> {

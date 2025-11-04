@@ -271,6 +271,12 @@ export interface CADLeaveCommunityPromiseResult {
 	data?: unknown;
 }
 
+export interface CADStandardResponse<T = unknown> {
+	success: boolean;
+	data?: T;
+	reason?: unknown;
+}
+
 export interface CMSProfileField {
 	id: string;
 	type: string;
@@ -348,6 +354,12 @@ export interface CMSRsvpPromiseResult {
 	data?: unknown;
 }
 
+export interface CMSChangeFormStagePromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: unknown;
+}
+
 export interface CMSSetGameServerStruct {
 	id?: number;
 	name: string;
@@ -363,6 +375,43 @@ export interface CMSSetGameServersPromiseResult {
 	success: boolean;
 	reason?: string;
 	data?: CMSSetGameServerStruct[];
+}
+
+export interface CMSExecuteRankPromotionResult {
+	users: string[];
+	flow: string;
+	promote: boolean;
+	succeeded: boolean;
+	message?: string;
+}
+
+export interface CMSTriggerPromotionFlowPayload {
+	userId: string;
+	flowId: string;
+	users: string[];
+	promote: boolean;
+}
+
+export interface CMSPromotionFlow {
+	id: string;
+	communityUuid: string;
+	labelFrom: string;
+	labelTo: string;
+	ranksToAdd: string[];
+	ranksToRemove: string[];
+	actions: unknown[];
+}
+
+export interface CMSTriggerPromotionFlowsPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSExecuteRankPromotionResult[];
+}
+
+export interface CMSGetPromotionFlowsPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSPromotionFlow[];
 }
 
 export interface CMSGetFormSubmissionsPromiseResult<T = unknown> {

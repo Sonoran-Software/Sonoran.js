@@ -373,6 +373,16 @@ export class REST extends EventEmitter {
 					uniqueId: args[4],
 				}
 			}
+			case 'TRIGGER_PROMOTION_FLOWS': {
+				const payload = args[0];
+				if (!Array.isArray(payload)) {
+					throw new Error('TRIGGER_PROMOTION_FLOWS requires an array of promotion flow payloads.');
+				}
+				return payload;
+			}
+			case 'GET_PROMOTION_FLOWS': {
+				return [];
+			}
 			case 'ERLC_GET_ONLINE_PLAYERS': {
 				return {
 					robloxJoinCode: args[0]

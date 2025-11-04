@@ -25,8 +25,7 @@ export class CMSManager extends BaseManager {
   protected async buildManager(instance: Instance) {
     const mutableThis = this as globalTypes.Mutable<CMSManager>;
     try {
-      const versionResp: any = await this.rest?.request('GET_SUB_VERSION');
-      const version = Number.parseInt(versionResp.replace(/(^\d+)(.+$)/i,'$1'));
+      const version = await this.getSubscriptionVersion();
       if (version >= globalTypes.CMSSubscriptionVersionEnum.STANDARD) {
         this.servers = new CMSServerManager(instance, this);
       }
@@ -39,6 +38,15 @@ export class CMSManager extends BaseManager {
       instance.emit('CMS_SETUP_UNSUCCESSFUL', err);
       throw err;
     }
+  }
+
+  /**
+   * Retrieves the community's CMS subscription version.
+   */
+  public async getSubscriptionVersion(): Promise<number> {
+    const versionResp: any = await this.rest?.request('GET_SUB_VERSION');
+    const versionString = String(versionResp);
+    return Number.parseInt(versionString.replace(/(^\d+)(.+$)/i, '$1'), 10);
   }
 
   /**
@@ -329,6 +337,46 @@ export class CMSManager extends BaseManager {
   }
 
   /**
+   * Triggers promotion flows for the specified users.
+   */
+  public async triggerPromotionFlows(flows: globalTypes.CMSTriggerPromotionFlowPayload[]): Promise<globalTypes.CMSTriggerPromotionFlowsPromiseResult> {
+    if (!Array.isArray(flows) || flows.length === 0) {
+      throw new Error('flows array must include at least one promotion flow payload.');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('TRIGGER_PROMOTION_FLOWS', flows);
+        resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Retrieves the available promotion flows configured in CMS.
+   */
+  public async getPromotionFlows(): Promise<globalTypes.CMSGetPromotionFlowsPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('GET_PROMOTION_FLOWS');
+        resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
    * Gets a list of online ERLC players for the given roblox join code.
    * @param {string} robloxJoinCode The roblox join code to get the online players for.
    * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed and the list of online players if successful.
@@ -360,6 +408,31 @@ export class CMSManager extends BaseManager {
         } else {
           resolve({ success: true, data: response });
         }
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Updates the stage of a form for the specified account.
+   */
+  public async changeFormStage(params: { accId?: string, formId: number, newStageId: string, apiId?: string, username?: string, discord?: string, uniqueId: number }): Promise<globalTypes.CMSChangeFormStagePromiseResult> {
+    if (!params.formId || !params.newStageId) {
+      throw new Error('formId and newStageId are required to change a form stage.');
+    }
+    if (params.uniqueId === undefined || Number.isNaN(Number(params.uniqueId))) {
+      throw new Error('uniqueId is required to change a form stage.');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('CHANGE_FORM_STAGE', params.accId, params.formId, params.newStageId, params.apiId, params.username, params.discord, params.uniqueId);
+        resolve({ success: true, data: response });
       } catch (err) {
         if (err instanceof APIError) {
           resolve({ success: false, reason: err.response });

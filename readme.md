@@ -3,7 +3,7 @@ Sonoran.js is a library that allows you to interact with the [Sonoran CAD](https
 
 ## Example Instance Setup
 
-Utilizing both Sonoran CMS & Sonoran CAD
+Utilizing Sonoran CMS, Sonoran CAD & Sonoran Radio
 ```js
 const Sonoran = require('sonoran.js');
 const instance = Sonoran.instance({
@@ -11,6 +11,8 @@ const instance = Sonoran.instance({
   cadApiKey: 'DF58F1E-FD8A-44C5-BA',
   cmsCommunityId: 'mycommunity',
   cmsApiKey: 'e6ba9d68-ca7a-4e59-a9e2-93e275b4e0bf'
+  radioCommunityId: 'mycommunity'
+  radioApiKey: 'e6ba9d68-ca7a-4e59-a9e2-93e275b4e0bf'
 });
 ```
 
@@ -51,50 +53,117 @@ instance.cms.verifyWhitelist({
 ```
 
 ## CAD Functions
-### getAccount
-Returns the user's account object.
-#### Argument `params`
-##### Type: `object` `{apiId?, username?}`
+Most CAD manager helpers return a `CADStandardResponse<T>` of `{ success, data?, reason? }`. Legacy helpers (`getAccount`, `setClockTime`, `joinCommunity`, `leaveCommunity`) keep their original response shapes.
+
+### Account & Configuration
+- **`getVersion()`** - resolves to the numeric CAD subscription level.
+- **`getAccount({ apiId?, username? })`** - fetches account details.
+- **`setClockTime({ serverId, currentUtc, currentGame, secondsPerHour })`** - synchronizes in-game time.
+- **`joinCommunity(internalKey, accounts)`** / **`leaveCommunity(internalKey, accounts)`** - manages community membership (requires an internal key).
+- **`setPenalCodes(codes)`** - replaces the penal code configuration.
+- **`setAccountApiIds(data)`** - assigns API IDs to a username.
+- **`checkApiId(apiId)`** - confirms whether an API ID exists.
+- **`applyPermissionKey(apiId?, permissionKey)`** - applies a permission key to an account.
+- **`setAccountPermissions(changes)`** - bulk add/remove CAD permissions.
+- **`banUser(data)`** - kicks or bans an account via the CAD API.
+- **`verifySecret(secret)`** - validates a configured secret.
+- **`authorizeStreetSigns(serverId)`** - authorizes map street-sign updates.
+- **`setPostals(entries)`** - overwrites the postal table.
+- **`sendPhoto(apiId?, url)`** - attaches a photo to an account.
+
 ```js
-const params = {
- apiId: '',
- username: 'SomeUser',
-};
-// Get user account object
-const account = await instance.cad.getAccount(params);
+const account = await instance.cad.getAccount({ apiId: '1234567890' });
+const penalCodes = await instance.cad.setPenalCodes([
+  { code: '1A', type: 'Felony', title: 'Example', bondType: 'None', jailTime: '0', bondAmount: 0 }
+]);
+await instance.cad.setAccountApiIds({ username: 'SomeUser', apiIds: ['1234567890'], pushNew: true });
+const permissionUpdate = await instance.cad.setAccountPermissions({ apiId: '1234567890', add: ['admin'], remove: [] });
 ```
 
-### setClockTime
-Synchronizes the CAD clock with your in-game time.
-#### Argument `params`
-##### Type: `object` `{ serverId: number, currentUtc: string, currentGame: string, secondsPerHour: number }`
+### Records & Lookups
+- **`getRecordTemplates(recordTypeId?)`**
+- **`createRecord(data)`** / **`updateRecord(data)`** / **`removeRecord(id)`**
+- **`lookupByInt(criteria)`** - identifier-based lookup.
+- **`lookupRecords(query)`** - plate/name-based lookup.
+
 ```js
-await instance.cad.setClockTime({
+await instance.cad.createRecord({ user: '1234567890', useDictionary: true, recordTypeId: 2, replaceValues: { NAME: 'Jane Doe' } });
+const lookup = await instance.cad.lookupRecords({ apiId: '1234567890', types: [2], first: 'Jane', last: 'Doe', mi: '', plate: '', partial: false });
+```
+
+### Civilian Tools
+- **`getCharacters(apiId)`** - lists civilian characters for an API ID.
+- **`createCharacter(data)`** / **`updateCharacter(data)`** / **`removeCharacter(id)`** - CRUD helpers for civilian profiles.
+
+### Identifiers & Units
+- **`getIdentifiers(apiId)`**
+- **`modifyIdentifier(change)`** / **`setIdentifier(apiId?, identId)`**
+- **`setUnitPanic(apiId?, isPanic)`** / **`setUnitStatus(apiId?, status, serverId)`**
+- **`getActiveUnits(options)`** - direct CAD fetch for active units.
+- **`kickUnit(apiId?, reason, serverId)`**
+- **`updateUnitLocations(locations)`**
+
+### Map & Streetsigns
+- **`getBlips(serverId)`**
+- **`addBlips(blips)`** / **`updateBlips(blips)`** / **`removeBlip(id)`**
+- **`setStreetSignConfig(serverId, signConfig)`**
+- **`updateStreetSign(serverId, signData)`**
+
+### Calls & Dispatch
+- **`create911Call(details)`** / **`remove911Call(callId)`**
+- **`getCalls(options)`**
+- **`createDispatch(data)`**
+- **`attachUnits(serverId, callId, units)`** / **`detachUnits(serverId, units)`**
+- **`setCallPostal(serverId, callId, postal)`** / **`setCallPrimary(serverId, callId, primary, trackPrimary)`**
+- **`addCallNote(serverId, callId, note)`**
+- **`closeCall(serverId, callId)`**
+
+```js
+const dispatch = await instance.cad.createDispatch({
   serverId: 1,
-  currentUtc: new Date().toISOString(),
-  currentGame: '2025-07-04T18:00:00Z',
-  secondsPerHour: 60
+  origin: Sonoran.CADDispatchOriginEnums.Caller,
+  status: Sonoran.CADDispatchStatusEnums.Active,
+  priority: 1,
+  block: '123',
+  address: 'Main St',
+  postal: '100',
+  title: 'Traffic Stop',
+  code: 'TS',
+  primary: 42,
+  trackPrimary: true,
+  description: 'Blue sedan headed north',
+  metaData: {},
+  units: ['unit-1']
 });
+await instance.cad.attachUnits(1, 1001, ['unit-2']);
 ```
 
-### joinCommunity
-Adds one or more accounts to the community using an internal key.
+## CAD Server Functions
+- **`getServers()`** - fetches configured CAD servers.
+- **`setServers(servers, deployMap?)`** - updates server configuration and refreshes the cache.
+
 ```js
-await instance.cad.joinCommunity('internal-key', [
-  { account: '1234567890' },
-  '0987654321'
-]);
+const servers = await instance.cad.servers?.getServers();
+await instance.cad.servers?.setServers(servers ?? [], false);
 ```
 
-### leaveCommunity
-Removes one or more accounts from the community using an internal key.
+## CAD Active Unit Functions
+`CADActiveUnitsManager#getActiveUnits(options?)` proxies the CAD endpoint and returns a `CADStandardResponse`.
+
 ```js
-await instance.cad.leaveCommunity('internal-key', [
-  { account: '1234567890' }
-]);
+const activeUnits = await cadActiveUnitsManager.getActiveUnits({ includeOffline: true, limit: 25 });
+if (activeUnits.success) {
+  console.log(activeUnits.data);
+}
 ```
 
 ## CMS Functions
+### getSubscriptionVersion()
+Returns the community's CMS subscription version.
+```js
+const version = await instance.cms.getSubscriptionVersion();
+```
+
 ### verifyWhitelist(obj)
 Verifies that a user is whitelisted in the specified server.
 #### Arugment `params`
@@ -188,7 +257,7 @@ const getDepts = await instance.cms.getDepartments();
 ```
 
 ### setAccountRanks(obj, apiId, accId, username, discord, uniqueId)
-Gets all department information for a CMS community
+Updates the CMS account's ranks using the identifiers provided.
 #### Arugment `params`
 ##### Type `object` `{set?: string[]; add?: string[]; remove?: string[]}`
 #### Arguments `apiId`, `accId`, `username`, `discord`, `uniqueId`
@@ -230,6 +299,23 @@ Manually triggers a CMS force-sync for the targeted identifiers.
 await instance.cms.forceSync({ username: 'SomeUser' });
 ```
 
+### getPromotionFlows()
+Fetches the configured promotion flows.
+```js
+const flows = await instance.cms.getPromotionFlows();
+```
+
+### triggerPromotionFlows(flows)
+Executes promotion or demotion flows for one or more users.
+```js
+await instance.cms.triggerPromotionFlows([{
+  userId: 'u-123',
+  flowId: 'flow-abc',
+  users: ['u-123', 'u-456'],
+  promote: true
+}]);
+```
+
 ### getCurrentClockIn(params)
 Fetches the current clock-in entry for the account if one exists.
 ```js
@@ -258,6 +344,17 @@ await instance.cms.rsvp('event-id', { accId: 'account-uuid' });
 Retrieves form submissions with optional pagination.
 ```js
 const submissions = await instance.cms.getFormSubmissions(42, { skip: 0, take: 25 });
+```
+
+### changeFormStage(params)
+Moves a form to the specified stage for an account.
+```js
+await instance.cms.changeFormStage({
+  formId: 42,
+  newStageId: 'approved',
+  accId: 'account-uuid',
+  uniqueId: 1234
+});
 ```
 
 ### editAccountProfileFields(params)
@@ -292,6 +389,21 @@ await instance.cms.erlcAddNewRecord({
   type: 'Warning',
   reason: 'Reckless driving'
 });
+```
+
+## CMS Server Functions
+### getGameServers()
+Fetches the configured CMS game servers. Returns an array of server objects.
+```js
+const cmsServers = await instance.cms.servers?.getGameServers();
+```
+
+### setGameServers(servers)
+Replaces the configured CMS game servers and refreshes the cache with the response payload.
+```js
+await instance.cms.servers?.setGameServers([
+  { name: 'Server 1', description: 'Primary server', allowedRanks: ['admin'] }
+]);
 ```
 
 ## Radio Functions

@@ -2,6 +2,8 @@
 
 // import { CADActiveUnitFetchOptions } from '../constants';
 import { Instance } from '../instance/Instance';
+import * as globalTypes from '../constants';
+import type { CADGetActiveUnitsStruct } from '../libs/rest/src';
 import { CADActiveUnit, CADActiveUnitResolvable, CADActiveUnitStruct } from '../structures/CADActiveUnit';
 import { CacheManager } from './CacheManager';
 
@@ -27,6 +29,20 @@ export class CADActiveUnitsManager extends CacheManager<number, CADActiveUnit, C
     });
   }
 
+  public async getActiveUnits(options: Partial<CADGetActiveUnitsStruct> = {}): Promise<globalTypes.CADStandardResponse> {
+    if (!this.instance.cad) {
+      throw new Error('CAD manager is not initialized.');
+    }
+    const payload: CADGetActiveUnitsStruct = {
+      serverId: options.serverId ?? this.serverId,
+      includeOffline: options.includeOffline ?? false,
+      onlyUnits: options.onlyUnits,
+      limit: options.limit,
+      offset: options.offset
+    };
+    return this.instance.cad.getActiveUnits(payload);
+  }
+
   async _fetchSingle({
     unit,
     includeOffline = false,
@@ -41,10 +57,7 @@ export class CADActiveUnitsManager extends CacheManager<number, CADActiveUnit, C
       if (existing) return existing;
     }
 
-    const data = await this.instance.cad?.rest?.request('GET_ACTIVE_UNITS', {
-      serverId: this.serverId,
-      includeOffline
-    });
-    console.log(data);
+    const result = await this.getActiveUnits({ includeOffline });
+    console.log(result);
   }
 }
