@@ -1,5 +1,10 @@
 # Sonoran.js
-Sonoran.js is a library that allows you to interact with the [Sonoran CAD](https://sonorancad.com/) and [Sonoran CMS](https://sonorancms.com/) API. Based off of and utilizes several Discord.js library techniques for ease of use.
+Sonoran.js is a library that allows you to interact with the [Sonoran CAD](https://sonorancad.com/](https://docs.sonoransoftware.com/cad), [Sonoran Radio](https://docs.sonoransoftware.com/radio), and [Sonoran CMS](https://docs.sonoransoftware.com/cms) API. Based off of and utilizes several Discord.js library techniques for ease of use.
+
+## Installation
+```js
+npm i @sonoransoftware/sonoran.js
+```
 
 ## Example Instance Setup
 
