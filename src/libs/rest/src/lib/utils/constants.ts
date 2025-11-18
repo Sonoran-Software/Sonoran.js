@@ -602,7 +602,7 @@ export const RadioAPITypes: APITypeData[] = [
 	},
 	{
 		type: 'PLAY_TONE',
-		path: 'play-tone',
+		path: 'api/play-tone',
 		method: 'POST',
 		minVersion: 0
 	}
