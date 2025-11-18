@@ -438,6 +438,13 @@ export class REST extends EventEmitter {
 					token: args[1]
 				}
 			}
+			case 'PLAY_TONE': {
+				return {
+					roomId: args[0],
+					tones: args[1],
+					playTo: args[2]
+				}
+			}
 			default: {
 				return args;
 			}
