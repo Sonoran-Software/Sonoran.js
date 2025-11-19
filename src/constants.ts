@@ -498,6 +498,17 @@ export interface RadioSpeakerLocation {
 	id: string;
 }
 
+export type RadioTonePlayTargetType = 'channel' | 'group' | 'game';
+
+export interface RadioTonePlayTarget {
+	label: string;
+	type: RadioTonePlayTargetType;
+	value: unknown;
+	group: number | null;
+	icon?: string;
+	color?: string;
+}
+
 export interface RadioSetUserChannelsOptions {
 	transmit?: number;
 	scan?: number[];
@@ -565,6 +576,12 @@ export interface RadioSetServerIpPromiseResult {
 }
 
 export interface RadioSetInGameSpeakerLocationsPromiseResult {
+	success: boolean;
+	reason?: string;
+	result?: string;
+}
+
+export interface RadioPlayTonePromiseResult {
 	success: boolean;
 	reason?: string;
 	result?: string;

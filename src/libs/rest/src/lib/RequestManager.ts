@@ -457,6 +457,35 @@ export class RequestManager extends EventEmitter {
         path = apiType.path;
         break;
       }
+      case 'PLAY_TONE': {
+        const auth = ensureAuth();
+        const roomIdRaw = payload?.roomId;
+        if (roomIdRaw === undefined || roomIdRaw === null) {
+          throw new Error('roomId is required for PLAY_TONE requests.');
+        }
+        const roomIdNumber = typeof roomIdRaw === 'number' ? roomIdRaw : Number(roomIdRaw);
+        if (Number.isNaN(roomIdNumber)) {
+          throw new Error('roomId must be a number for PLAY_TONE requests.');
+        }
+        const tones = payload?.tones;
+        if (!Array.isArray(tones) || tones.length === 0) {
+          throw new Error('tones array is required for PLAY_TONE requests.');
+        }
+        const playTo = payload?.playTo;
+        if (!Array.isArray(playTo) || playTo.length === 0) {
+          throw new Error('playTo array is required for PLAY_TONE requests.');
+        }
+        method = 'POST';
+        body = {
+          id: auth.id,
+          key: auth.key,
+          roomId: roomIdNumber,
+          tones,
+          playTo
+        };
+        path = apiType.path;
+        break;
+      }
       default: {
         throw new Error(`Unsupported radio API type received: ${apiType.type}`);
       }

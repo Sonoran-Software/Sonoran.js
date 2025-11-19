@@ -463,5 +463,14 @@ await instance.radio.setInGameSpeakerLocations(
 );
 ```
 
+### playTone(roomId, tones, playTo)
+Dispatches tones to channels, groups, or in-game speakers.
+```js
+await instance.radio.playTone(1, [1001, 1002], [
+  { label: 'Primary Dispatch', type: 'channel', value: 10, group: 2 },
+  { label: 'Station Speakers', type: 'game', value: 'station-1', group: null }
+]);
+```
+
 ## Further Documentation
 More documentation for Sonoran CAD specific methods and usage can be found [here](/docs/CAD-Methods-and-Usage.md), Sonoran CMS specific methods and usage can be found [here](/docs/CMS-Methods-and-Usage.md), and usage information for the REST class [here](/docs/REST-Methods-and-Usage.md).
