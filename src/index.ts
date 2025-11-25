@@ -41,5 +41,10 @@ export {
   CMSPromotionFlow,
   CMSTriggerPromotionFlowsPromiseResult,
   CMSGetPromotionFlowsPromiseResult,
-  CMSGetFormSubmissionsPromiseResult
+  CMSGetFormSubmissionsPromiseResult,
+  CMSERLCGetOnlinePlayersPromiseResult,
+  CMSERLCGetPlayerQueuePromiseResult,
+  CMSERLCAddNewRecordPromiseResult,
+  CMSERLCExecuteCommandPayload,
+  CMSERLCExecuteCommandPromiseResult
 } from './constants';

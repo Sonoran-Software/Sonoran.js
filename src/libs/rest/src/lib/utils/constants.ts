@@ -1,4 +1,4 @@
-import { productEnums, RadioSetUserChannelsOptions, RadioSpeakerLocation, RadioTonePlayTarget, CMSProfileFieldUpdate, CMSSetGameServerStruct, CMSTriggerPromotionFlowPayload } from '../../../../../constants';
+import { productEnums, RadioSetUserChannelsOptions, RadioSpeakerLocation, RadioTonePlayTarget, CMSProfileFieldUpdate, CMSSetGameServerStruct, CMSTriggerPromotionFlowPayload, CMSERLCExecuteCommandPayload } from '../../../../../constants';
 import type { RESTOptions } from '../REST';
 
 export const DefaultUserAgent = 'Sonoran.js NPM Module';
@@ -546,6 +546,12 @@ export const ERLCMSAPITypes: APITypeData[] = [
 	{
 		type: "ERLC_ADD_NEW_RECORD",
 		path: "erlc/add_new_record",
+		method: "POST",
+		minVersion: 0
+	},
+	{
+		type: "ERLC_EXECUTE_COMMAND",
+		path: "erlc/execute_command",
 		method: "POST",
 		minVersion: 0
 	}
@@ -1169,6 +1175,9 @@ export interface RESTTypedAPIDataStructs {
 		playerDiscordId?: string | number,
 		playerRobloxId?: string | number,
 		points?: number,
+	]
+	ERLC_EXECUTE_COMMAND: [
+		commands: CMSERLCExecuteCommandPayload[]
 	]
 	// Radio
 	RADIO_GET_COMMUNITY_CHANNELS: [];
