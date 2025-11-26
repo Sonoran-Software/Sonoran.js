@@ -405,11 +405,18 @@ export class REST extends EventEmitter {
 				}
 			}
 			case 'ERLC_EXECUTE_COMMAND': {
-				const payload = args[0];
+				const serverId = args[0];
+				const payload = args[1];
 				if (!Array.isArray(payload)) {
 					throw new Error('ERLC_EXECUTE_COMMAND requires an array of command payloads.');
 				}
-				return payload;
+				if (typeof serverId !== 'string' || serverId.length === 0) {
+					throw new Error('ERLC_EXECUTE_COMMAND requires a valid serverId.');
+				}
+				return payload.map((cmd) => ({
+					...cmd,
+					serverId: (cmd as any).serverId ?? serverId
+				}));
 			}
 			case 'RADIO_GET_COMMUNITY_CHANNELS':
 			case 'RADIO_GET_CONNECTED_USERS':

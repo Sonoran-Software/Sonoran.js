@@ -565,14 +565,41 @@ export class CMSManager extends BaseManager {
   /**
    * Sends an ERLC command payload to CMS.
    */
-  public async erlcExecuteCommand(commands: globalTypes.CMSERLCExecuteCommandPayload[]): Promise<globalTypes.CMSERLCExecuteCommandPromiseResult> {
+  public async erlcExecuteCommand(serverId: string, commands: Array<globalTypes.CMSERLCExecuteCommandPayload | globalTypes.CMSERLCExecuteCommandInput>): Promise<globalTypes.CMSERLCExecuteCommandPromiseResult> {
     if (!Array.isArray(commands) || commands.length === 0) {
       throw new Error('ERLC execute command requires at least one command payload.');
     }
+    if (typeof serverId !== 'string' || serverId.length === 0) {
+      throw new Error('A valid serverId is required to execute an ERLC command.');
+    }
+
+    const normalizedCommands = commands.map((cmd) => {
+      const type = (cmd as any).type ?? (cmd as any).command;
+      const args = (cmd as any).args ?? (cmd as any).argument;
+      const discordId = (cmd as any).discordId ?? (cmd as any).executerDiscordId;
+      const includesPlayerNameOrId = (cmd as any).includesPlayerNameOrId ?? Boolean((cmd as any).playerDiscordId);
+
+      if (!type) {
+        throw new Error('Each ERLC command requires a type or command field.');
+      }
+      if (!discordId) {
+        throw new Error('Each ERLC command requires a discordId or executerDiscordId.');
+      }
+
+      return {
+        ...cmd,
+        type,
+        args,
+        discordId,
+        includesPlayerNameOrId,
+        serverId,
+        robloxJoinCode: (cmd as any).robloxJoinCode ?? serverId,
+      };
+    });
 
     return new Promise(async (resolve, reject) => {
       try {
-        const erlcExecuteCommandRequest: any = await this.rest?.request('ERLC_EXECUTE_COMMAND', commands);
+        const erlcExecuteCommandRequest: any = await this.rest?.request('ERLC_EXECUTE_COMMAND', serverId, normalizedCommands);
         resolve({ success: true, data: erlcExecuteCommandRequest });
       } catch (err) {
         if (err instanceof APIError) {
