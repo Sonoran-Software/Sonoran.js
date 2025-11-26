@@ -563,6 +563,28 @@ export class CMSManager extends BaseManager {
   }
 
   /**
+   * Sends an ERLC command payload to CMS.
+   */
+  public async erlcExecuteCommand(commands: globalTypes.CMSERLCExecuteCommandPayload[]): Promise<globalTypes.CMSERLCExecuteCommandPromiseResult> {
+    if (!Array.isArray(commands) || commands.length === 0) {
+      throw new Error('ERLC execute command requires at least one command payload.');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const erlcExecuteCommandRequest: any = await this.rest?.request('ERLC_EXECUTE_COMMAND', commands);
+        resolve({ success: true, data: erlcExecuteCommandRequest });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
    * Adds a new ERLC record for a player.
    * @param {Object} data The object that contains critical data to add a new ERLC record.
    * @param {string} data.robloxJoinCode The roblox join code to add the record to.

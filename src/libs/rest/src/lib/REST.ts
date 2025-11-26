@@ -404,6 +404,13 @@ export class REST extends EventEmitter {
 					points: args[6],
 				}
 			}
+			case 'ERLC_EXECUTE_COMMAND': {
+				const payload = args[0];
+				if (!Array.isArray(payload)) {
+					throw new Error('ERLC_EXECUTE_COMMAND requires an array of command payloads.');
+				}
+				return payload;
+			}
 			case 'RADIO_GET_COMMUNITY_CHANNELS':
 			case 'RADIO_GET_CONNECTED_USERS':
 			case 'RADIO_GET_SERVER_SUBSCRIPTION_FROM_IP': {

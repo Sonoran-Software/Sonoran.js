@@ -443,6 +443,19 @@ export interface CMSERLCAddNewRecordPromiseResult {
 	logId?: string;
 }
 
+export interface CMSERLCExecuteCommandPayload {
+	type: string;
+	args: unknown;
+	discordId: string | number;
+	includesPlayerNameOrId: boolean;
+}
+
+export interface CMSERLCExecuteCommandPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: unknown;
+}
+
 export interface RadioChannelGroup {
 	id: number;
 	name: string;
