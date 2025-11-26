@@ -570,9 +570,36 @@ export class CMSManager extends BaseManager {
       throw new Error('ERLC execute command requires at least one command payload.');
     }
 
+    const normalizedCommands = commands.map((cmd) => {
+      const type = cmd.type;
+      const args = cmd.args;
+      const discordId = cmd.discordId;
+      const includesPlayerNameOrId = cmd.includesPlayerNameOrId;
+      const serverId = cmd.serverId;
+
+      if (!type) {
+        throw new Error('Each ERLC command requires a type.');
+      }
+      if (!discordId) {
+        throw new Error('Each ERLC command requires a discordId.');
+      }
+      if (typeof serverId !== 'string' || serverId.length === 0) {
+        throw new Error('Each ERLC command requires a serverId.');
+      }
+
+      return {
+        ...cmd,
+        type,
+        args,
+        discordId,
+        includesPlayerNameOrId,
+        serverId,
+      };
+    });
+
     return new Promise(async (resolve, reject) => {
       try {
-        const erlcExecuteCommandRequest: any = await this.rest?.request('ERLC_EXECUTE_COMMAND', commands);
+        const erlcExecuteCommandRequest: any = await this.rest?.request('ERLC_EXECUTE_COMMAND', normalizedCommands);
         resolve({ success: true, data: erlcExecuteCommandRequest });
       } catch (err) {
         if (err instanceof APIError) {

@@ -551,7 +551,7 @@ export const ERLCMSAPITypes: APITypeData[] = [
 	},
 	{
 		type: "ERLC_EXECUTE_COMMAND",
-		path: "erlc/execute_command",
+		path: "erlc/command",
 		method: "POST",
 		minVersion: 0
 	}
