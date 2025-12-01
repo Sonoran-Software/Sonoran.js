@@ -575,7 +575,7 @@ export class CMSManager extends BaseManager {
       const args = cmd.args;
       const discordId = cmd.discordId;
       const includesPlayerNameOrId = cmd.includesPlayerNameOrId;
-      const serverId = cmd.serverId;
+      const robloxJoinCode = cmd.robloxJoinCode;
 
       if (!type) {
         throw new Error('Each ERLC command requires a type.');
@@ -583,8 +583,8 @@ export class CMSManager extends BaseManager {
       if (!discordId) {
         throw new Error('Each ERLC command requires a discordId.');
       }
-      if (typeof serverId !== 'string' || serverId.length === 0) {
-        throw new Error('Each ERLC command requires a serverId.');
+      if (typeof robloxJoinCode !== 'string' || robloxJoinCode.length === 0) {
+        throw new Error('Each ERLC command requires a robloxJoinCode.');
       }
 
       return {
@@ -593,7 +593,7 @@ export class CMSManager extends BaseManager {
         args,
         discordId,
         includesPlayerNameOrId,
-        serverId,
+        robloxJoinCode,
       };
     });
 

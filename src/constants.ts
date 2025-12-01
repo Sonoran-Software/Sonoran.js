@@ -444,7 +444,7 @@ export interface CMSERLCAddNewRecordPromiseResult {
 }
 
 export interface CMSERLCExecuteCommandPayload {
-	serverId: string;
+	robloxJoinCode: string;
 	type: string;
 	args: unknown;
 	discordId: string | number;
