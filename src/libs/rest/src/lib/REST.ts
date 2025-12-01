@@ -410,13 +410,13 @@ export class REST extends EventEmitter {
 					throw new Error('ERLC_EXECUTE_COMMAND requires an array of command payloads.');
 				}
 				return payload.map((cmd) => {
-					const serverId = cmd.serverId;
-					if (typeof serverId !== 'string' || serverId.length === 0) {
-						throw new Error('ERLC_EXECUTE_COMMAND requires each command to include a valid serverId.');
+					const robloxJoinCode = cmd.robloxJoinCode;
+					if (typeof robloxJoinCode !== 'string' || robloxJoinCode.length === 0) {
+						throw new Error('ERLC_EXECUTE_COMMAND requires each command to include a valid robloxJoinCode.');
 					}
 					return {
 						...cmd,
-						serverId
+						robloxJoinCode
 					};
 				});
 			}
