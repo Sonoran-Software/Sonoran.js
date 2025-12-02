@@ -122,10 +122,30 @@ export interface CMSClockInOutPromiseResult {
 	clockedIn?: boolean;
 }
 
+export interface CMSClockInType {
+	id: string;
+	label: string;
+}
+
+export interface CMSGetClockInTypesPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSClockInType[];
+}
+
+export interface CMSGetLatestActivityPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: string | null;
+}
+
 export interface CMSClockInOutParams {
 	accId?: string;
 	apiId?: string;
 	forceClockIn?: boolean;
+	discord?: string;
+	uniqueId?: string;
+	type?: string;
 }
 
 export interface CMSCheckComApiIdPromiseResult {
