@@ -150,15 +150,35 @@ export class CMSManager extends BaseManager {
    * @param {string} [data.apiId] (Optional) The api id to clock in or out.
    * @param {boolean} [data.forceClockIn] If true, it will override any current clock in with a new clock in at the time of the request.
    * @param {string} [data.discord] (Optional) The discord ID to clock in or out.
+   * @param {string} [data.uniqueId] (Optional) The unique ID to clock in or out.
+   * @param {string} [data.type] (Optional) The UUID of a specific clock-in type to use.
    * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed.
    */
-  public async clockInOut(data: { accId?: string, apiId?: string, forceClockIn?: boolean, discord?: string, uniqueId?: string }): Promise<globalTypes.CMSClockInOutPromiseResult> {
+  public async clockInOut(data: globalTypes.CMSClockInOutParams): Promise<globalTypes.CMSClockInOutPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
-        const clockInOutRequest = await this.rest?.request('CLOCK_IN_OUT', data.apiId, data.accId, !!data.forceClockIn, data.discord, data.uniqueId);
+        const clockInOutRequest = await this.rest?.request('CLOCK_IN_OUT', data.apiId, data.accId, !!data.forceClockIn, data.discord, data.uniqueId, data.type);
         const clockInOutResponse = clockInOutRequest as globalTypes.clockInOutRequest;
         if (!clockInOutResponse) resolve({ success: false, reason: clockInOutRequest as string });
         resolve({ success: true, clockedIn: clockInOutResponse.completed });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Retrieves configured clock-in types for the community.
+   */
+  public async getClockInTypes(): Promise<globalTypes.CMSGetClockInTypesPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('GET_CLOCKIN_TYPES');
+        resolve({ success: true, data: response });
       } catch (err) {
         if (err instanceof APIError) {
           resolve({ success: false, reason: err.response });
@@ -472,6 +492,34 @@ export class CMSManager extends BaseManager {
     return new Promise(async (resolve, reject) => {
       try {
         const response: any = await this.rest?.request('EDIT_ACC_PROFLIE_FIELDS', params.apiId, params.username, params.accId, params.discord, params.uniqueId, params.profileFields);
+        resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Gets the latest clock-in or activity timestamp for the provided account.
+   */
+  public async getLatestActivity(params: { accId: string, type: 'clockin' | 'activity', serverId?: number, clockInType?: string }): Promise<globalTypes.CMSGetLatestActivityPromiseResult> {
+    if (!params?.accId) {
+      throw new Error('accId is required to get latest activity.');
+    }
+    if (params.type !== 'clockin' && params.type !== 'activity') {
+      throw new Error('type must be either "clockin" or "activity".');
+    }
+    if (params.type === 'activity' && params.serverId === undefined) {
+      throw new Error('serverId is required when type is "activity".');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('GET_LATEST_ACTIVITY', params);
         resolve({ success: true, data: response });
       } catch (err) {
         if (err instanceof APIError) {

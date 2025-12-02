@@ -174,6 +174,10 @@ export class RequestManager extends EventEmitter {
           apiData.data.data = [];
           break;
         }
+        case 'GET_CLOCKIN_TYPES': {
+          apiData.data.data = [];
+          break;
+        }
         case 'ERLC_EXECUTE_COMMAND': {
           apiData.data.data = clonedData;
           break;

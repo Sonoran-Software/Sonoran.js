@@ -224,6 +224,21 @@ export class REST extends EventEmitter {
 					uniqueId: args[4]
 				};
 			}
+			case 'GET_CLOCKIN_TYPES': {
+				return {};
+			}
+			case 'GET_LATEST_ACTIVITY': {
+				const payload = args[0];
+				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+					return payload;
+				}
+				return {
+					accId: args[0],
+					type: args[1],
+					serverId: args[2],
+					clockInType: args[3]
+				};
+			}
 			case 'GET_ACCOUNTS': {
 				return args[0] ?? {};
 			}
@@ -272,12 +287,16 @@ export class REST extends EventEmitter {
 				};
 			}
 			case 'CLOCK_IN_OUT': {
+				if (args[0] && typeof args[0] === 'object' && !Array.isArray(args[0])) {
+					return args[0];
+				}
 				return {
 					apiId: args[0],
 					accId: args[1],
 					forceClockIn: args[2],
 					discord: args[3],
-					uniqueId: args[4]
+					uniqueId: args[4],
+					type: args[5]
 				};
 			}
 			case 'CHECK_COM_APIID': {
