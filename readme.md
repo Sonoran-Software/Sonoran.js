@@ -232,7 +232,7 @@ const getRanks = await instance.cms.getAccountRanks(params);
 ### clockInOut(obj)
 Clock a user in or out in the CMS system
 #### Arugment `obj`
-##### Type `object` `{accId?: string, apiId?: string, forceClockIn?: boolean, discord?: string, uniqueId?: string}`
+##### Type `object` `{accId?: string, apiId?: string, forceClockIn?: boolean, discord?: string, uniqueId?: string, type?: string}`
 ```js
 const params = {
  accId: '',
@@ -240,9 +240,17 @@ const params = {
  forceClockIn: true,
  discord: '',
  uniqueId: '1234',
+ type: 'clockin-type-uuid'
 };
 // Clocks a user in or out
 const clock = await instance.cms.clockInOut(params);
+```
+
+### getClockInTypes()
+Returns the configured clock-in types.
+```js
+const types = await instance.cms.getClockInTypes();
+// [{ id: 'uuid', label: 'Patrol' }]
 ```
 
 ### checkComApiId(apiId)
@@ -326,6 +334,16 @@ Fetches the current clock-in entry for the account if one exists.
 ```js
 const currentEntry = await instance.cms.getCurrentClockIn({ apiId: '1234' });
 ```
+
+### getLatestActivity(params)
+Gets the latest clock-in or activity entries for an account.
+```js
+// Clock-in history
+const clockins = await instance.cms.getLatestActivity({ accId: 'account-uuid', type: 'clockin' });
+// Activity history (requires serverId)
+const activity = await instance.cms.getLatestActivity({ accId: 'account-uuid', type: 'activity', serverId: 1 });
+```
+*Returns an array of clock-in logs (`AccountClockInLog`) or activity logs (`AccountActivityLog`); each item includes `objKey` alongside the other fields.*
 
 ### getAccounts(options)
 Retrieves CMS accounts with optional pagination and status filters.
