@@ -127,6 +127,31 @@ export interface CMSClockInType {
 	label: string;
 }
 
+export interface AccountActivityLog {
+	id: string;
+	status: boolean;
+	accId: string;
+	serverId: number;
+	start: string;
+	end: string | null;
+	clearReason: string | null;
+	metadata: Record<string, any>;
+	objKey: string;
+}
+
+export interface AccountClockInLog {
+	id: number;
+	startTime: string | null;
+	endTime: string | null;
+	completed: boolean;
+	notes: {
+		timestamp: string;
+		message: string;
+	}[];
+	type?: string;
+	objKey: string;
+}
+
 export interface CMSGetClockInTypesPromiseResult {
 	success: boolean;
 	reason?: string;
@@ -136,7 +161,7 @@ export interface CMSGetClockInTypesPromiseResult {
 export interface CMSGetLatestActivityPromiseResult {
 	success: boolean;
 	reason?: string;
-	data?: string | null;
+	data?: AccountClockInLog[] | AccountActivityLog[];
 }
 
 export interface CMSClockInOutParams {

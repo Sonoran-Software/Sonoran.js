@@ -520,7 +520,8 @@ export class CMSManager extends BaseManager {
     return new Promise(async (resolve, reject) => {
       try {
         const response: any = await this.rest?.request('GET_LATEST_ACTIVITY', params);
-        resolve({ success: true, data: response });
+        const data = response && typeof response === 'object' && 'data' in response ? (response as any).data : response;
+        resolve({ success: true, data });
       } catch (err) {
         if (err instanceof APIError) {
           resolve({ success: false, reason: err.response });
