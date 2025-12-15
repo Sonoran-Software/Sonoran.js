@@ -448,10 +448,10 @@ Fetches a specific connected radio user by room and identity.
 const user = await instance.radio.getConnectedUser(1, 'account-uuid');
 ```
 
-### setUserChannels(identity, options)
-Updates a user's transmit or scan channels.
+### setUserChannels(roomId, identity, options)
+Updates a user's transmit or scan channels for a specific radio room.
 ```js
-await instance.radio.setUserChannels('account-uuid', { transmit: 12, scan: [10, 11, 12] });
+await instance.radio.setUserChannels(1, 'account-uuid', { transmit: 12, scan: [10, 11, 12] });
 ```
 
 ### setUserDisplayName(accId, displayName)

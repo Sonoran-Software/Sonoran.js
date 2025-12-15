@@ -452,8 +452,9 @@ export class REST extends EventEmitter {
 			}
 			case 'RADIO_SET_USER_CHANNELS': {
 				return {
-					identity: args[0],
-					options: args[1] ?? {}
+					roomId: args[0],
+					identity: args[1],
+					options: args[2] ?? {}
 				}
 			}
 			case 'RADIO_SET_USER_DISPLAY_NAME': {

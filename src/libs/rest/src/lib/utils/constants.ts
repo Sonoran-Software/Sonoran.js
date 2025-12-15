@@ -1209,6 +1209,7 @@ export interface RESTTypedAPIDataStructs {
 		identity: string
 	];
 	RADIO_SET_USER_CHANNELS: [
+		roomId: number,
 		identity: string,
 		options?: RadioSetUserChannelsOptions
 	];
