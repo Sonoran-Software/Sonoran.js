@@ -299,6 +299,23 @@ export class REST extends EventEmitter {
 					type: args[5]
 				};
 			}
+			case 'UNIT_STATUS': {
+				const payload = args[0];
+				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+					const { apiId, account, status, serverId } = payload as {
+						apiId?: string;
+						account?: string;
+						status: number;
+						serverId: number;
+					};
+					return { apiId, account, status, serverId };
+				}
+				return {
+					apiId: args[0],
+					status: args[1],
+					serverId: args[2]
+				};
+			}
 			case 'CHECK_COM_APIID': {
 				return {
 					apiId: args[0]

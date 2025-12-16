@@ -900,7 +900,14 @@ export interface CADStreetSignStruct {
 
 export interface CADUnitLocationStruct {
 	apiId: string;
-location: string;
+	location: string;
+}
+
+export interface CADUnitStatusStruct {
+	apiId?: string;
+	account?: string;
+	status: number;
+	serverId: number;
 }
 
 export interface RESTTypedAPIDataStructs {
@@ -977,6 +984,8 @@ export interface RESTTypedAPIDataStructs {
 		apiId: string | undefined,
 		status: number,
 		serverId: number
+	] | [
+		data: CADUnitStatusStruct
 	];
 	GET_BLIPS: [serverId: number];
 	ADD_BLIP: [data: CADAddBlipStruct[]];
@@ -1288,7 +1297,8 @@ export type PossibleRequestData =
 		isPanic: boolean;
 	} |
 	{
-		apiId: string;
+		apiId?: string;
+		account?: string;
 		status: number;
 		serverId: number;
 	} |

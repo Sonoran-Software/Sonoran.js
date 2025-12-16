@@ -405,11 +405,27 @@ export class CADManager extends BaseManager {
   /**
    * Updates a unit's status.
    */
-  public async setUnitStatus(apiId: string | undefined, status: number, serverId: number): Promise<globalTypes.CADStandardResponse> {
-    if (!Number.isInteger(serverId)) {
+  public async setUnitStatus(apiId: string | undefined, status: number, serverId: number): Promise<globalTypes.CADStandardResponse>;
+  public async setUnitStatus(params: { apiId?: string; account?: string; status: number; serverId: number }): Promise<globalTypes.CADStandardResponse>;
+  public async setUnitStatus(
+    apiIdOrParams: string | undefined | { apiId?: string; account?: string; status: number; serverId: number },
+    status?: number,
+    serverId?: number
+  ): Promise<globalTypes.CADStandardResponse> {
+    const payload = apiIdOrParams && typeof apiIdOrParams === 'object' && !Array.isArray(apiIdOrParams)
+      ? apiIdOrParams
+      : { apiId: apiIdOrParams, status, serverId };
+    const { apiId, account, status: resolvedStatus, serverId: resolvedServerId } = payload;
+    if (!Number.isInteger(resolvedServerId)) {
       throw new Error('serverId must be an integer when updating unit status.');
     }
-    return this.executeCadRequest('UNIT_STATUS', apiId, status, serverId);
+    if (resolvedStatus === undefined) {
+      throw new Error('status is required when updating unit status.');
+    }
+    if (!apiId && !account) {
+      throw new Error('Either apiId or account is required when updating unit status.');
+    }
+    return this.executeCadRequest('UNIT_STATUS', { apiId, account, status: resolvedStatus, serverId: resolvedServerId });
   }
 
   /**

@@ -103,10 +103,17 @@ const lookup = await instance.cad.lookupRecords({ apiId: '1234567890', types: [2
 ### Identifiers & Units
 - **`getIdentifiers(apiId)`**
 - **`modifyIdentifier(change)`** / **`setIdentifier(apiId?, identId)`**
-- **`setUnitPanic(apiId?, isPanic)`** / **`setUnitStatus(apiId?, status, serverId)`**
+- **`setUnitPanic(apiId?, isPanic)`** / **`setUnitStatus({ status, serverId, apiId?, account? })`**
 - **`getActiveUnits(options)`** - direct CAD fetch for active units.
 - **`kickUnit(apiId?, reason, serverId)`**
 - **`updateUnitLocations(locations)`**
+
+```js
+// Update a unit's status using an account UUID
+await instance.cad.setUnitStatus({ account: 'd5663516-ee35-11e9-9714-5600023b2434', status: 2, serverId: 1 });
+// Legacy positional call using an API ID
+await instance.cad.setUnitStatus('1234567890', 2, 1);
+```
 
 ### Map & Streetsigns
 - **`getBlips(serverId)`**
