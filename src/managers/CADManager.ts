@@ -19,7 +19,8 @@ import type {
   CADGetActiveUnitsStruct,
   CADNewDispatchStruct,
   CADStreetSignStruct,
-  CADUnitLocationStruct
+  CADUnitLocationStruct,
+  CADUnitStatusStruct
 } from '../libs/rest/src';
 import { BaseManager } from './BaseManager';
 import * as globalTypes from '../constants';
@@ -412,9 +413,17 @@ export class CADManager extends BaseManager {
     status?: number,
     serverId?: number
   ): Promise<globalTypes.CADStandardResponse> {
-    const payload = apiIdOrParams && typeof apiIdOrParams === 'object' && !Array.isArray(apiIdOrParams)
-      ? apiIdOrParams
-      : { apiId: apiIdOrParams, status, serverId };
+    let payload: CADUnitStatusStruct;
+    if (apiIdOrParams && typeof apiIdOrParams === 'object' && !Array.isArray(apiIdOrParams)) {
+      payload = {
+        apiId: apiIdOrParams.apiId,
+        account: apiIdOrParams.account,
+        status: apiIdOrParams.status,
+        serverId: apiIdOrParams.serverId
+      };
+    } else {
+      payload = { apiId: apiIdOrParams as string | undefined, status: status as number, serverId: serverId as number };
+    }
     const { apiId, account, status: resolvedStatus, serverId: resolvedServerId } = payload;
     if (!Number.isInteger(resolvedServerId)) {
       throw new Error('serverId must be an integer when updating unit status.');
