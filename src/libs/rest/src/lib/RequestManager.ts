@@ -392,12 +392,20 @@ export class RequestManager extends EventEmitter {
       }
       case 'RADIO_SET_USER_CHANNELS': {
         const auth = ensureAuth();
+        const roomIdRaw = payload?.roomId ?? payload?.roomID;
+        if (roomIdRaw === undefined) {
+          throw new Error('roomId is required for RADIO_SET_USER_CHANNELS requests.');
+        }
+        const roomIdNumeric = typeof roomIdRaw === 'number' ? roomIdRaw : Number(roomIdRaw);
+        if (Number.isNaN(roomIdNumeric)) {
+          throw new Error('roomId must be a number for RADIO_SET_USER_CHANNELS requests.');
+        }
         const identity = payload?.identity;
         if (!identity) {
           throw new Error('identity is required for RADIO_SET_USER_CHANNELS requests.');
         }
         const options = payload?.options ?? {};
-        path = `${apiType.path}/${auth.encodedId}/${auth.encodedKey}/${encodeSegment(identity)}`;
+        path = `${apiType.path}/${auth.encodedId}/${auth.encodedKey}/${encodeSegment(roomIdNumeric)}/${encodeSegment(identity)}`;
         method = 'POST';
         const requestBody: Record<string, unknown> = {};
         if (options?.transmit !== undefined) {

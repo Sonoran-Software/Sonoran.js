@@ -90,13 +90,14 @@ export class RadioManager extends BaseManager {
 
   /**
    * Updates a user's transmit and scanned channel configuration.
+   * @param {number} roomId Multi-server room id.
    * @param {string} identity The user's UUID.
    * @param {RadioSetUserChannelsOptions} options Transmit and scan channel configuration.
    */
-  public async setUserChannels(identity: string, options: globalTypes.RadioSetUserChannelsOptions = {}): Promise<globalTypes.RadioSetUserChannelsPromiseResult> {
+  public async setUserChannels(roomId: number, identity: string, options: globalTypes.RadioSetUserChannelsOptions = {}): Promise<globalTypes.RadioSetUserChannelsPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
-        const response: any = await this.rest?.request('RADIO_SET_USER_CHANNELS', identity, options);
+        const response: any = await this.rest?.request('RADIO_SET_USER_CHANNELS', roomId, identity, options);
         resolve({ success: true, result: response?.result ?? response });
       } catch (err) {
         if (err instanceof APIError) {
