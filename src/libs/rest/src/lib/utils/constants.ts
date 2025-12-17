@@ -775,6 +775,7 @@ export interface CADLookupByIntStruct {
 
 export interface CADLookupStruct {
 	apiId?: string;
+	account?: string;
 	types: number[];
 	first: string;
 	last: string;

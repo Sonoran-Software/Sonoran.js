@@ -247,6 +247,7 @@ export class CADManager extends BaseManager {
 
   /**
    * Executes a CAD lookup using first/last name, plate, or other values.
+   * Supports identifying the requester via `apiId` or `account` (UUID).
    */
   public async lookupRecords(data: CADLookupStruct): Promise<globalTypes.CADStandardResponse> {
     return this.executeCadRequest('LOOKUP', data);

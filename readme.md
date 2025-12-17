@@ -94,6 +94,7 @@ const permissionUpdate = await instance.cad.setAccountPermissions({ apiId: '1234
 ```js
 await instance.cad.createRecord({ user: '1234567890', useDictionary: true, recordTypeId: 2, replaceValues: { NAME: 'Jane Doe' } });
 const lookup = await instance.cad.lookupRecords({ apiId: '1234567890', types: [2], first: 'Jane', last: 'Doe', mi: '', plate: '', partial: false });
+const lookupByAccount = await instance.cad.lookupRecords({ account: 'd5663516-ee35-11e9-9714-5600023b2434', types: [2], first: 'Jane', last: 'Doe', mi: '', plate: '', partial: false });
 ```
 
 ### Civilian Tools

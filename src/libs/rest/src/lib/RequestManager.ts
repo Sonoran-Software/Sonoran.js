@@ -203,7 +203,13 @@ export class RequestManager extends EventEmitter {
           break;
         }
         case 'LOOKUP': {
-          apiData.data.data = [clonedData[0]];
+          if (Array.isArray(clonedData)) {
+            apiData.data.data = clonedData.length > 0 ? clonedData : [];
+          } else if (clonedData !== undefined && clonedData !== null) {
+            apiData.data.data = [clonedData];
+          } else {
+            apiData.data.data = [];
+          }
           break;
         }
         case 'SET_ACCOUNT_PERMISSIONS': {
