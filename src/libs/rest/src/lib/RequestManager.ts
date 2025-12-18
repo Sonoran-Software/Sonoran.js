@@ -276,12 +276,67 @@ export class RequestManager extends EventEmitter {
           apiData.data.data = [clonedData[0]];
           break;
         }
+        case 'GET_MY_CALL': {
+          const payload = data.data;
+          if (Array.isArray(payload)) {
+            apiData.data.data = payload.length > 0 ? payload : [];
+          } else if (payload !== undefined && payload !== null) {
+            apiData.data.data = [payload];
+          } else {
+            apiData.data.data = [];
+          }
+          break;
+        }
         case 'GET_ACTIVE_UNITS': {
           apiData.data.data = [clonedData[0]];
           break;
         }
         case 'NEW_DISPATCH': {
           apiData.data.data = [clonedData[0]];
+          break;
+        }
+        case 'ADD_CALL_NOTE': {
+          const payload = data.data;
+          if (Array.isArray(payload)) {
+            apiData.data.data = payload;
+          } else if (payload !== undefined && payload !== null) {
+            apiData.data.data = [payload];
+          } else {
+            apiData.data.data = [];
+          }
+          break;
+        }
+        case 'UNIT_PANIC': {
+          const payload = data.data;
+          if (Array.isArray(payload)) {
+            apiData.data.data = payload;
+          } else if (payload !== undefined && payload !== null) {
+            apiData.data.data = [payload];
+          } else {
+            apiData.data.data = [];
+          }
+          break;
+        }
+        case 'ATTACH_UNIT': {
+          const payload = data.data;
+          if (Array.isArray(payload)) {
+            apiData.data.data = payload;
+          } else if (payload !== undefined && payload !== null) {
+            apiData.data.data = [payload];
+          } else {
+            apiData.data.data = [];
+          }
+          break;
+        }
+        case 'DETACH_UNIT': {
+          const payload = data.data;
+          if (Array.isArray(payload)) {
+            apiData.data.data = payload;
+          } else if (payload !== undefined && payload !== null) {
+            apiData.data.data = [payload];
+          } else {
+            apiData.data.data = [];
+          }
           break;
         }
         case 'UNIT_LOCATION': {

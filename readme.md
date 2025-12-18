@@ -104,7 +104,7 @@ const lookupByAccount = await instance.cad.lookupRecords({ account: 'd5663516-ee
 ### Identifiers & Units
 - **`getIdentifiers(apiId)`**
 - **`modifyIdentifier(change)`** / **`setIdentifier(apiId?, identId)`**
-- **`setUnitPanic(apiId?, isPanic)`** / **`setUnitStatus({ status, serverId, apiId?, account? })`**
+- **`setUnitPanic({ apiId?, account?, isPanic })`** / **`setUnitStatus({ status, serverId, apiId?, account? })`**
 - **`getActiveUnits(options)`** - direct CAD fetch for active units.
 - **`kickUnit(apiId?, reason, serverId)`**
 - **`updateUnitLocations(locations)`**
@@ -114,6 +114,8 @@ const lookupByAccount = await instance.cad.lookupRecords({ account: 'd5663516-ee
 await instance.cad.setUnitStatus({ account: 'd5663516-ee35-11e9-9714-5600023b2434', status: 2, serverId: 1 });
 // Legacy positional call using an API ID
 await instance.cad.setUnitStatus('1234567890', 2, 1);
+// Trigger panic using account UUID
+await instance.cad.setUnitPanic({ account: '91de0ce8-c571-11e9-9714-5600023b2434', isPanic: true });
 ```
 
 ### Map & Streetsigns
@@ -125,10 +127,11 @@ await instance.cad.setUnitStatus('1234567890', 2, 1);
 ### Calls & Dispatch
 - **`create911Call(details)`** / **`remove911Call(callId)`**
 - **`getCalls(options)`**
+- **`getMyCall({ account })`**
 - **`createDispatch(data)`**
-- **`attachUnits(serverId, callId, units)`** / **`detachUnits(serverId, units)`**
+- **`attachUnits(serverId, callId, unitsOrAccount)`** / **`detachUnits(serverId, unitsOrAccount)`**
 - **`setCallPostal(serverId, callId, postal)`** / **`setCallPrimary(serverId, callId, primary, trackPrimary)`**
-- **`addCallNote(serverId, callId, note)`**
+- **`addCallNote({ serverId, callId, note, label? })`**
 - **`closeCall(serverId, callId)`**
 
 ```js
@@ -149,6 +152,14 @@ const dispatch = await instance.cad.createDispatch({
   units: ['unit-1']
 });
 await instance.cad.attachUnits(1, 1001, ['unit-2']);
+// Or attach a single unit by account UUID
+await instance.cad.attachUnits({ serverId: 1, callId: 1001, account: '91de0ce8-c571-11e9-9714-5600023b2434' });
+// Detach using account UUID
+await instance.cad.detachUnits({ serverId: 1, account: '91de0ce8-c571-11e9-9714-5600023b2434' });
+// Fetch the current call for an account UUID
+const myCall = await instance.cad.getMyCall({ account: '91de0ce8-c571-11e9-9714-5600023b2434' });
+// Add a call note with optional label
+await instance.cad.addCallNote({ serverId: 1, callId: 1001, note: 'This is a test!', label: 'A-10' });
 ```
 
 ## CAD Server Functions

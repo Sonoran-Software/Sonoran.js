@@ -245,6 +245,13 @@ export class REST extends EventEmitter {
 			case 'GET_PROFILE_FIELDS': {
 				return {};
 			}
+			case 'GET_MY_CALL': {
+				const payload = args[0];
+				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+					return payload;
+				}
+				return { account: args[0] };
+			}
 			case 'SET_CLOCK': {
 				if (args[0] && typeof args[0] === 'object' && !Array.isArray(args[0])) {
 					return args[0];
@@ -299,6 +306,18 @@ export class REST extends EventEmitter {
 					type: args[5]
 				};
 			}
+			case 'ADD_CALL_NOTE': {
+				const payload = args[0];
+				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+					return payload;
+				}
+				return {
+					serverId: args[0],
+					callId: args[1],
+					note: args[2],
+					label: args[3]
+				};
+			}
 			case 'UNIT_STATUS': {
 				const payload = args[0];
 				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
@@ -314,6 +333,46 @@ export class REST extends EventEmitter {
 					apiId: args[0],
 					status: args[1],
 					serverId: args[2]
+				};
+			}
+			case 'UNIT_PANIC': {
+				const payload = args[0];
+				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+					const { apiId, account, isPanic } = payload as { apiId?: string; account?: string; isPanic: boolean };
+					return { apiId, account, isPanic };
+				}
+				return {
+					apiId: args[0],
+					isPanic: args[1]
+				};
+			}
+			case 'ATTACH_UNIT': {
+				const payload = args[0];
+				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+					return payload;
+				}
+				const unitsOrAccount = args[2];
+				const account = typeof unitsOrAccount === 'string' && !Array.isArray(unitsOrAccount) ? unitsOrAccount : undefined;
+				const units = Array.isArray(unitsOrAccount) ? unitsOrAccount : undefined;
+				return {
+					serverId: args[0],
+					callId: args[1],
+					units,
+					account
+				};
+			}
+			case 'DETACH_UNIT': {
+				const payload = args[0];
+				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+					return payload;
+				}
+				const unitsOrAccount = args[1];
+				const account = typeof unitsOrAccount === 'string' && !Array.isArray(unitsOrAccount) ? unitsOrAccount : undefined;
+				const units = Array.isArray(unitsOrAccount) ? unitsOrAccount : undefined;
+				return {
+					serverId: args[0],
+					units,
+					account
 				};
 			}
 			case 'CHECK_COM_APIID': {

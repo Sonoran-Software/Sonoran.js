@@ -16,11 +16,16 @@ import type {
   CADAddBlipStruct,
   CADModifyBlipStruct,
   CADGetCallsStruct,
+  CADGetMyCallStruct,
+  CADAddCallNoteStruct,
   CADGetActiveUnitsStruct,
   CADNewDispatchStruct,
+  CADAttachUnitsStruct,
+  CADDetachUnitsStruct,
   CADStreetSignStruct,
   CADUnitLocationStruct,
-  CADUnitStatusStruct
+  CADUnitStatusStruct,
+  CADUnitPanicStruct
 } from '../libs/rest/src';
 import { BaseManager } from './BaseManager';
 import * as globalTypes from '../constants';
@@ -400,8 +405,23 @@ export class CADManager extends BaseManager {
   /**
    * Toggles panic state for a unit.
    */
-  public async setUnitPanic(apiId: string | undefined, isPanic: boolean): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadRequest('UNIT_PANIC', apiId, isPanic);
+  public async setUnitPanic(apiId: string | undefined, isPanic: boolean): Promise<globalTypes.CADStandardResponse>;
+  public async setUnitPanic(params: CADUnitPanicStruct): Promise<globalTypes.CADStandardResponse>;
+  public async setUnitPanic(apiIdOrParams: string | CADUnitPanicStruct | undefined, isPanic?: boolean): Promise<globalTypes.CADStandardResponse> {
+    let payload: CADUnitPanicStruct;
+    if (apiIdOrParams && typeof apiIdOrParams === 'object') {
+      payload = { ...apiIdOrParams };
+    } else {
+      payload = { apiId: apiIdOrParams as string | undefined, isPanic: isPanic as boolean };
+    }
+    const { apiId, account, isPanic: resolvedPanic } = payload;
+    if (resolvedPanic === undefined) {
+      throw new Error('isPanic is required when setting unit panic.');
+    }
+    if (!apiId && !account) {
+      throw new Error('Either apiId or account is required when setting unit panic.');
+    }
+    return this.executeCadRequest('UNIT_PANIC', { apiId, account, isPanic: resolvedPanic });
   }
 
   /**
@@ -509,6 +529,16 @@ export class CADManager extends BaseManager {
   }
 
   /**
+   * Retrieves the current call associated with the given account UUID.
+   */
+  public async getMyCall(options: CADGetMyCallStruct): Promise<globalTypes.CADStandardResponse> {
+    if (!options?.account) {
+      throw new Error('account is required when fetching current call.');
+    }
+    return this.executeCadRequest('GET_MY_CALL', options);
+  }
+
+  /**
    * Retrieves active units for the provided filters.
    */
   public async getActiveUnits(options: CADGetActiveUnitsStruct): Promise<globalTypes.CADStandardResponse> {
@@ -538,27 +568,73 @@ export class CADManager extends BaseManager {
   /**
    * Attaches units to an existing dispatch call.
    */
-  public async attachUnits(serverId: number, callId: number, units: string[]): Promise<globalTypes.CADStandardResponse> {
-    if (!Number.isInteger(serverId) || !Number.isInteger(callId)) {
+  public async attachUnits(serverId: number, callId: number, unitsOrAccount: string[] | string): Promise<globalTypes.CADStandardResponse>;
+  public async attachUnits(params: CADAttachUnitsStruct): Promise<globalTypes.CADStandardResponse>;
+  public async attachUnits(
+    serverIdOrParams: number | CADAttachUnitsStruct,
+    callId?: number,
+    unitsOrAccount?: string[] | string
+  ): Promise<globalTypes.CADStandardResponse> {
+    let payload: CADAttachUnitsStruct;
+    if (serverIdOrParams && typeof serverIdOrParams === 'object') {
+      payload = { ...serverIdOrParams };
+    } else {
+      payload = {
+        serverId: serverIdOrParams as number,
+        callId: callId as number,
+        ...(Array.isArray(unitsOrAccount)
+          ? { units: unitsOrAccount }
+          : typeof unitsOrAccount === 'string'
+            ? { account: unitsOrAccount }
+            : {})
+      };
+    }
+
+    const { serverId, callId: resolvedCallId, units, account } = payload;
+    if (!Number.isInteger(serverId) || !Number.isInteger(resolvedCallId)) {
       throw new Error('serverId and callId must be integers when attaching units.');
     }
-    if (!Array.isArray(units) || units.length === 0) {
-      throw new Error('units must include at least one entry when attaching.');
+    const hasUnits = Array.isArray(units) && units.length > 0;
+    const hasAccount = typeof account === 'string' && account.length > 0;
+    if (!hasUnits && !hasAccount) {
+      throw new Error('Either units or account is required when attaching units.');
     }
-    return this.executeCadRequest('ATTACH_UNIT', serverId, callId, units);
+    return this.executeCadRequest('ATTACH_UNIT', { serverId, callId: resolvedCallId, units: hasUnits ? units : undefined, account: hasAccount ? account : undefined });
   }
 
   /**
    * Detaches units from dispatch calls.
    */
-  public async detachUnits(serverId: number, units: string[]): Promise<globalTypes.CADStandardResponse> {
+  public async detachUnits(serverId: number, unitsOrAccount: string[] | string): Promise<globalTypes.CADStandardResponse>;
+  public async detachUnits(params: CADDetachUnitsStruct): Promise<globalTypes.CADStandardResponse>;
+  public async detachUnits(
+    serverIdOrParams: number | CADDetachUnitsStruct,
+    unitsOrAccount?: string[] | string
+  ): Promise<globalTypes.CADStandardResponse> {
+    let payload: CADDetachUnitsStruct;
+    if (serverIdOrParams && typeof serverIdOrParams === 'object') {
+      payload = { ...serverIdOrParams };
+    } else {
+      payload = {
+        serverId: serverIdOrParams as number,
+        ...(Array.isArray(unitsOrAccount)
+          ? { units: unitsOrAccount }
+          : typeof unitsOrAccount === 'string'
+            ? { account: unitsOrAccount }
+            : {})
+      };
+    }
+
+    const { serverId, units, account } = payload;
     if (!Number.isInteger(serverId)) {
       throw new Error('serverId must be an integer when detaching units.');
     }
-    if (!Array.isArray(units) || units.length === 0) {
-      throw new Error('units must include at least one entry when detaching.');
+    const hasUnits = Array.isArray(units) && units.length > 0;
+    const hasAccount = typeof account === 'string' && account.length > 0;
+    if (!hasUnits && !hasAccount) {
+      throw new Error('Either units or account is required when detaching units.');
     }
-    return this.executeCadRequest('DETACH_UNIT', serverId, units);
+    return this.executeCadRequest('DETACH_UNIT', { serverId, units: hasUnits ? units : undefined, account: hasAccount ? account : undefined });
   }
 
   /**
@@ -587,14 +663,28 @@ export class CADManager extends BaseManager {
   /**
    * Adds a note to an active call.
    */
-  public async addCallNote(serverId: number, callId: number, note: string): Promise<globalTypes.CADStandardResponse> {
-    if (!Number.isInteger(serverId) || !Number.isInteger(callId)) {
+  public async addCallNote(serverId: number, callId: number, note: string, label?: string): Promise<globalTypes.CADStandardResponse>;
+  public async addCallNote(params: CADAddCallNoteStruct): Promise<globalTypes.CADStandardResponse>;
+  public async addCallNote(
+    serverIdOrParams: number | CADAddCallNoteStruct,
+    callId?: number,
+    note?: string,
+    label?: string
+  ): Promise<globalTypes.CADStandardResponse> {
+    let payload: CADAddCallNoteStruct;
+    if (serverIdOrParams && typeof serverIdOrParams === 'object') {
+      payload = { ...serverIdOrParams };
+    } else {
+      payload = { serverId: serverIdOrParams as number, callId: callId as number, note: note as string, label };
+    }
+    const { serverId, callId: resolvedCallId, note: resolvedNote, label: resolvedLabel } = payload;
+    if (!Number.isInteger(serverId) || !Number.isInteger(resolvedCallId)) {
       throw new Error('serverId and callId must be integers when adding a call note.');
     }
-    if (!note) {
+    if (!resolvedNote) {
       throw new Error('note is required when adding a call note.');
     }
-    return this.executeCadRequest('ADD_CALL_NOTE', serverId, callId, note);
+    return this.executeCadRequest('ADD_CALL_NOTE', { serverId, callId: resolvedCallId, note: resolvedNote, label: resolvedLabel });
   }
 
   /**
