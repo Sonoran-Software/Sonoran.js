@@ -377,7 +377,7 @@ export class REST extends EventEmitter {
 			case 'LOOKUP': {
 				const payload = args[0];
 				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
-					return args;
+					return payload;
 				}
 				return {
 					id: args[0],

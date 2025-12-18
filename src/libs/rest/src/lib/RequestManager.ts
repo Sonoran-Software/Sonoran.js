@@ -203,10 +203,11 @@ export class RequestManager extends EventEmitter {
           break;
         }
         case 'LOOKUP': {
-          if (Array.isArray(clonedData)) {
-            apiData.data.data = clonedData.length > 0 ? clonedData : [];
-          } else if (clonedData !== undefined && clonedData !== null) {
-            apiData.data.data = [clonedData];
+          const rawLookup = data.data;
+          if (Array.isArray(rawLookup)) {
+            apiData.data.data = rawLookup;
+          } else if (rawLookup !== undefined && rawLookup !== null) {
+            apiData.data.data = [rawLookup];
           } else {
             apiData.data.data = [];
           }
