@@ -128,7 +128,7 @@ await instance.cad.setUnitPanic({ account: '91de0ce8-c571-11e9-9714-5600023b2434
 - **`create911Call(details)`** / **`remove911Call(callId)`**
 - **`getCalls(options)`**
 - **`getMyCall({ account })`**
-- **`createDispatch(data)`**
+- **`createDispatch(data)`** - accepts either `units` (API IDs) or `accounts` (account UUIDs) as arrays.
 - **`attachUnits(serverId, callId, unitsOrAccount)`** / **`detachUnits(serverId, unitsOrAccount)`**
 - **`setCallPostal(serverId, callId, postal)`** / **`setCallPrimary(serverId, callId, primary, trackPrimary)`**
 - **`addCallNote({ serverId, callId, note, label? })`**
@@ -150,6 +150,22 @@ const dispatch = await instance.cad.createDispatch({
   description: 'Blue sedan headed north',
   metaData: {},
   units: ['unit-1']
+});
+const dispatchByAccount = await instance.cad.createDispatch({
+  serverId: 1,
+  origin: Sonoran.CADDispatchOriginEnums.WalkUp,
+  status: Sonoran.CADDispatchStatusEnums.Active,
+  priority: 2,
+  block: '456',
+  address: '2nd St',
+  postal: '200',
+  title: 'Suspicious Person',
+  code: 'SP',
+  primary: 43,
+  trackPrimary: false,
+  description: 'Individual loitering near storefront',
+  metaData: {},
+  accounts: ['91de0ce8-c571-11e9-9714-5600023b2434']
 });
 await instance.cad.attachUnits(1, 1001, ['unit-2']);
 // Or attach a single unit by account UUID

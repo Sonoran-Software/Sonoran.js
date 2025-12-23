@@ -562,7 +562,14 @@ export class CADManager extends BaseManager {
    * Creates a new dispatch call.
    */
   public async createDispatch(data: CADNewDispatchStruct): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadRequest('NEW_DISPATCH', data);
+    const hasUnits = Array.isArray(data.units);
+    const hasAccounts = Array.isArray(data.accounts);
+    const payload: CADNewDispatchStruct = {
+      ...data,
+      ...(hasUnits ? { units: data.units } : {}),
+      ...(hasAccounts ? { accounts: data.accounts } : {})
+    };
+    return this.executeCadRequest('NEW_DISPATCH', payload);
   }
 
   /**

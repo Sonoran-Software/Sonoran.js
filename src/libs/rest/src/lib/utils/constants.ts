@@ -910,7 +910,7 @@ export enum CADDispatchStatusEnums {
 	Closed
 }
 
-export interface CADNewDispatchStruct {
+interface CADNewDispatchBaseStruct {
 	serverId: number;
 	origin: CADDispatchOriginEnums;
 	status: CADDispatchStatusEnums;
@@ -924,8 +924,11 @@ export interface CADNewDispatchStruct {
 	trackPrimary: boolean;
 	description: string;
 	metaData: Record<string, string>;
-	units: string[];
 }
+
+export type CADNewDispatchStruct =
+	| (CADNewDispatchBaseStruct & { units: string[]; accounts?: string[] })
+	| (CADNewDispatchBaseStruct & { units?: string[]; accounts: string[] });
 
 export interface CADStreetSignStruct {
 	id: number;
