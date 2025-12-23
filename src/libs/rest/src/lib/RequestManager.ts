@@ -470,11 +470,25 @@ export class RequestManager extends EventEmitter {
         path = `${apiType.path}/${auth.encodedId}/${auth.encodedKey}/${encodeSegment(roomIdNumeric)}/${encodeSegment(identity)}`;
         method = 'POST';
         const requestBody: Record<string, unknown> = {};
-        if (options?.transmit !== undefined) {
-          requestBody.transmit = options.transmit;
+        const normalizeNumberArray = (label: string, value: unknown) => {
+          if (value === undefined) return undefined;
+          const asArray = Array.isArray(value) ? value : [value];
+          const numbers = asArray.map((entry) => {
+            const numeric = typeof entry === 'number' ? entry : Number(entry);
+            if (Number.isNaN(numeric)) {
+              throw new Error(`${label} must be a number or array of numbers for RADIO_SET_USER_CHANNELS requests.`);
+            }
+            return numeric;
+          });
+          return numbers;
+        };
+        const transmit = normalizeNumberArray('transmit', options?.transmit);
+        if (transmit !== undefined) {
+          requestBody.transmit = transmit;
         }
-        if (options?.scan !== undefined) {
-          requestBody.scan = options.scan;
+        const scan = normalizeNumberArray('scan', options?.scan);
+        if (scan !== undefined) {
+          requestBody.scan = scan;
         }
         body = requestBody;
         break;

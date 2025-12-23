@@ -569,7 +569,7 @@ export interface RadioTonePlayTarget {
 }
 
 export interface RadioSetUserChannelsOptions {
-	transmit?: number;
+	transmit?: number[];
 	scan?: number[];
 }
 
