@@ -405,6 +405,56 @@ export interface CMSChangeFormStagePromiseResult {
 	data?: unknown;
 }
 
+export interface CMSGetFormLockStatusPromiseResult {
+	success: boolean;
+	reason?: string;
+	locked?: boolean;
+}
+
+export interface CMSSetFormLockStatusPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: unknown;
+}
+
+export interface CMSCurrentSession {
+	id: string;
+	sysStatus: boolean;
+	community: string;
+	serverId: number;
+	startedBy: string;
+	startedAt: string;
+	endedBy: string | null;
+	endedAt: string | null;
+	cancelledBy: string | null;
+	stats: Record<string, unknown>;
+	metadata: Record<string, unknown>;
+}
+
+export interface CMSGetCurrentSessionPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSCurrentSession | null;
+}
+
+export interface CMSStartSessionPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSCurrentSession | null;
+}
+
+export interface CMSStopSessionPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSCurrentSession | null;
+}
+
+export interface CMSCancelSessionPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSCurrentSession | null;
+}
+
 export interface CMSSetGameServerStruct {
 	id?: number;
 	name: string;
