@@ -168,6 +168,7 @@ export interface CMSClockInOutParams {
 	accId?: string;
 	apiId?: string;
 	forceClockIn?: boolean;
+	forceClockOut?: boolean;
 	discord?: string;
 	uniqueId?: string;
 	type?: string;

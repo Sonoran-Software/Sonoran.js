@@ -267,12 +267,13 @@ const getRanks = await instance.cms.getAccountRanks(params);
 ### clockInOut(obj)
 Clock a user in or out in the CMS system
 #### Arugment `obj`
-##### Type `object` `{accId?: string, apiId?: string, forceClockIn?: boolean, discord?: string, uniqueId?: string, type?: string}`
+##### Type `object` `{accId?: string, apiId?: string, forceClockIn?: boolean, forceClockOut?: boolean, discord?: string, uniqueId?: string, type?: string}`
 ```js
 const params = {
  accId: '',
  apiId: '',
  forceClockIn: true,
+ forceClockOut: false,
  discord: '',
  uniqueId: '1234',
  type: 'clockin-type-uuid'

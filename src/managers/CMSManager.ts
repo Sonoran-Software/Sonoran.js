@@ -149,6 +149,7 @@ export class CMSManager extends BaseManager {
    * @param {string} [data.accId] (Optional) The account id to clock in or out.
    * @param {string} [data.apiId] (Optional) The api id to clock in or out.
    * @param {boolean} [data.forceClockIn] If true, it will override any current clock in with a new clock in at the time of the request.
+   * @param {boolean} [data.forceClockOut] If true, it will force a clock out regardless of current status.
    * @param {string} [data.discord] (Optional) The discord ID to clock in or out.
    * @param {string} [data.uniqueId] (Optional) The unique ID to clock in or out.
    * @param {string} [data.type] (Optional) The UUID of a specific clock-in type to use.
@@ -157,7 +158,7 @@ export class CMSManager extends BaseManager {
   public async clockInOut(data: globalTypes.CMSClockInOutParams): Promise<globalTypes.CMSClockInOutPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
-        const clockInOutRequest = await this.rest?.request('CLOCK_IN_OUT', data.apiId, data.accId, !!data.forceClockIn, data.discord, data.uniqueId, data.type);
+        const clockInOutRequest = await this.rest?.request('CLOCK_IN_OUT', data.apiId, data.accId, !!data.forceClockIn, data.discord, data.uniqueId, data.type, !!data.forceClockOut);
         const clockInOutResponse = clockInOutRequest as globalTypes.clockInOutRequest;
         if (!clockInOutResponse) resolve({ success: false, reason: clockInOutRequest as string });
         resolve({ success: true, clockedIn: clockInOutResponse.completed });
