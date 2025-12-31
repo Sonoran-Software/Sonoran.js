@@ -1179,7 +1179,8 @@ export interface RESTTypedAPIDataStructs {
 		forceClockIn?: boolean,
 		discord?: string,
 		uniqueId?: string,
-		type?: string
+		type?: string,
+		forceClockOut?: boolean
 	];
 	GET_DEPARTMENTS: [];
 	GET_ACCOUNT_RANKS: [
@@ -1496,6 +1497,7 @@ export type PossibleRequestData =
 		apiId?: string;
 		accId?: string;
 		forceClockIn?: boolean;
+		forceClockOut?: boolean;
 		discord?: string;
 		uniqueId?: string;
 		type?: string;

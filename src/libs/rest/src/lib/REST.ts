@@ -326,7 +326,8 @@ export class REST extends EventEmitter {
 					forceClockIn: args[2],
 					discord: args[3],
 					uniqueId: args[4],
-					type: args[5]
+					type: args[5],
+					forceClockOut: args[6]
 				};
 			}
 			case 'ADD_CALL_NOTE': {

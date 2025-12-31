@@ -139,6 +139,7 @@ if (comAccount.success) {
 | data.apiId | Yes | String | Must have at least apiId or accId |
 | data.accId | Yes | String | Must have at least apiId or accId |
 | data.forceClockIn | Yes | Boolean | Will start a new clock in and overrite any current clock in |
+| data.forceClockOut | Yes | Boolean | Forces a clock out regardless of the current status |
 
 Returns *clockResult*;
 | Property   |      Optional      |  Type | Note |
@@ -160,6 +161,12 @@ const instance = Sonoran.instance({
 const clockResult = await instance.cms.clockInOut({
   apiId: '235947056630333440',
   forceClockIn: true
+});
+// OR
+// This will force a clock out on the community account found by the specified API ID if found.
+const clockResult = await instance.cms.clockInOut({
+  apiId: '235947056630333440',
+  forceClockOut: true
 });
 // OR
 // This will either clock in or out the community account found by the specified API ID if found.
