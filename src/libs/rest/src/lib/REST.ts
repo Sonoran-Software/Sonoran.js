@@ -318,6 +318,16 @@ export class REST extends EventEmitter {
 					label: args[3]
 				};
 			}
+			case 'CLOSE_CALL': {
+				const payload = args[0];
+				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+					return payload;
+				}
+				return {
+					serverId: args[0],
+					callId: args[1]
+				};
+			}
 			case 'UNIT_STATUS': {
 				const payload = args[0];
 				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {

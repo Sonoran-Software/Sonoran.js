@@ -306,6 +306,10 @@ export class RequestManager extends EventEmitter {
           }
           break;
         }
+        case 'CLOSE_CALL': {
+          apiData.data.data = [clonedData];
+          break;
+        }
         case 'UNIT_PANIC': {
           const payload = data.data;
           if (Array.isArray(payload)) {

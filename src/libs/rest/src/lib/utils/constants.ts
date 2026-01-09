@@ -878,6 +878,13 @@ export interface CADGetActiveUnitsStruct {
 	offset?: number;
 }
 
+export interface CADDispatchNoteStruct {
+	time: string;
+	label: string;
+	type: string;
+	content: string;
+}
+
 export interface CADAttachUnitsStruct {
 	serverId: number;
 	callId: number;
@@ -923,6 +930,7 @@ interface CADNewDispatchBaseStruct {
 	primary: number;
 	trackPrimary: boolean;
 	description: string;
+	notes: CADDispatchNoteStruct[];
 	metaData: Record<string, string>;
 }
 
