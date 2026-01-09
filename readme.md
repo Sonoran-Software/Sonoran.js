@@ -267,12 +267,13 @@ const getRanks = await instance.cms.getAccountRanks(params);
 ### clockInOut(obj)
 Clock a user in or out in the CMS system
 #### Arugment `obj`
-##### Type `object` `{accId?: string, apiId?: string, forceClockIn?: boolean, discord?: string, uniqueId?: string, type?: string}`
+##### Type `object` `{accId?: string, apiId?: string, forceClockIn?: boolean, forceClockOut?: boolean, discord?: string, uniqueId?: string, type?: string}`
 ```js
 const params = {
  accId: '',
  apiId: '',
  forceClockIn: true,
+ forceClockOut: false,
  discord: '',
  uniqueId: '1234',
  type: 'clockin-type-uuid'
@@ -404,6 +405,19 @@ Retrieves form submissions with optional pagination.
 const submissions = await instance.cms.getFormSubmissions(42, { skip: 0, take: 25 });
 ```
 
+### getFormLockStatus(templateId)
+Returns whether a form template is locked.
+```js
+const lockStatus = await instance.cms.getFormLockStatus(42);
+// lockStatus => { success: true, locked: true } when locked
+```
+
+### setFormLockStatus(templateId, state)
+Sets the lock state for a form template.
+```js
+const result = await instance.cms.setFormLockStatus(42, true); // lock form
+```
+
 ### changeFormStage(params)
 Moves a form to the specified stage for an account.
 ```js
@@ -462,6 +476,30 @@ Replaces the configured CMS game servers and refreshes the cache with the respon
 await instance.cms.servers?.setGameServers([
   { name: 'Server 1', description: 'Primary server', allowedRanks: ['admin'] }
 ]);
+```
+
+### getCurrentSession(serverId?)
+Retrieves the active CMS session for a server (if one exists).
+```js
+const session = await instance.cms.getCurrentSession(1);
+```
+
+### startSession(serverId?, accId)
+Starts a CMS session for the given server using the provided account.
+```js
+const session = await instance.cms.startSession(1, 'account-uuid');
+```
+
+### stopSession(serverId?, accId)
+Stops the active CMS session for the given server using the provided account.
+```js
+const session = await instance.cms.stopSession(1, 'account-uuid');
+```
+
+### cancelSession(serverId?, accId)
+Cancels the active CMS session for the given server using the provided account.
+```js
+const session = await instance.cms.cancelSession(1, 'account-uuid');
 ```
 
 ## Radio Functions

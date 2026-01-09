@@ -149,6 +149,7 @@ export class CMSManager extends BaseManager {
    * @param {string} [data.accId] (Optional) The account id to clock in or out.
    * @param {string} [data.apiId] (Optional) The api id to clock in or out.
    * @param {boolean} [data.forceClockIn] If true, it will override any current clock in with a new clock in at the time of the request.
+   * @param {boolean} [data.forceClockOut] If true, it will force a clock out regardless of current status.
    * @param {string} [data.discord] (Optional) The discord ID to clock in or out.
    * @param {string} [data.uniqueId] (Optional) The unique ID to clock in or out.
    * @param {string} [data.type] (Optional) The UUID of a specific clock-in type to use.
@@ -157,7 +158,7 @@ export class CMSManager extends BaseManager {
   public async clockInOut(data: globalTypes.CMSClockInOutParams): Promise<globalTypes.CMSClockInOutPromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
-        const clockInOutRequest = await this.rest?.request('CLOCK_IN_OUT', data.apiId, data.accId, !!data.forceClockIn, data.discord, data.uniqueId, data.type);
+        const clockInOutRequest = await this.rest?.request('CLOCK_IN_OUT', data.apiId, data.accId, !!data.forceClockIn, data.discord, data.uniqueId, data.type, !!data.forceClockOut);
         const clockInOutResponse = clockInOutRequest as globalTypes.clockInOutRequest;
         if (!clockInOutResponse) resolve({ success: false, reason: clockInOutRequest as string });
         resolve({ success: true, clockedIn: clockInOutResponse.completed });
@@ -464,6 +465,81 @@ export class CMSManager extends BaseManager {
   }
 
   /**
+   * Retrieves the lock status for a form template.
+   */
+  public async getFormLockStatus(templateId: number): Promise<globalTypes.CMSGetFormLockStatusPromiseResult> {
+    if (templateId === undefined || Number.isNaN(Number(templateId))) {
+      throw new Error('templateId is required to get form lock status.');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('GET_FORM_LOCK_STATUS', templateId);
+        if (typeof response === 'boolean') {
+          resolve({ success: true, locked: response });
+          return;
+        }
+
+        if (typeof response === 'string') {
+          const normalized = response.toLowerCase();
+          if (normalized === 'locked') {
+            resolve({ success: true, locked: true });
+            return;
+          }
+          if (normalized === 'unlocked') {
+            resolve({ success: true, locked: false });
+            return;
+          }
+        }
+
+        if (response && typeof response === 'object') {
+          if ('locked' in response) {
+            resolve({ success: true, locked: Boolean((response as any).locked) });
+            return;
+          }
+          if ('isLocked' in response) {
+            resolve({ success: true, locked: Boolean((response as any).isLocked) });
+            return;
+          }
+        }
+
+        resolve({ success: false, reason: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Sets the lock status for a form template.
+   */
+  public async setFormLockStatus(templateId: number, state: boolean): Promise<globalTypes.CMSSetFormLockStatusPromiseResult> {
+    if (templateId === undefined || Number.isNaN(Number(templateId))) {
+      throw new Error('templateId is required to set form lock status.');
+    }
+    if (typeof state !== 'boolean') {
+      throw new Error('state must be a boolean to set form lock status.');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('SET_FORM_LOCK_STATUS', templateId, state);
+        resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
    * Retrieves submissions for a specific form template.
    */
   public async getFormSubmissions<T = unknown>(templateId: number, options: { skip?: number, take?: number } = {}): Promise<globalTypes.CMSGetFormSubmissionsPromiseResult<T>> {
@@ -581,6 +657,107 @@ export class CMSManager extends BaseManager {
       try {
         const response: any = await this.rest?.request('GET_PROFILE_FIELDS');
         resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Retrieves the current active session for the specified server, if present.
+   */
+  public async getCurrentSession(serverId?: number): Promise<globalTypes.CMSGetCurrentSessionPromiseResult> {
+    const resolvedServerId = serverId ?? this.instance.cmsDefaultServerId;
+    if (resolvedServerId === undefined || Number.isNaN(Number(resolvedServerId))) {
+      throw new Error('serverId is required to get current session.');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('GET_CURRENT_SESSION', resolvedServerId);
+        resolve({ success: true, data: response ?? null });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Starts a new CMS session for the specified server.
+   */
+  public async startSession(serverId?: number, accId?: string): Promise<globalTypes.CMSStartSessionPromiseResult> {
+    const resolvedServerId = serverId ?? this.instance.cmsDefaultServerId;
+    if (resolvedServerId === undefined || Number.isNaN(Number(resolvedServerId))) {
+      throw new Error('serverId is required to start a session.');
+    }
+    if (!accId) {
+      throw new Error('accId is required to start a session.');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('START_SESSION', resolvedServerId, accId);
+        resolve({ success: true, data: response ?? null });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Stops the current CMS session for the specified server.
+   */
+  public async stopSession(serverId?: number, accId?: string): Promise<globalTypes.CMSStopSessionPromiseResult> {
+    const resolvedServerId = serverId ?? this.instance.cmsDefaultServerId;
+    if (resolvedServerId === undefined || Number.isNaN(Number(resolvedServerId))) {
+      throw new Error('serverId is required to stop a session.');
+    }
+    if (!accId) {
+      throw new Error('accId is required to stop a session.');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('STOP_SESSION', resolvedServerId, accId);
+        resolve({ success: true, data: response ?? null });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Cancels the current CMS session for the specified server.
+   */
+  public async cancelSession(serverId?: number, accId?: string): Promise<globalTypes.CMSCancelSessionPromiseResult> {
+    const resolvedServerId = serverId ?? this.instance.cmsDefaultServerId;
+    if (resolvedServerId === undefined || Number.isNaN(Number(resolvedServerId))) {
+      throw new Error('serverId is required to cancel a session.');
+    }
+    if (!accId) {
+      throw new Error('accId is required to cancel a session.');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('CANCEL_SESSION', resolvedServerId, accId);
+        resolve({ success: true, data: response ?? null });
       } catch (err) {
         if (err instanceof APIError) {
           resolve({ success: false, reason: err.response });

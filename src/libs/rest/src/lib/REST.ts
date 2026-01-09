@@ -185,6 +185,29 @@ export class REST extends EventEmitter {
 					serverId: args[0]
 				}
 			}
+			case 'GET_CURRENT_SESSION': {
+				return {
+					serverId: args[0]
+				}
+			}
+			case 'START_SESSION': {
+				return {
+					serverId: args[0],
+					accId: args[1],
+				}
+			}
+			case 'STOP_SESSION': {
+				return {
+					serverId: args[0],
+					accId: args[1],
+				}
+			}
+			case 'CANCEL_SESSION': {
+				return {
+					serverId: args[0],
+					accId: args[1],
+				}
+			}
 			case 'SET_GAME_SERVERS': {
 				return args[0] ?? [];
 			}
@@ -303,7 +326,8 @@ export class REST extends EventEmitter {
 					forceClockIn: args[2],
 					discord: args[3],
 					uniqueId: args[4],
-					type: args[5]
+					type: args[5],
+					forceClockOut: args[6]
 				};
 			}
 			case 'ADD_CALL_NOTE': {
@@ -412,6 +436,17 @@ export class REST extends EventEmitter {
 					templateId: args[0],
 					skip: args[1],
 					take: args[2],
+				};
+			}
+			case 'GET_FORM_LOCK_STATUS': {
+				return {
+					templateId: args[0],
+				};
+			}
+			case 'SET_FORM_LOCK_STATUS': {
+				return {
+					templateId: args[0],
+					state: args[1],
 				};
 			}
 			case 'CHANGE_FORM_STAGE': {
