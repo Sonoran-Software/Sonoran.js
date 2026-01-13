@@ -46,5 +46,7 @@ export {
   CMSERLCGetPlayerQueuePromiseResult,
   CMSERLCAddNewRecordPromiseResult,
   CMSERLCExecuteCommandPayload,
-  CMSERLCExecuteCommandPromiseResult
+  CMSERLCExecuteCommandPromiseResult,
+  CMSERLCTeamsLockPromiseResult,
+  CMSERLCTeamsUnlockPromiseResult
 } from './constants';

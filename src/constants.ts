@@ -553,6 +553,18 @@ export interface CMSERLCExecuteCommandPromiseResult {
 	data?: unknown;
 }
 
+export type ERLCTeams = 'police' | 'sheriff' | 'fire' | 'dot';
+
+export interface CMSERLCTeamsLockPromiseResult {
+	success: boolean;
+	reason: string;
+}
+
+export interface CMSERLCTeamsUnlockPromiseResult {
+	success: boolean;
+	reason: string;
+}
+
 export interface RadioChannelGroup {
 	id: number;
 	name: string;

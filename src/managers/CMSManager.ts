@@ -863,4 +863,47 @@ export class CMSManager extends BaseManager {
       }
     });
   }
+
+  /**
+   * Adds a new ERLC record for a player.
+   * @param {string} robloxJoinCode The roblox join code to add the record to.
+   * @param {string} team The ERLC team to be player limit locked
+   * @param {number} maxPlayers The maximum amount of players that are allowed on the team
+   * @return {Promise} Promise object represents if the request was successful with reason for failure if needed.
+   * */
+  public async erlcTeamsLock(robloxJoinCode: string, team: globalTypes.ERLCTeams, maxPlayers: number): Promise<globalTypes.CMSERLCTeamsLockPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const erlcTeamsLockRequest: any = await this.rest?.request('ERLC_TEAMS_LOCK', robloxJoinCode, team, maxPlayers);
+        resolve({ success: true, reason: erlcTeamsLockRequest });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Adds a new ERLC record for a player.
+   * @param {string} robloxJoinCode The roblox join code to add the record to.
+   * @param {string} team The ERLC team to no longer be player limit locked
+   * @return {Promise} Promise object represents if the request was successful with reason for failure if needed.
+   * */
+  public async erlcTeamsUnlock(robloxJoinCode: string, team: globalTypes.ERLCTeams): Promise<globalTypes.CMSERLCTeamsUnlockPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const erlcTeamsLockRequest: any = await this.rest?.request('ERLC_TEAMS_UNLOCK', robloxJoinCode, team);
+        resolve({ success: true, reason: erlcTeamsLockRequest });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
 }

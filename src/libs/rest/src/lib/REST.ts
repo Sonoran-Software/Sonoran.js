@@ -564,6 +564,38 @@ export class REST extends EventEmitter {
 					};
 				});
 			}
+			case 'ERLC_TEAMS_LOCK': {
+				const payload = args[0];
+				if (!Array.isArray(payload)) {
+					throw new Error('ERLC_TEAMS_LOCK requires an array of command payloads.');
+				}
+				return payload.map((cmd) => {
+					const robloxJoinCode = cmd.robloxJoinCode;
+					if (typeof robloxJoinCode !== 'string' || robloxJoinCode.length === 0) {
+						throw new Error('ERLC_TEAMS_LOCK requires each command to include a valid robloxJoinCode.');
+					}
+					return {
+						...cmd,
+						robloxJoinCode
+					};
+				});
+			}
+			case 'ERLC_TEAMS_UNLOCK': {
+				const payload = args[0];
+				if (!Array.isArray(payload)) {
+					throw new Error('ERLC_TEAMS_UNLOCK requires an array of command payloads.');
+				}
+				return payload.map((cmd) => {
+					const robloxJoinCode = cmd.robloxJoinCode;
+					if (typeof robloxJoinCode !== 'string' || robloxJoinCode.length === 0) {
+						throw new Error('ERLC_TEAMS_UNLOCK requires each command to include a valid robloxJoinCode.');
+					}
+					return {
+						...cmd,
+						robloxJoinCode
+					};
+				});
+			}
 			case 'RADIO_GET_COMMUNITY_CHANNELS':
 			case 'RADIO_GET_CONNECTED_USERS':
 			case 'RADIO_GET_SERVER_SUBSCRIPTION_FROM_IP': {
