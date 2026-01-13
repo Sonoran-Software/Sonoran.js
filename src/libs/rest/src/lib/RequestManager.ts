@@ -182,6 +182,14 @@ export class RequestManager extends EventEmitter {
           apiData.data.data = clonedData;
           break;
         }
+        case 'ERLC_TEAMS_LOCK': {
+          apiData.data.data = clonedData;
+          break;
+        }
+        case 'ERLC_TEAMS_UNLOCK': {
+          apiData.data.data = clonedData;
+          break;
+        }
         case 'SET_PENAL_CODES': {
           apiData.data.data = [clonedData[0]];
           break;
