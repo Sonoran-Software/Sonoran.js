@@ -884,6 +884,7 @@ export interface CADIdentsToGroupStruct {
 	serverId: number;
 	identIds: number[];
 	groupName: string;
+	account?: string;
 }
 
 export interface CADBlipStruct {

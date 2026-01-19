@@ -424,6 +424,9 @@ export class CADManager extends BaseManager {
       if (typeof entry.groupName !== 'string') {
         throw new Error(`entries[${index}].groupName must be a string (use '' to clear).`);
       }
+      if (entry.account !== undefined && typeof entry.account !== 'string') {
+        throw new Error(`entries[${index}].account must be a string when provided.`);
+      }
     });
     return this.executeCadRequest('IDENTS_TO_GROUP', payload);
   }
