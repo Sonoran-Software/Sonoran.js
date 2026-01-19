@@ -418,7 +418,7 @@ export class CADManager extends BaseManager {
       if (!Number.isInteger(entry.serverId)) {
         throw new Error(`entries[${index}].serverId must be an integer.`);
       }
-      if (!Array.isArray(entry.identIds) || entry.identIds.length === 0 || entry.identIds.some((id) => !Number.isInteger(id))) {
+      if (!Array.isArray(entry.identIds) || entry.identIds.some((id) => !Number.isInteger(id))) {
         throw new Error(`entries[${index}].identIds must be an array of integers.`);
       }
       if (typeof entry.groupName !== 'string') {
@@ -426,6 +426,9 @@ export class CADManager extends BaseManager {
       }
       if (entry.account !== undefined && typeof entry.account !== 'string') {
         throw new Error(`entries[${index}].account must be a string when provided.`);
+      }
+      if (entry.identIds.length === 0 && !entry.account) {
+        throw new Error(`entries[${index}] must include account or at least one identId.`);
       }
     });
     return this.executeCadRequest('IDENTS_TO_GROUP', payload);
