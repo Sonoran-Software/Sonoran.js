@@ -380,6 +380,13 @@ export class REST extends EventEmitter {
 					isPanic: args[1]
 				};
 			}
+			case 'IDENTS_TO_GROUP': {
+				const payload = args[0];
+				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+					return payload;
+				}
+				return payload ?? [];
+			}
 			case 'ATTACH_UNIT': {
 				const payload = args[0];
 				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {

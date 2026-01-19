@@ -104,6 +104,7 @@ const lookupByAccount = await instance.cad.lookupRecords({ account: 'd5663516-ee
 ### Identifiers & Units
 - **`getIdentifiers(apiId)`**
 - **`modifyIdentifier(change)`** / **`setIdentifier(apiId?, identId)`**
+- **`setIdentifiersToGroup(entries)`** - assigns identifiers to a group name (empty string clears).
 - **`setUnitPanic({ apiId?, account?, isPanic })`** / **`setUnitStatus({ status, serverId, apiId?, account? })`**
 - **`getActiveUnits(options)`** - direct CAD fetch for active units.
 - **`kickUnit(apiId?, reason, serverId)`**

@@ -13,6 +13,7 @@ import type {
   CADKickBanUserStruct,
   CADSetPostalStruct,
   CADModifyIdentifierStruct,
+  CADIdentsToGroupStruct,
   CADAddBlipStruct,
   CADModifyBlipStruct,
   CADGetCallsStruct,
@@ -400,6 +401,31 @@ export class CADManager extends BaseManager {
       throw new Error('identId must be an integer when setting an identifier.');
     }
     return this.executeCadRequest('SET_IDENTIFIER', apiId, identId);
+  }
+
+  /**
+   * Assigns identifiers to a group name.
+   */
+  public async setIdentifiersToGroup(entries: CADIdentsToGroupStruct | CADIdentsToGroupStruct[]): Promise<globalTypes.CADStandardResponse> {
+    const payload = Array.isArray(entries) ? entries : [entries];
+    if (payload.length === 0) {
+      throw new Error('entries must include at least one identifier group update.');
+    }
+    payload.forEach((entry, index) => {
+      if (!entry) {
+        throw new Error(`entries[${index}] is required.`);
+      }
+      if (!Number.isInteger(entry.serverId)) {
+        throw new Error(`entries[${index}].serverId must be an integer.`);
+      }
+      if (!Array.isArray(entry.identIds) || entry.identIds.length === 0 || entry.identIds.some((id) => !Number.isInteger(id))) {
+        throw new Error(`entries[${index}].identIds must be an array of integers.`);
+      }
+      if (typeof entry.groupName !== 'string') {
+        throw new Error(`entries[${index}].groupName must be a string (use '' to clear).`);
+      }
+    });
+    return this.executeCadRequest('IDENTS_TO_GROUP', payload);
   }
 
   /**

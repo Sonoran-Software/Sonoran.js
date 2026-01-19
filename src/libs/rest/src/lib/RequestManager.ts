@@ -272,6 +272,17 @@ export class RequestManager extends EventEmitter {
           apiData.data.data = [clonedData[0]];
           break;
         }
+        case 'IDENTS_TO_GROUP': {
+          const payload = data.data;
+          if (Array.isArray(payload)) {
+            apiData.data.data = payload;
+          } else if (payload !== undefined && payload !== null) {
+            apiData.data.data = [payload];
+          } else {
+            apiData.data.data = [];
+          }
+          break;
+        }
         case 'ADD_BLIP': {
           apiData.data.data = [clonedData[0]];
           break;
