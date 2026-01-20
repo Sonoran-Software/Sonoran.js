@@ -41,6 +41,8 @@ export {
   CMSPromotionFlow,
   CMSTriggerPromotionFlowsPromiseResult,
   CMSGetPromotionFlowsPromiseResult,
+  CMSCustomLogType,
+  CMSGetCustomLogTypesPromiseResult,
   CMSGetFormSubmissionsPromiseResult,
   CMSERLCGetOnlinePlayersPromiseResult,
   CMSERLCGetPlayerQueuePromiseResult,

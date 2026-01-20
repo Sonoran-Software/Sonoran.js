@@ -534,6 +534,9 @@ export class REST extends EventEmitter {
 			case 'GET_PROMOTION_FLOWS': {
 				return [];
 			}
+			case 'GET_CUSTOM_LOG_TYPES': {
+				return [];
+			}
 			case 'ERLC_GET_ONLINE_PLAYERS': {
 				return {
 					robloxJoinCode: args[0]

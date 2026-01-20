@@ -418,6 +418,19 @@ export interface CMSSetFormLockStatusPromiseResult {
 	data?: unknown;
 }
 
+export interface CMSCustomLogType {
+	id: string;
+	label: string;
+	shortCode: string;
+	melonlyId?: string;
+}
+
+export interface CMSGetCustomLogTypesPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSCustomLogType[];
+}
+
 export interface CMSCurrentSession {
 	id: string;
 	sysStatus: boolean;

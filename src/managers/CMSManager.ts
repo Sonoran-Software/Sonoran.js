@@ -906,4 +906,23 @@ export class CMSManager extends BaseManager {
       }
     });
   }
+
+  /**
+   * Adds a new ERLC record for a player.
+   * @return {Promise} Promise object represents if the request was successful with reason for failure if needed.
+   * */
+  public async getCustomLogTypes(): Promise<globalTypes.CMSGetCustomLogTypesPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const getCustomLogTypesRequest: any = await this.rest?.request('GET_CUSTOM_LOG_TYPES');
+        resolve({ success: true, data: getCustomLogTypesRequest });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
 }
