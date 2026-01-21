@@ -393,13 +393,15 @@ export class REST extends EventEmitter {
 					return payload;
 				}
 				const unitsOrAccount = args[2];
+				const identIds = args[3];
 				const account = typeof unitsOrAccount === 'string' && !Array.isArray(unitsOrAccount) ? unitsOrAccount : undefined;
 				const units = Array.isArray(unitsOrAccount) ? unitsOrAccount : undefined;
 				return {
 					serverId: args[0],
 					callId: args[1],
 					units,
-					account
+					account,
+					identIds
 				};
 			}
 			case 'DETACH_UNIT': {

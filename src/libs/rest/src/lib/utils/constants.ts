@@ -957,6 +957,7 @@ export interface CADAttachUnitsStruct {
 	callId: number;
 	units?: string[];
 	account?: string;
+	identIds?: number[];
 }
 
 export interface CADDetachUnitsStruct {
@@ -1122,7 +1123,8 @@ export interface RESTTypedAPIDataStructs {
 	ATTACH_UNIT: [
 		serverId: number,
 		callId: number,
-		units: string[]
+		units: string[],
+		identIds?: number[]
 	] | [
 		data: CADAttachUnitsStruct
 	];
@@ -1480,6 +1482,7 @@ export type PossibleRequestData =
 		callId: number;
 		units?: string[];
 		account?: string;
+		identIds?: number[];
 	} |
 	{
 		serverId: number;

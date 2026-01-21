@@ -607,12 +607,13 @@ export class CADManager extends BaseManager {
   /**
    * Attaches units to an existing dispatch call.
    */
-  public async attachUnits(serverId: number, callId: number, unitsOrAccount: string[] | string): Promise<globalTypes.CADStandardResponse>;
+  public async attachUnits(serverId: number, callId: number, unitsOrAccount: string[] | string, identIds?: number[]): Promise<globalTypes.CADStandardResponse>;
   public async attachUnits(params: CADAttachUnitsStruct): Promise<globalTypes.CADStandardResponse>;
   public async attachUnits(
     serverIdOrParams: number | CADAttachUnitsStruct,
     callId?: number,
-    unitsOrAccount?: string[] | string
+    unitsOrAccount?: string[] | string,
+    identIds?: number[]
   ): Promise<globalTypes.CADStandardResponse> {
     let payload: CADAttachUnitsStruct;
     if (serverIdOrParams && typeof serverIdOrParams === 'object') {
@@ -625,20 +626,31 @@ export class CADManager extends BaseManager {
           ? { units: unitsOrAccount }
           : typeof unitsOrAccount === 'string'
             ? { account: unitsOrAccount }
-            : {})
+            : {}),
+        ...(Array.isArray(identIds) ? { identIds } : {})
       };
     }
 
-    const { serverId, callId: resolvedCallId, units, account } = payload;
+    const { serverId, callId: resolvedCallId, units, account, identIds: resolvedIdentIds } = payload;
     if (!Number.isInteger(serverId) || !Number.isInteger(resolvedCallId)) {
       throw new Error('serverId and callId must be integers when attaching units.');
     }
     const hasUnits = Array.isArray(units) && units.length > 0;
     const hasAccount = typeof account === 'string' && account.length > 0;
-    if (!hasUnits && !hasAccount) {
-      throw new Error('Either units or account is required when attaching units.');
+    if (resolvedIdentIds !== undefined && (!Array.isArray(resolvedIdentIds) || resolvedIdentIds.some((id) => !Number.isInteger(id)))) {
+      throw new Error('identIds must be an array of integers when attaching units.');
     }
-    return this.executeCadRequest('ATTACH_UNIT', { serverId, callId: resolvedCallId, units: hasUnits ? units : undefined, account: hasAccount ? account : undefined });
+    const hasIdentIds = Array.isArray(resolvedIdentIds) && resolvedIdentIds.length > 0;
+    if (!hasUnits && !hasAccount && !hasIdentIds) {
+      throw new Error('Either units, account, or identIds is required when attaching units.');
+    }
+    return this.executeCadRequest('ATTACH_UNIT', {
+      serverId,
+      callId: resolvedCallId,
+      units: hasUnits ? units : undefined,
+      account: hasAccount ? account : undefined,
+      identIds: hasIdentIds ? resolvedIdentIds : undefined
+    });
   }
 
   /**
