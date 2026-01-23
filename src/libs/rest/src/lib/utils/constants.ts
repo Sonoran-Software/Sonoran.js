@@ -970,6 +970,7 @@ export interface CADUnitPanicStruct {
 	apiId?: string;
 	account?: string;
 	isPanic: boolean;
+	identIds?: number[];
 }
 
 export enum CADDispatchOriginEnums {
@@ -1096,7 +1097,8 @@ export interface RESTTypedAPIDataStructs {
 	IDENTS_TO_GROUP: [data: CADIdentsToGroupStruct[]];
 	UNIT_PANIC: [
 		apiId: string | undefined,
-		isPanic: boolean
+		isPanic: boolean,
+		identIds?: number[]
 	] | [
 		data: CADUnitPanicStruct
 	];

@@ -437,23 +437,32 @@ export class CADManager extends BaseManager {
   /**
    * Toggles panic state for a unit.
    */
-  public async setUnitPanic(apiId: string | undefined, isPanic: boolean): Promise<globalTypes.CADStandardResponse>;
+  public async setUnitPanic(apiId: string | undefined, isPanic: boolean, identIds?: number[]): Promise<globalTypes.CADStandardResponse>;
   public async setUnitPanic(params: CADUnitPanicStruct): Promise<globalTypes.CADStandardResponse>;
-  public async setUnitPanic(apiIdOrParams: string | CADUnitPanicStruct | undefined, isPanic?: boolean): Promise<globalTypes.CADStandardResponse> {
+  public async setUnitPanic(apiIdOrParams: string | CADUnitPanicStruct | undefined, isPanic?: boolean, identIds?: number[]): Promise<globalTypes.CADStandardResponse> {
     let payload: CADUnitPanicStruct;
     if (apiIdOrParams && typeof apiIdOrParams === 'object') {
       payload = { ...apiIdOrParams };
     } else {
-      payload = { apiId: apiIdOrParams as string | undefined, isPanic: isPanic as boolean };
+      payload = { apiId: apiIdOrParams as string | undefined, isPanic: isPanic as boolean, identIds };
     }
-    const { apiId, account, isPanic: resolvedPanic } = payload;
+    const { apiId, account, isPanic: resolvedPanic, identIds: resolvedIdentIds } = payload;
     if (resolvedPanic === undefined) {
       throw new Error('isPanic is required when setting unit panic.');
     }
-    if (!apiId && !account) {
-      throw new Error('Either apiId or account is required when setting unit panic.');
+    if (resolvedIdentIds !== undefined && (!Array.isArray(resolvedIdentIds) || resolvedIdentIds.some((id) => !Number.isInteger(id)))) {
+      throw new Error('identIds must be an array of integers when setting unit panic.');
     }
-    return this.executeCadRequest('UNIT_PANIC', { apiId, account, isPanic: resolvedPanic });
+    const hasIdentIds = Array.isArray(resolvedIdentIds) && resolvedIdentIds.length > 0;
+    if (!apiId && !account && !hasIdentIds) {
+      throw new Error('Either apiId, account, or identIds is required when setting unit panic.');
+    }
+    return this.executeCadRequest('UNIT_PANIC', {
+      apiId,
+      account,
+      isPanic: resolvedPanic,
+      identIds: hasIdentIds ? resolvedIdentIds : undefined
+    });
   }
 
   /**
