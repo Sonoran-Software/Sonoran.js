@@ -355,18 +355,20 @@ export class REST extends EventEmitter {
 			case 'UNIT_STATUS': {
 				const payload = args[0];
 				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
-					const { apiId, account, status, serverId } = payload as {
+					const { apiId, account, status, serverId, identIds } = payload as {
 						apiId?: string;
 						account?: string;
 						status: number;
 						serverId: number;
+						identIds?: number[];
 					};
-					return { apiId, account, status, serverId };
+					return { apiId, account, status, serverId, identIds };
 				}
 				return {
 					apiId: args[0],
 					status: args[1],
-					serverId: args[2]
+					serverId: args[2],
+					identIds: args[3]
 				};
 			}
 			case 'UNIT_PANIC': {

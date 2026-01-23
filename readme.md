@@ -105,7 +105,7 @@ const lookupByAccount = await instance.cad.lookupRecords({ account: 'd5663516-ee
 - **`getIdentifiers(apiId)`**
 - **`modifyIdentifier(change)`** / **`setIdentifier(apiId?, identId)`**
 - **`setIdentifiersToGroup(entries)`** - assigns identifiers to a group name (empty string clears).
-- **`setUnitPanic({ apiId?, account?, isPanic })`** / **`setUnitStatus({ status, serverId, apiId?, account? })`**
+- **`setUnitPanic({ apiId?, account?, isPanic })`** / **`setUnitStatus({ status, serverId, apiId?, account?, identIds? })`**
 - **`getActiveUnits(options)`** - direct CAD fetch for active units.
 - **`kickUnit(apiId?, reason, serverId)`**
 - **`updateUnitLocations(locations)`**
@@ -115,6 +115,8 @@ const lookupByAccount = await instance.cad.lookupRecords({ account: 'd5663516-ee
 await instance.cad.setUnitStatus({ account: 'd5663516-ee35-11e9-9714-5600023b2434', status: 2, serverId: 1 });
 // Legacy positional call using an API ID
 await instance.cad.setUnitStatus('1234567890', 2, 1);
+// Update status by identifier IDs
+await instance.cad.setUnitStatus({ identIds: [101, 102], status: 2, serverId: 1 });
 // Trigger panic using account UUID
 await instance.cad.setUnitPanic({ account: '91de0ce8-c571-11e9-9714-5600023b2434', isPanic: true });
 ```

@@ -459,12 +459,13 @@ export class CADManager extends BaseManager {
   /**
    * Updates a unit's status.
    */
-  public async setUnitStatus(apiId: string | undefined, status: number, serverId: number): Promise<globalTypes.CADStandardResponse>;
-  public async setUnitStatus(params: { apiId?: string; account?: string; status: number; serverId: number }): Promise<globalTypes.CADStandardResponse>;
+  public async setUnitStatus(apiId: string | undefined, status: number, serverId: number, identIds?: number[]): Promise<globalTypes.CADStandardResponse>;
+  public async setUnitStatus(params: { apiId?: string; account?: string; status: number; serverId: number; identIds?: number[] }): Promise<globalTypes.CADStandardResponse>;
   public async setUnitStatus(
-    apiIdOrParams: string | undefined | { apiId?: string; account?: string; status: number; serverId: number },
+    apiIdOrParams: string | undefined | { apiId?: string; account?: string; status: number; serverId: number; identIds?: number[] },
     status?: number,
-    serverId?: number
+    serverId?: number,
+    identIds?: number[]
   ): Promise<globalTypes.CADStandardResponse> {
     let payload: CADUnitStatusStruct;
     if (apiIdOrParams && typeof apiIdOrParams === 'object' && !Array.isArray(apiIdOrParams)) {
@@ -472,22 +473,33 @@ export class CADManager extends BaseManager {
         apiId: apiIdOrParams.apiId,
         account: apiIdOrParams.account,
         status: apiIdOrParams.status,
-        serverId: apiIdOrParams.serverId
+        serverId: apiIdOrParams.serverId,
+        identIds: apiIdOrParams.identIds
       };
     } else {
-      payload = { apiId: apiIdOrParams as string | undefined, status: status as number, serverId: serverId as number };
+      payload = { apiId: apiIdOrParams as string | undefined, status: status as number, serverId: serverId as number, identIds };
     }
-    const { apiId, account, status: resolvedStatus, serverId: resolvedServerId } = payload;
+    const { apiId, account, status: resolvedStatus, serverId: resolvedServerId, identIds: resolvedIdentIds } = payload;
     if (!Number.isInteger(resolvedServerId)) {
       throw new Error('serverId must be an integer when updating unit status.');
     }
     if (resolvedStatus === undefined) {
       throw new Error('status is required when updating unit status.');
     }
-    if (!apiId && !account) {
-      throw new Error('Either apiId or account is required when updating unit status.');
+    if (resolvedIdentIds !== undefined && (!Array.isArray(resolvedIdentIds) || resolvedIdentIds.some((id) => !Number.isInteger(id)))) {
+      throw new Error('identIds must be an array of integers when updating unit status.');
     }
-    return this.executeCadRequest('UNIT_STATUS', { apiId, account, status: resolvedStatus, serverId: resolvedServerId });
+    const hasIdentIds = Array.isArray(resolvedIdentIds) && resolvedIdentIds.length > 0;
+    if (!apiId && !account && !hasIdentIds) {
+      throw new Error('Either apiId, account, or identIds is required when updating unit status.');
+    }
+    return this.executeCadRequest('UNIT_STATUS', {
+      apiId,
+      account,
+      status: resolvedStatus,
+      serverId: resolvedServerId,
+      identIds: hasIdentIds ? resolvedIdentIds : undefined
+    });
   }
 
   /**

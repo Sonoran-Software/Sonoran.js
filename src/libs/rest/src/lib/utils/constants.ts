@@ -1024,6 +1024,7 @@ export interface CADUnitStatusStruct {
 	account?: string;
 	status: number;
 	serverId: number;
+	identIds?: number[];
 }
 
 export interface RESTTypedAPIDataStructs {
@@ -1102,7 +1103,8 @@ export interface RESTTypedAPIDataStructs {
 	UNIT_STATUS: [
 		apiId: string | undefined,
 		status: number,
-		serverId: number
+		serverId: number,
+		identIds?: number[]
 	] | [
 		data: CADUnitStatusStruct
 	];
