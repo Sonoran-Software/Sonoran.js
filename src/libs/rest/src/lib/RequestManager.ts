@@ -206,6 +206,10 @@ export class RequestManager extends EventEmitter {
           apiData.data.data = [clonedData[0]];
           break;
         }
+        case 'SEND_DRAFT': {
+          apiData.data.data = [clonedData[0]];
+          break;
+        }
         case 'EDIT_RECORD': {
           apiData.data.data = [clonedData[0]];
           break;

@@ -7,6 +7,7 @@ import type {
   CADSetAPIIDStruct,
   CADNewEditRecordOptionOneStruct,
   CADNewEditRecordOptionTwoStruct,
+  CADSendDraftStruct,
   CADLookupByIntStruct,
   CADLookupStruct,
   CADModifyAccountPermsStruct,
@@ -222,6 +223,25 @@ export class CADManager extends BaseManager {
    */
   public async createRecord(data: CADNewEditRecordOptionOneStruct | CADNewEditRecordOptionTwoStruct): Promise<globalTypes.CADStandardResponse> {
     return this.executeCadRequest('NEW_RECORD', data);
+  }
+
+  /**
+   * Sends a record draft with populated fields.
+   */
+  public async sendDraft(data: CADSendDraftStruct): Promise<globalTypes.CADStandardResponse> {
+    if (!data || typeof data !== 'object') {
+      throw new Error('data is required when sending a draft.');
+    }
+    if (!data.apiId && !data.account) {
+      throw new Error('apiId or account is required when sending a draft.');
+    }
+    if (!Number.isInteger(data.recordTypeId)) {
+      throw new Error('recordTypeId must be an integer when sending a draft.');
+    }
+    if (!data.replaceValues || typeof data.replaceValues !== 'object') {
+      throw new Error('replaceValues is required when sending a draft.');
+    }
+    return this.executeCadRequest('SEND_DRAFT', data);
   }
 
   /**
