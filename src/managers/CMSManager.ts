@@ -465,6 +465,28 @@ export class CMSManager extends BaseManager {
   }
 
   /**
+   * Gets the form submission object for the given ID
+   */
+  public async getFormSubmission(formId: number): Promise<globalTypes.CMSGetFormSubmissionPromiseResult> {
+    if (!formId) {
+      throw new Error('formId is required to fetch submission');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('GET_FORM_SUBMISSION', formId);
+        resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
    * Retrieves the lock status for a form template.
    */
   public async getFormLockStatus(templateId: number): Promise<globalTypes.CMSGetFormLockStatusPromiseResult> {

@@ -406,6 +406,12 @@ export interface CMSChangeFormStagePromiseResult {
 	data?: unknown;
 }
 
+export interface CMSGetFormSubmissionPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: unknown;
+}
+
 export interface CMSGetFormLockStatusPromiseResult {
 	success: boolean;
 	reason?: string;

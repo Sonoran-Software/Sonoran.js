@@ -473,6 +473,11 @@ export class REST extends EventEmitter {
 					uniqueId: args[7],
 				};
 			}
+			case 'GET_FORM_SUBMISSION': {
+				return {
+					id: args[0]
+				};
+			}
 			case 'BAN_ACCOUNT': {
 				return {
 					apiId: args[0],
