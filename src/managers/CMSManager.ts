@@ -442,7 +442,7 @@ export class CMSManager extends BaseManager {
   /**
    * Updates the stage of a form for the specified account.
    */
-  public async changeFormStage(params: { accId?: string, formId: number, newStageId: string, apiId?: string, username?: string, discord?: string, uniqueId: number }): Promise<globalTypes.CMSChangeFormStagePromiseResult> {
+  public async changeFormStage(params: { accId?: string, formId: number, newStageId: string, optionalReason: string | null, apiId?: string, username?: string, discord?: string, uniqueId: number }): Promise<globalTypes.CMSChangeFormStagePromiseResult> {
     if (!params.formId || !params.newStageId) {
       throw new Error('formId and newStageId are required to change a form stage.');
     }
@@ -452,7 +452,7 @@ export class CMSManager extends BaseManager {
 
     return new Promise(async (resolve, reject) => {
       try {
-        const response: any = await this.rest?.request('CHANGE_FORM_STAGE', params.accId, params.formId, params.newStageId, params.apiId, params.username, params.discord, params.uniqueId);
+        const response: any = await this.rest?.request('CHANGE_FORM_STAGE', params.accId, params.formId, params.newStageId, params.optionalReason, params.apiId, params.username, params.discord, params.uniqueId);
         resolve({ success: true, data: response });
       } catch (err) {
         if (err instanceof APIError) {

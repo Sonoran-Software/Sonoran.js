@@ -466,10 +466,11 @@ export class REST extends EventEmitter {
 					accId: args[0],
 					formId: args[1],
 					newStageId: args[2],
-					apiId: args[3],
-					username: args[4],
-					discord: args[5],
-					uniqueId: args[6],
+					optionalReason: args[3],
+					apiId: args[4],
+					username: args[5],
+					discord: args[6],
+					uniqueId: args[7],
 				};
 			}
 			case 'BAN_ACCOUNT': {

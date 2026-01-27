@@ -1329,6 +1329,7 @@ export interface RESTTypedAPIDataStructs {
 		accId: string | undefined,
 		formId: number,
 		newStageId: string,
+		optionalReason: string | null,
 		apiId: string | undefined,
 		username: string | undefined,
 		discord: string | undefined,
