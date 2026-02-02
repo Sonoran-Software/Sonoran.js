@@ -124,6 +124,15 @@ export class DispatchCallBuilder {
   }
 
   /**
+	 * Sets the auto-delete timer for this dispatch call
+   * @param deleteAfterMinutes Minutes until the dispatch call is deleted
+	 */
+  public setDeleteAfterMinutes(deleteAfterMinutes: number): this {
+    this.data.deleteAfterMinutes = deleteAfterMinutes;
+    return this;
+  }
+
+  /**
 	 * Sets specified units for this dispatch call
    * @param units Units to be removed from a call
 	 */

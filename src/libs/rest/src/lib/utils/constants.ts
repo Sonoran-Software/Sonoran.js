@@ -1020,6 +1020,7 @@ interface CADNewDispatchBaseStruct {
 	description: string;
 	notes: CADDispatchNoteStruct[];
 	metaData: Record<string, string>;
+	deleteAfterMinutes?: number;
 }
 
 export type CADNewDispatchStruct =

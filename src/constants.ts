@@ -25,6 +25,7 @@ export interface CADNewDispatchBuilderOptions {
 	description?: string;
 	metaData?: Record<string, string>;
 	units?: string[];
+	deleteAfterMinutes?: number;
 }
 
 export type Constructable<T> = abstract new (...args: any[]) => T;
