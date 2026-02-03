@@ -20,6 +20,7 @@ import type {
   CADGetCallsStruct,
   CADGetMyCallStruct,
   CADAddCallNoteStruct,
+  CADRemove911Struct,
   CADGetActiveUnitsStruct,
   CADNewDispatchStruct,
   CADAttachUnitsStruct,
@@ -587,11 +588,20 @@ export class CADManager extends BaseManager {
   /**
    * Removes a 911 call by its identifier.
    */
-  public async remove911Call(callId: number): Promise<globalTypes.CADStandardResponse> {
-    if (!Number.isInteger(callId)) {
-      throw new Error('callId must be an integer when removing a 911 call.');
+  public async remove911Call(serverId: number, callId: number): Promise<globalTypes.CADStandardResponse>;
+  public async remove911Call(params: CADRemove911Struct): Promise<globalTypes.CADStandardResponse>;
+  public async remove911Call(serverIdOrParams: number | CADRemove911Struct, callId?: number): Promise<globalTypes.CADStandardResponse> {
+    let payload: CADRemove911Struct;
+    if (serverIdOrParams && typeof serverIdOrParams === 'object') {
+      payload = { ...serverIdOrParams };
+    } else {
+      payload = { serverId: serverIdOrParams as number, callId: callId as number };
     }
-    return this.executeCadRequest('REMOVE_911', callId);
+    const { serverId, callId: resolvedCallId } = payload;
+    if (!Number.isInteger(serverId) || !Number.isInteger(resolvedCallId)) {
+      throw new Error('serverId and callId must be integers when removing a 911 call.');
+    }
+    return this.executeCadRequest('REMOVE_911', { serverId, callId: resolvedCallId });
   }
 
   /**
@@ -634,7 +644,7 @@ export class CADManager extends BaseManager {
   /**
    * Creates a new dispatch call.
    */
-  public async createDispatch(data: CADNewDispatchStruct): Promise<globalTypes.CADStandardResponse> {
+  public async createDispatch(data: CADNewDispatchStruct): Promise<globalTypes.CADStandardResponse<globalTypes.CADDispatchCallStruct>> {
     const hasUnits = Array.isArray(data.units);
     const hasAccounts = Array.isArray(data.accounts);
     const payload: CADNewDispatchStruct = {

@@ -1,5 +1,6 @@
 import { Collection } from '@discordjs/collection';
 import { CADDispatchOriginEnums, CADDispatchStatusEnums } from './libs/rest/src';
+import type { CADDispatchNoteStruct } from './libs/rest/src';
 import { DataManager } from './managers/DataManager';
 import { CADActiveUnitsManager } from './managers/CADActiveUnitsManager';
 import { CADActiveUnit } from './structures/CADActiveUnit';
@@ -26,6 +27,25 @@ export interface CADNewDispatchBuilderOptions {
 	metaData?: Record<string, string>;
 	units?: string[];
 	deleteAfterMinutes?: number;
+}
+
+export interface CADDispatchCallStruct {
+	callId: number;
+	origin: CADDispatchOriginEnums;
+	status: CADDispatchStatusEnums;
+	priority: 1 | 2 | 3;
+	block: string;
+	address: string;
+	postal: string;
+	title: string;
+	code: string;
+	primary: number;
+	trackPrimary: boolean;
+	description: string;
+	notes: CADDispatchNoteStruct[];
+	idents: number[];
+	metaData: Record<string, string>;
+	updated: string;
 }
 
 export type Constructable<T> = abstract new (...args: any[]) => T;

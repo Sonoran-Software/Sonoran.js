@@ -4,6 +4,7 @@ export * from './libs/rest/src';
 export {
   productEnums,
   CADNewDispatchBuilderOptions,
+  CADDispatchCallStruct,
   CADSubscriptionVersionEnum,
   CMSSubscriptionVersionEnum,
   RadioSubscriptionLevel,

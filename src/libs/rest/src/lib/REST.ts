@@ -342,6 +342,16 @@ export class REST extends EventEmitter {
 					label: args[3]
 				};
 			}
+			case 'REMOVE_911': {
+				const payload = args[0];
+				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+					return payload;
+				}
+				return {
+					serverId: args[0],
+					callId: args[1]
+				};
+			}
 			case 'CLOSE_CALL': {
 				const payload = args[0];
 				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {

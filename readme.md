@@ -130,7 +130,7 @@ await instance.cad.setUnitPanic({ identIds: [101, 102], isPanic: true });
 - **`updateStreetSign(serverId, signData)`**
 
 ### Calls & Dispatch
-- **`create911Call(details)`** / **`remove911Call(callId)`**
+- **`create911Call(details)`** / **`remove911Call(serverId, callId)`**
 - **`getCalls(options)`**
 - **`getMyCall({ account })`**
 - **`createDispatch(data)`** - accepts either `units` (API IDs) or `accounts` (account UUIDs) as arrays.

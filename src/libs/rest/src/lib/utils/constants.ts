@@ -956,6 +956,11 @@ export interface CADAddCallNoteStruct {
 	label?: string;
 }
 
+export interface CADRemove911Struct {
+	serverId: number;
+	callId: number;
+}
+
 export interface CADGetActiveUnitsStruct {
 	serverId?: number;
 	onlyUnits?: boolean;
@@ -1135,7 +1140,12 @@ export interface RESTTypedAPIDataStructs {
 	ADD_BLIP: [data: CADAddBlipStruct[]];
 	MODIFY_BLIP: [data: CADModifyBlipStruct[]];
 	REMOVE_BLIP: [id: number];
-	REMOVE_911: [callId: number];
+	REMOVE_911: [
+		serverId: number,
+		callId: number
+	] | [
+		data: CADRemove911Struct
+	];
 	GET_CALLS: [data: CADGetCallsStruct];
 	GET_MY_CALL: [data: CADGetMyCallStruct];
 	GET_ACTIVE_UNITS: [data: CADGetActiveUnitsStruct];
