@@ -766,27 +766,36 @@ export class CADManager extends BaseManager {
    * Adds a note to an active call.
    */
   public async addCallNote(serverId: number, callId: number, note: string, label?: string): Promise<globalTypes.CADStandardResponse>;
+  public async addCallNote(serverId: number, callId: number, note: string, noteType: 'text' | 'link', label?: string): Promise<globalTypes.CADStandardResponse>;
   public async addCallNote(params: CADAddCallNoteStruct): Promise<globalTypes.CADStandardResponse>;
   public async addCallNote(
     serverIdOrParams: number | CADAddCallNoteStruct,
     callId?: number,
     note?: string,
+    noteTypeOrLabel?: 'text' | 'link' | string,
     label?: string
   ): Promise<globalTypes.CADStandardResponse> {
     let payload: CADAddCallNoteStruct;
     if (serverIdOrParams && typeof serverIdOrParams === 'object') {
       payload = { ...serverIdOrParams };
     } else {
-      payload = { serverId: serverIdOrParams as number, callId: callId as number, note: note as string, label };
+      const isNoteType = noteTypeOrLabel === 'text' || noteTypeOrLabel === 'link';
+      payload = {
+        serverId: serverIdOrParams as number,
+        callId: callId as number,
+        note: note as string,
+        noteType: isNoteType ? (noteTypeOrLabel as 'text' | 'link') : undefined,
+        label: isNoteType ? label : (noteTypeOrLabel as string | undefined)
+      };
     }
-    const { serverId, callId: resolvedCallId, note: resolvedNote, label: resolvedLabel } = payload;
+    const { serverId, callId: resolvedCallId, note: resolvedNote, label: resolvedLabel, noteType } = payload;
     if (!Number.isInteger(serverId) || !Number.isInteger(resolvedCallId)) {
       throw new Error('serverId and callId must be integers when adding a call note.');
     }
     if (!resolvedNote) {
       throw new Error('note is required when adding a call note.');
     }
-    return this.executeCadRequest('ADD_CALL_NOTE', { serverId, callId: resolvedCallId, note: resolvedNote, label: resolvedLabel });
+    return this.executeCadRequest('ADD_CALL_NOTE', { serverId, callId: resolvedCallId, note: resolvedNote, label: resolvedLabel, noteType });
   }
 
   /**

@@ -335,11 +335,14 @@ export class REST extends EventEmitter {
 				if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
 					return payload;
 				}
+				const noteTypeOrLabel = args[3];
+				const isNoteType = noteTypeOrLabel === 'text' || noteTypeOrLabel === 'link';
 				return {
 					serverId: args[0],
 					callId: args[1],
 					note: args[2],
-					label: args[3]
+					noteType: isNoteType ? noteTypeOrLabel : undefined,
+					label: isNoteType ? args[4] : noteTypeOrLabel
 				};
 			}
 			case 'REMOVE_911': {

@@ -136,7 +136,7 @@ await instance.cad.setUnitPanic({ identIds: [101, 102], isPanic: true });
 - **`createDispatch(data)`** - accepts either `units` (API IDs) or `accounts` (account UUIDs) as arrays.
 - **`attachUnits(serverId, callId, unitsOrAccount)`** / **`detachUnits(serverId, unitsOrAccount)`**
 - **`setCallPostal(serverId, callId, postal)`** / **`setCallPrimary(serverId, callId, primary, trackPrimary)`**
-- **`addCallNote({ serverId, callId, note, label? })`**
+- **`addCallNote({ serverId, callId, note, noteType?, label? })`**
 - **`closeCall(serverId, callId)`**
 
 ```js
@@ -179,8 +179,8 @@ await instance.cad.attachUnits({ serverId: 1, callId: 1001, account: '91de0ce8-c
 await instance.cad.detachUnits({ serverId: 1, account: '91de0ce8-c571-11e9-9714-5600023b2434' });
 // Fetch the current call for an account UUID
 const myCall = await instance.cad.getMyCall({ account: '91de0ce8-c571-11e9-9714-5600023b2434' });
-// Add a call note with optional label
-await instance.cad.addCallNote({ serverId: 1, callId: 1001, note: 'This is a test!', label: 'A-10' });
+// Add a call note with optional type/label
+await instance.cad.addCallNote({ serverId: 1, callId: 1001, note: 'This is a test!', noteType: 'text', label: 'A-10' });
 ```
 
 ## CAD Server Functions

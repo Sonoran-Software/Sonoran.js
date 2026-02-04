@@ -954,6 +954,7 @@ export interface CADAddCallNoteStruct {
 	callId: number;
 	note: string;
 	label?: string;
+	noteType?: 'text' | 'link';
 }
 
 export interface CADRemove911Struct {
@@ -1184,6 +1185,11 @@ export interface RESTTypedAPIDataStructs {
 		serverId: number,
 		callId: number,
 		note: string
+	] | [
+		serverId: number,
+		callId: number,
+		note: string,
+		noteType: 'text' | 'link'
 	] | [
 		data: CADAddCallNoteStruct
 	];
