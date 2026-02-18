@@ -166,6 +166,10 @@ export class RequestManager extends EventEmitter {
           apiData.data.data = clonedData;
           break;
         }
+        case 'ADD_GAME_SERVERS': {
+          apiData.data.data = clonedData;
+          break;
+        }
         case 'TRIGGER_PROMOTION_FLOWS': {
           apiData.data.data = clonedData;
           break;

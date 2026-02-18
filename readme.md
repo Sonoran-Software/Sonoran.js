@@ -483,6 +483,14 @@ await instance.cms.servers?.setGameServers([
 ]);
 ```
 
+### addGameServers(servers)
+Adds CMS game servers using the `ADD_GAME_SERVERS` endpoint and refreshes the cache.
+```js
+await instance.cms.servers?.addGameServers([
+  { id: 5, name: 'Server 5', description: 'Created from automation' }
+]);
+```
+
 ### getCurrentSession(serverId?)
 Retrieves the active CMS session for a server (if one exists).
 ```js

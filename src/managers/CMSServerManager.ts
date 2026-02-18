@@ -51,7 +51,7 @@ export class CMSServerManager extends CacheManager<number, CMSServer, CMSServerA
     return new Promise(async (resolve, reject) => {
       try {
         const response: any = await this.manager.rest?.request('SET_GAME_SERVERS', servers);
-        const updatedServers = (Array.isArray(response?.data) ? response.data : []) as CMSServerAPIStruct[];
+        const updatedServers = CMSServerManager.resolveUpdatedServers(response);
 
         if (updatedServers.length > 0) {
           this.cache.clear();
@@ -73,5 +73,47 @@ export class CMSServerManager extends CacheManager<number, CMSServer, CMSServerA
         }
       }
     });
+  }
+
+  public async addGameServers(servers: globalTypes.CMSSetGameServerStruct[]): Promise<globalTypes.CMSSetGameServersPromiseResult> {
+    if (!Array.isArray(servers) || servers.length === 0) {
+      throw new Error('servers array must include at least one server configuration.');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.manager.rest?.request('ADD_GAME_SERVERS', servers);
+        const updatedServers = CMSServerManager.resolveUpdatedServers(response);
+
+        if (updatedServers.length > 0) {
+          this.cache.clear();
+          updatedServers.forEach((server) => {
+            const serverStruct = {
+              id: server.id,
+              config: server
+            };
+            this._add(serverStruct, true, server.id);
+          });
+        }
+
+        resolve({ success: true, data: updatedServers as globalTypes.CMSSetGameServerStruct[] });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  private static resolveUpdatedServers(response: any): CMSServerAPIStruct[] {
+    return (Array.isArray(response?.data?.servers)
+      ? response.data.servers
+      : Array.isArray(response?.servers)
+        ? response.servers
+        : Array.isArray(response?.data)
+          ? response.data
+          : []) as CMSServerAPIStruct[];
   }
 }

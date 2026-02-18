@@ -211,6 +211,9 @@ export class REST extends EventEmitter {
 			case 'SET_GAME_SERVERS': {
 				return args[0] ?? [];
 			}
+			case 'ADD_GAME_SERVERS': {
+				return args[0] ?? [];
+			}
 			case 'RSVP': {
 				return {
 					eventId: args[0],
