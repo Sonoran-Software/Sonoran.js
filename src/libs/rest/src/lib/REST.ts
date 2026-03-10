@@ -561,6 +561,12 @@ export class REST extends EventEmitter {
 			case 'GET_PROMOTION_FLOWS': {
 				return [];
 			}
+			case 'UNDO_RANK_CHANGE': {
+				return {
+					undoId: args[0],
+					userId: args[1]
+				}
+			}
 			case 'GET_CUSTOM_LOG_TYPES': {
 				return [];
 			}

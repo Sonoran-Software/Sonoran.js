@@ -398,6 +398,28 @@ export class CMSManager extends BaseManager {
   }
 
   /**
+   * Reverts a previously logged rank change using the provided undo ID.
+   */
+  public async undoRankChange(undoId: string, userId?: string): Promise<globalTypes.CMSUndoRankChangePromiseResult> {
+    if (!undoId || typeof undoId !== 'string') {
+      throw new Error('undoId is required to undo a rank change.');
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('UNDO_RANK_CHANGE', undoId, userId);
+        resolve({ success: true, data: response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
    * Gets a list of online ERLC players for the given roblox join code.
    * @param {string} robloxJoinCode The roblox join code to get the online players for.
    * @returns {Promise} Promise object represents if the request was successful with reason for failure if needed and the list of online players if successful.

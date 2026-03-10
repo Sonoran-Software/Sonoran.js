@@ -178,6 +178,10 @@ export class RequestManager extends EventEmitter {
           apiData.data.data = [];
           break;
         }
+        case 'UNDO_RANK_CHANGE': {
+          apiData.data.data = [clonedData];
+          break;
+        }
         case 'GET_CUSTOM_LOG_TYPES': {
           apiData.data.data = [];
           break;

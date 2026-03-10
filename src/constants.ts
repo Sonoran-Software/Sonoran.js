@@ -550,6 +550,21 @@ export interface CMSGetPromotionFlowsPromiseResult {
 	data?: CMSPromotionFlow[];
 }
 
+export interface CMSUndoRankChangeResult {
+	undoId: string;
+	account: Record<string, unknown>;
+	previousRanks: string[];
+	currentRanks: string[];
+	originalLogId: string;
+	reversalUndoId: string | null;
+}
+
+export interface CMSUndoRankChangePromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSUndoRankChangeResult;
+}
+
 export interface CMSGetFormSubmissionsPromiseResult<T = unknown> {
 	success: boolean;
 	reason?: string;
