@@ -134,6 +134,7 @@ await instance.cad.setUnitPanic({ identIds: [101, 102], isPanic: true });
 - **`getCalls(options)`**
 - **`getMyCall({ account })`**
 - **`createDispatch(data)`** - accepts either `units` (API IDs) or `accounts` (account UUIDs) as arrays.
+- **`editDispatch(data)`** - updates an existing dispatch call with any combination of editable fields.
 - **`attachUnits(serverId, callId, unitsOrAccount)`** / **`detachUnits(serverId, unitsOrAccount)`**
 - **`setCallPostal(serverId, callId, postal)`** / **`setCallPrimary(serverId, callId, primary, trackPrimary)`**
 - **`addCallNote({ serverId, callId, note, noteType?, label? })`**

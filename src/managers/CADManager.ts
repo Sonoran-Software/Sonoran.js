@@ -23,6 +23,7 @@ import type {
   CADRemove911Struct,
   CADGetActiveUnitsStruct,
   CADNewDispatchStruct,
+  CADEditDispatchStruct,
   CADAttachUnitsStruct,
   CADDetachUnitsStruct,
   CADStreetSignStruct,
@@ -653,6 +654,22 @@ export class CADManager extends BaseManager {
       ...(hasAccounts ? { accounts: data.accounts } : {})
     };
     return this.executeCadRequest('NEW_DISPATCH', payload);
+  }
+
+  /**
+   * Edits an existing dispatch call.
+   */
+  public async editDispatch(data: CADEditDispatchStruct): Promise<globalTypes.CADStandardResponse> {
+    if (!Number.isInteger(data.serverId) || !Number.isInteger(data.callId)) {
+      throw new Error('serverId and callId must be integers when editing a dispatch call.');
+    }
+
+    const { serverId, callId, ...updates } = data;
+    if (!Object.values(updates).some((value) => value !== undefined)) {
+      throw new Error('At least one dispatch field must be provided when editing a dispatch call.');
+    }
+
+    return this.executeCadRequest('EDIT_DISPATCH', data);
   }
 
   /**

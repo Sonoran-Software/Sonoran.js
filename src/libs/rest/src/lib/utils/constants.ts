@@ -328,6 +328,12 @@ export const EmergencyCADAPITypes: APITypeData[] = [
 		minVersion: 3
 	},
 	{
+		type: 'EDIT_DISPATCH',
+		path: 'emergency/edit_dispatch',
+		method: 'POST',
+		minVersion: 3
+	},
+	{
 		type: 'ATTACH_UNIT',
 		path: 'emergency/attach_unit',
 		method: 'POST',
@@ -727,7 +733,7 @@ function formatForAll(array: APITypeData[], product: productEnums): AllAPITypeDa
 
 export const AllAPITypes: AllAPITypeData[] = [ ...formatForAll(GeneralCADAPITypes, productEnums.CAD), ...formatForAll(CivilianCADAPITypes, productEnums.CAD), ...formatForAll(EmergencyCADAPITypes, productEnums.CAD), ...formatForAll(GeneralCMSAPITypes, productEnums.CMS), ...formatForAll(ServersCMSAPITypes, productEnums.CMS), ...formatForAll(EventsCMSAPITypes, productEnums.CMS),  ...formatForAll(FormsCMSAPITypes, productEnums.CMS), ...formatForAll(CommunitiesCMSAPITypes, productEnums.CMS), ...formatForAll(ERLCMSAPITypes, productEnums.CMS), ...formatForAll(RadioAPITypes, productEnums.RADIO) ];
 
-export type AllAPITypesType = 'GET_SERVERS' | 'SET_SERVERS' | 'GET_VERSION' | 'SET_PENAL_CODES' | 'SET_API_ID' | 'GET_TEMPLATES' | 'NEW_RECORD' | 'SEND_DRAFT' | 'EDIT_RECORD' | 'REMOVE_RECORD' | 'LOOKUP_INT' | 'LOOKUP' | 'GET_ACCOUNT' | 'CHECK_APIID' | 'APPLY_PERMISSION_KEY' | 'SET_ACCOUNT_PERMISSIONS' | 'BAN_USER' | 'VERIFY_SECRET' | 'AUTH_STREETSIGNS' | 'SET_POSTALS' | 'SEND_PHOTO' | 'SET_CLOCK' | 'JOIN_COMMUNITY' | 'LEAVE_COMMUNITY' | 'GET_CHARACTERS' | 'NEW_CHARACTER' | 'EDIT_CHARACTER' | 'REMOVE_CHARACTER' | 'GET_IDENTIFIERS' | 'MODIFY_IDENTIFIER' | 'SET_IDENTIFIER' | 'IDENTS_TO_GROUP' | 'UNIT_PANIC' | 'UNIT_STATUS' | 'GET_BLIPS' | 'ADD_BLIP' | 'MODIFY_BLIP' | 'REMOVE_BLIP' | '911_CALL' | 'REMOVE_911' | 'GET_CALLS' | 'GET_MY_CALL' | 'GET_ACTIVE_UNITS' | 'KICK_UNIT' | 'NEW_DISPATCH' | 'ATTACH_UNIT' | 'DETACH_UNIT' | 'SET_CALL_POSTAL' | 'SET_CALL_PRIMARY' | 'ADD_CALL_NOTE' | 'CLOSE_CALL' | 'UNIT_LOCATION' | 'SET_STREETSIGN_CONFIG' | 'UPDATE_STREETSIGN' | 'GET_COM_ACCOUNT' | 'GET_DEPARTMENTS' | 'GET_SUB_VERSION' | 'GET_CURRENT_CLOCK_IN' | 'GET_CLOCKIN_TYPES' | 'GET_LATEST_ACTIVITY' | 'GET_ACCOUNTS' | 'GET_PROFILE_FIELDS' | 'CHECK_COM_APIID' | 'VERIFY_WHITELIST' | 'CLOCK_IN_OUT' | 'FULL_WHITELIST' | 'GET_ACCOUNT_RANKS' | 'SET_ACCOUNT_RANKS' | 'RSVP' | 'CHANGE_FORM_STAGE' | 'GET_SUBMISSION' | 'GET_FORM_TEMPLATE_SUBMISSIONS' | 'GET_FORM_LOCK_STATUS' | 'SET_FORM_LOCK_STATUS' | 'GET_CURRENT_SESSION' | 'START_SESSION' | 'STOP_SESSION' | 'CANCEL_SESSION' | 'KICK_ACCOUNT' | 'BAN_ACCOUNT' | 'LOOKUP' | 'EDIT_ACC_PROFLIE_FIELDS' | 'SET_ACCOUNT_NAME' | 'FORCE_SYNC' | 'TRIGGER_PROMOTION_FLOWS' | 'GET_PROMOTION_FLOWS' | 'UNDO_RANK_CHANGE' | 'GET_CUSTOM_LOG_TYPES' | 'SET_GAME_SERVERS' | 'ADD_GAME_SERVERS' | 'ERLC_GET_ONLINE_PLAYERS' | 'ERLC_GET_PLAYER_QUEUE' | 'ERLC_ADD_NEW_RECORD' | 'ERLC_EXECUTE_COMMAND' | 'ERLC_TEAMS_LOCK' | 'ERLC_TEAMS_UNLOCK' | 'RADIO_GET_COMMUNITY_CHANNELS' | 'RADIO_GET_CONNECTED_USERS' | 'RADIO_GET_CONNECTED_USER' | 'RADIO_SET_USER_CHANNELS' | 'RADIO_SET_USER_DISPLAY_NAME' | 'RADIO_GET_SERVER_SUBSCRIPTION_FROM_IP' | 'RADIO_SET_SERVER_IP' | 'RADIO_SET_IN_GAME_SPEAKER_LOCATIONS' | 'PLAY_TONE';
+export type AllAPITypesType = 'GET_SERVERS' | 'SET_SERVERS' | 'GET_VERSION' | 'SET_PENAL_CODES' | 'SET_API_ID' | 'GET_TEMPLATES' | 'NEW_RECORD' | 'SEND_DRAFT' | 'EDIT_RECORD' | 'REMOVE_RECORD' | 'LOOKUP_INT' | 'LOOKUP' | 'GET_ACCOUNT' | 'CHECK_APIID' | 'APPLY_PERMISSION_KEY' | 'SET_ACCOUNT_PERMISSIONS' | 'BAN_USER' | 'VERIFY_SECRET' | 'AUTH_STREETSIGNS' | 'SET_POSTALS' | 'SEND_PHOTO' | 'SET_CLOCK' | 'JOIN_COMMUNITY' | 'LEAVE_COMMUNITY' | 'GET_CHARACTERS' | 'NEW_CHARACTER' | 'EDIT_CHARACTER' | 'REMOVE_CHARACTER' | 'GET_IDENTIFIERS' | 'MODIFY_IDENTIFIER' | 'SET_IDENTIFIER' | 'IDENTS_TO_GROUP' | 'UNIT_PANIC' | 'UNIT_STATUS' | 'GET_BLIPS' | 'ADD_BLIP' | 'MODIFY_BLIP' | 'REMOVE_BLIP' | '911_CALL' | 'REMOVE_911' | 'GET_CALLS' | 'GET_MY_CALL' | 'GET_ACTIVE_UNITS' | 'KICK_UNIT' | 'NEW_DISPATCH' | 'EDIT_DISPATCH' | 'ATTACH_UNIT' | 'DETACH_UNIT' | 'SET_CALL_POSTAL' | 'SET_CALL_PRIMARY' | 'ADD_CALL_NOTE' | 'CLOSE_CALL' | 'UNIT_LOCATION' | 'SET_STREETSIGN_CONFIG' | 'UPDATE_STREETSIGN' | 'GET_COM_ACCOUNT' | 'GET_DEPARTMENTS' | 'GET_SUB_VERSION' | 'GET_CURRENT_CLOCK_IN' | 'GET_CLOCKIN_TYPES' | 'GET_LATEST_ACTIVITY' | 'GET_ACCOUNTS' | 'GET_PROFILE_FIELDS' | 'CHECK_COM_APIID' | 'VERIFY_WHITELIST' | 'CLOCK_IN_OUT' | 'FULL_WHITELIST' | 'GET_ACCOUNT_RANKS' | 'SET_ACCOUNT_RANKS' | 'RSVP' | 'CHANGE_FORM_STAGE' | 'GET_SUBMISSION' | 'GET_FORM_TEMPLATE_SUBMISSIONS' | 'GET_FORM_LOCK_STATUS' | 'SET_FORM_LOCK_STATUS' | 'GET_CURRENT_SESSION' | 'START_SESSION' | 'STOP_SESSION' | 'CANCEL_SESSION' | 'KICK_ACCOUNT' | 'BAN_ACCOUNT' | 'LOOKUP' | 'EDIT_ACC_PROFLIE_FIELDS' | 'SET_ACCOUNT_NAME' | 'FORCE_SYNC' | 'TRIGGER_PROMOTION_FLOWS' | 'GET_PROMOTION_FLOWS' | 'UNDO_RANK_CHANGE' | 'GET_CUSTOM_LOG_TYPES' | 'SET_GAME_SERVERS' | 'ADD_GAME_SERVERS' | 'ERLC_GET_ONLINE_PLAYERS' | 'ERLC_GET_PLAYER_QUEUE' | 'ERLC_ADD_NEW_RECORD' | 'ERLC_EXECUTE_COMMAND' | 'ERLC_TEAMS_LOCK' | 'ERLC_TEAMS_UNLOCK' | 'RADIO_GET_COMMUNITY_CHANNELS' | 'RADIO_GET_CONNECTED_USERS' | 'RADIO_GET_CONNECTED_USER' | 'RADIO_SET_USER_CHANNELS' | 'RADIO_SET_USER_DISPLAY_NAME' | 'RADIO_GET_SERVER_SUBSCRIPTION_FROM_IP' | 'RADIO_SET_SERVER_IP' | 'RADIO_SET_IN_GAME_SPEAKER_LOCATIONS' | 'PLAY_TONE';
 
 export interface CMSServerAPIStruct {
 	id: number;
@@ -1045,6 +1051,23 @@ export type CADNewDispatchStruct =
 	| (CADNewDispatchBaseStruct & { units: string[]; accounts?: string[] })
 	| (CADNewDispatchBaseStruct & { units?: string[]; accounts: string[] });
 
+export interface CADEditDispatchStruct {
+	serverId: number;
+	callId: number;
+	origin?: CADDispatchOriginEnums;
+	status?: CADDispatchStatusEnums;
+	priority?: 1 | 2 | 3;
+	block?: string;
+	address?: string;
+	postal?: string;
+	title?: string;
+	code?: string;
+	primary?: number;
+	trackPrimary?: boolean;
+	description?: string;
+	metaData?: Record<string, string>;
+}
+
 export interface CADStreetSignStruct {
 	id: number;
 	label: string;
@@ -1168,6 +1191,7 @@ export interface RESTTypedAPIDataStructs {
 		serverId: number
 	];
 	NEW_DISPATCH: [data: CADNewDispatchStruct];
+	EDIT_DISPATCH: [data: CADEditDispatchStruct];
 	ATTACH_UNIT: [
 		serverId: number,
 		callId: number,
@@ -1466,7 +1490,7 @@ export interface RESTTypedAPIDataStructs {
 export type PossibleRequestData =
 	undefined |
 	{
-		data: CADPenalCodeStruct[] | CADSetAPIIDStruct | CADNewEditRecordOptionOneStruct | CADNewEditRecordOptionTwoStruct | CADSendDraftStruct | CADLookupByIntStruct | CADLookupStruct | CADModifyAccountPermsStruct | CADKickBanUserStruct | CADSetPostalStruct[] | CADModifyIdentifierStruct | CADIdentsToGroupStruct[] | CADAddBlipStruct[] | CADModifyBlipStruct[] | CADGetCallsStruct | CADGetActiveUnitsStruct | CADNewDispatchStruct | CMSTriggerPromotionFlowPayload[]
+		data: CADPenalCodeStruct[] | CADSetAPIIDStruct | CADNewEditRecordOptionOneStruct | CADNewEditRecordOptionTwoStruct | CADSendDraftStruct | CADLookupByIntStruct | CADLookupStruct | CADModifyAccountPermsStruct | CADKickBanUserStruct | CADSetPostalStruct[] | CADModifyIdentifierStruct | CADIdentsToGroupStruct[] | CADAddBlipStruct[] | CADModifyBlipStruct[] | CADGetCallsStruct | CADGetActiveUnitsStruct | CADNewDispatchStruct | CADEditDispatchStruct | CMSTriggerPromotionFlowPayload[]
 	} |
 	{
 		servers: CADServerAPIStruct[];

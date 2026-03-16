@@ -330,6 +330,10 @@ export class RequestManager extends EventEmitter {
           apiData.data.data = [clonedData[0]];
           break;
         }
+        case 'EDIT_DISPATCH': {
+          apiData.data.data = [clonedData[0]];
+          break;
+        }
         case 'ADD_CALL_NOTE': {
           const payload = data.data;
           if (Array.isArray(payload)) {
