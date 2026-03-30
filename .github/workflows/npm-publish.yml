@@ -1,6 +1,9 @@
 name: Release Sonoran.js
 
 on:
+  push:
+    branches:
+      - master
   workflow_dispatch:
     inputs:
       bump:
@@ -23,6 +26,7 @@ concurrency:
 
 jobs:
   release:
+    if: github.event_name != 'push' || github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +51,11 @@ jobs:
       - name: Bump package version
         id: version
         run: |
-          npm version "${{ github.event.inputs.bump }}" --no-git-tag-version
+          BUMP_TYPE="${{ github.event.inputs.bump }}"
+          if [ -z "$BUMP_TYPE" ]; then
+            BUMP_TYPE="patch"
+          fi
+          npm version "$BUMP_TYPE" --no-git-tag-version
           echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
 
       - name: Build package
