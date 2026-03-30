@@ -1,4 +1,4 @@
-import { productEnums, RadioSetUserChannelsOptions, RadioSpeakerLocation, RadioTonePlayTarget, CMSProfileFieldUpdate, CMSSetGameServerStruct, CMSTriggerPromotionFlowPayload, CMSERLCExecuteCommandPayload, ERLCTeams } from '../../../../../constants';
+import { productEnums, RadioSetUserChannelsOptions, RadioSpeakerLocation, RadioTonePlayTarget, RadioMemberDisplayNameChange, RadioMemberPermissionChange, CMSProfileFieldUpdate, CMSSetGameServerStruct, CMSTriggerPromotionFlowPayload, CMSERLCExecuteCommandPayload, ERLCTeams } from '../../../../../constants';
 import type { RESTOptions } from '../REST';
 
 export const DefaultUserAgent = 'Sonoran.js NPM Module';
