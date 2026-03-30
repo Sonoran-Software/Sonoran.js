@@ -644,6 +644,23 @@ export class REST extends EventEmitter {
 					displayName: args[1]
 				}
 			}
+			case 'RADIO_APPROVE_MEMBERS':
+			case 'RADIO_KICK_MEMBERS':
+			case 'RADIO_BAN_MEMBERS': {
+				return {
+					accIds: args[0] ?? []
+				}
+			}
+			case 'RADIO_SET_MEMBER_DISPLAY_NAMES': {
+				return {
+					accNicknames: args[0] ?? []
+				}
+			}
+			case 'RADIO_SET_MEMBER_PERMISSIONS': {
+				return {
+					userPerms: args[0] ?? []
+				}
+			}
 			case 'RADIO_SET_SERVER_IP': {
 				return {
 					pushUrl: args[0]

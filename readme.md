@@ -547,6 +547,47 @@ Sets the user's radio display name.
 await instance.radio.setUserDisplayName('account-uuid', 'Dispatch 101');
 ```
 
+### approveMembers(accIds)
+Approves one or more pending community members.
+```js
+await instance.radio.approveMembers(['account-uuid-1', 'account-uuid-2']);
+```
+
+### kickMembers(accIds)
+Removes one or more members from the community.
+```js
+await instance.radio.kickMembers(['account-uuid-1', 'account-uuid-2']);
+```
+
+### banMembers(accIds)
+Bans one or more members from the community.
+```js
+await instance.radio.banMembers(['account-uuid-1']);
+```
+
+### setMemberDisplayNames(accNicknames)
+Updates stored display names for community members.
+```js
+await instance.radio.setMemberDisplayNames([
+  { accId: 'account-uuid-1', nickname: 'Dispatch 101' },
+  { accId: 'account-uuid-2', nickname: 'Patrol 201' }
+]);
+```
+
+### setMemberPermissions(userPerms)
+Updates member permissions and optional private channel access.
+```js
+await instance.radio.setMemberPermissions([
+  {
+    accId: 'account-uuid-1',
+    perm: 34,
+    profilePerms: [
+      { profileId: 12, canJoin: true }
+    ]
+  }
+]);
+```
+
 ### getServerSubscriptionFromIp()
 Resolves the community's subscription level for the calling server IP.
 ```js

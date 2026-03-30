@@ -691,6 +691,22 @@ export interface RadioSetUserChannelsOptions {
 	scan?: number[];
 }
 
+export interface RadioMemberDisplayNameChange {
+	accId: string;
+	nickname: string;
+}
+
+export interface RadioMemberProfilePermissionChange {
+	profileId: number;
+	canJoin: boolean;
+}
+
+export interface RadioMemberPermissionChange {
+	accId: string;
+	perm: number;
+	profilePerms?: RadioMemberProfilePermissionChange[];
+}
+
 export type RadioSubscriptionLevel = 0 | 1 | 2;
 
 export interface RadioGetCommunityChannelsPromiseResult {
@@ -731,6 +747,12 @@ export interface RadioSetUserChannelsPromiseResult {
 }
 
 export interface RadioSetUserDisplayNamePromiseResult {
+	success: boolean;
+	reason?: string;
+	result?: string;
+}
+
+export interface RadioMemberActionPromiseResult {
 	success: boolean;
 	reason?: string;
 	result?: string;

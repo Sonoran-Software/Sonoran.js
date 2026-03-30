@@ -130,6 +130,101 @@ export class RadioManager extends BaseManager {
   }
 
   /**
+   * Approves existing pending community members.
+   * @param {string[]} accIds Account UUIDs to approve.
+   */
+  public async approveMembers(accIds: string[]): Promise<globalTypes.RadioMemberActionPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('RADIO_APPROVE_MEMBERS', accIds);
+        resolve({ success: true, result: response?.result ?? response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Removes members from the community.
+   * @param {string[]} accIds Account UUIDs to remove.
+   */
+  public async kickMembers(accIds: string[]): Promise<globalTypes.RadioMemberActionPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('RADIO_KICK_MEMBERS', accIds);
+        resolve({ success: true, result: response?.result ?? response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Bans members from the community.
+   * @param {string[]} accIds Account UUIDs to ban.
+   */
+  public async banMembers(accIds: string[]): Promise<globalTypes.RadioMemberActionPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('RADIO_BAN_MEMBERS', accIds);
+        resolve({ success: true, result: response?.result ?? response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Updates stored display names for community members.
+   * @param {RadioMemberDisplayNameChange[]} accNicknames Display name updates to apply.
+   */
+  public async setMemberDisplayNames(accNicknames: globalTypes.RadioMemberDisplayNameChange[]): Promise<globalTypes.RadioMemberActionPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('RADIO_SET_MEMBER_DISPLAY_NAMES', accNicknames);
+        resolve({ success: true, result: response?.result ?? response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
+   * Updates community permissions and private channel access for members.
+   * @param {RadioMemberPermissionChange[]} userPerms Permission updates to apply.
+   */
+  public async setMemberPermissions(userPerms: globalTypes.RadioMemberPermissionChange[]): Promise<globalTypes.RadioMemberActionPromiseResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response: any = await this.rest?.request('RADIO_SET_MEMBER_PERMISSIONS', userPerms);
+        resolve({ success: true, result: response?.result ?? response });
+      } catch (err) {
+        if (err instanceof APIError) {
+          resolve({ success: false, reason: err.response });
+        } else {
+          reject(err);
+        }
+      }
+    });
+  }
+
+  /**
    * Retrieves the community subscription level determined by the calling server's IP.
    */
   public async getServerSubscriptionFromIp(): Promise<globalTypes.RadioGetServerSubscriptionFromIpPromiseResult> {

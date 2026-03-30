@@ -553,6 +553,50 @@ export class RequestManager extends EventEmitter {
         path = apiType.path;
         break;
       }
+      case 'RADIO_APPROVE_MEMBERS':
+      case 'RADIO_KICK_MEMBERS':
+      case 'RADIO_BAN_MEMBERS': {
+        const auth = ensureAuth();
+        const accIds = payload?.accIds;
+        if (!Array.isArray(accIds)) {
+          throw new Error(`${apiType.type} requests require an accIds array.`);
+        }
+        method = 'POST';
+        body = {
+          apiKey: auth.key,
+          accIds
+        };
+        path = apiType.path.replace(':id', encodeSegment(auth.id));
+        break;
+      }
+      case 'RADIO_SET_MEMBER_DISPLAY_NAMES': {
+        const auth = ensureAuth();
+        const accNicknames = payload?.accNicknames;
+        if (!Array.isArray(accNicknames)) {
+          throw new Error('RADIO_SET_MEMBER_DISPLAY_NAMES requests require an accNicknames array.');
+        }
+        method = 'POST';
+        body = {
+          apiKey: auth.key,
+          accNicknames
+        };
+        path = apiType.path.replace(':id', encodeSegment(auth.id));
+        break;
+      }
+      case 'RADIO_SET_MEMBER_PERMISSIONS': {
+        const auth = ensureAuth();
+        const userPerms = payload?.userPerms;
+        if (!Array.isArray(userPerms)) {
+          throw new Error('RADIO_SET_MEMBER_PERMISSIONS requests require a userPerms array.');
+        }
+        method = 'POST';
+        body = {
+          apiKey: auth.key,
+          userPerms
+        };
+        path = apiType.path.replace(':id', encodeSegment(auth.id));
+        break;
+      }
       case 'RADIO_GET_SERVER_SUBSCRIPTION_FROM_IP': {
         method = 'GET';
         path = apiType.path;
