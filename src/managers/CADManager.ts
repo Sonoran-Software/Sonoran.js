@@ -1,6 +1,8 @@
 import { Instance } from '../instance/Instance';
 import { CADSubscriptionVersionEnum } from '../constants';
 import { APIError, DefaultCADRestOptions, REST } from '../libs/rest/src';
+import fetch, { Response } from 'node-fetch';
+import { AbortController } from 'node-abort-controller';
 import type {
   RESTTypedAPIDataStructs,
   CADPenalCodeStruct,
@@ -35,6 +37,8 @@ import { BaseManager } from './BaseManager';
 import * as globalTypes from '../constants';
 import type { Mutable } from '../constants';
 import { CADServerManager } from './CADServerManager';
+
+type CADV2HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 /**
  * Manages all Sonoran CAD data and methods to interact with the public API.
@@ -859,6 +863,667 @@ export class CADManager extends BaseManager {
       throw new Error('signData.ids must include at least one identifier when updating a street sign.');
     }
     return this.executeCadRequest('UPDATE_STREETSIGN', serverId, signData);
+  }
+
+  private async executeCadV2Request<T = unknown>(
+    method: CADV2HttpMethod,
+    path: string,
+    options: {
+      query?: Record<string, unknown>;
+      body?: unknown;
+      authenticated?: boolean;
+    } = {}
+  ): Promise<globalTypes.CADStandardResponse<T>> {
+    const baseUrl = this.instance.cadApiUrl?.replace(/\/+$/u, '');
+    if (!baseUrl) {
+      throw new Error('CAD API URL is not configured.');
+    }
+
+    const normalizedPath = path.replace(/^\/+/u, '');
+    const url = new URL(`${baseUrl}/${normalizedPath}`);
+    const { query, body, authenticated = true } = options;
+
+    if (query) {
+      Object.entries(query).forEach(([key, value]) => this.appendCadV2QueryValue(url.searchParams, key, value));
+    }
+
+    const headers = this.headersInitToRecord(this.instance.apiHeaders);
+    headers.Accept = 'application/json';
+
+    if (authenticated) {
+      if (!this.instance.cadApiKey) {
+        throw new Error('CAD API key is not configured.');
+      }
+      headers.Authorization = `Bearer ${this.instance.cadApiKey}`;
+    }
+
+    const fetchOptions: Record<string, unknown> = {
+      method,
+      headers
+    };
+
+    if (body !== undefined) {
+      headers['Content-Type'] = 'application/json';
+      fetchOptions.body = JSON.stringify(body);
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000).unref();
+
+    try {
+      const response = await fetch(url.toString(), {
+        ...(fetchOptions as Parameters<typeof fetch>[1]),
+        signal: controller.signal as any
+      });
+      const parsedResponse = await this.parseCadV2Response(response);
+
+      if (response.ok) {
+        return { success: true, data: parsedResponse as T };
+      }
+
+      return { success: false, reason: parsedResponse };
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  private headersInitToRecord(headersInit: HeadersInit | undefined): Record<string, string> {
+    if (!headersInit) {
+      return {};
+    }
+    if (Array.isArray(headersInit)) {
+      return Object.fromEntries(headersInit.map(([key, value]) => [key, String(value)]));
+    }
+    if (typeof Headers !== 'undefined' && headersInit instanceof Headers) {
+      return Object.fromEntries(headersInit.entries());
+    }
+    return Object.fromEntries(Object.entries(headersInit).map(([key, value]) => [key, String(value)]));
+  }
+
+  private appendCadV2QueryValue(searchParams: URLSearchParams, key: string, value: unknown): void {
+    if (value === undefined || value === null) {
+      return;
+    }
+    if (Array.isArray(value)) {
+      value.forEach((entry) => this.appendCadV2QueryValue(searchParams, key, entry));
+      return;
+    }
+    searchParams.append(key, String(value));
+  }
+
+  private async parseCadV2Response(response: Response): Promise<unknown> {
+    if (response.status === 204) {
+      return null;
+    }
+    if (response.headers.get('Content-Type')?.startsWith('application/json')) {
+      return response.json();
+    }
+    return response.text();
+  }
+
+  private resolveCadServerId(serverId?: number): number {
+    return serverId ?? this.instance.cadDefaultServerId;
+  }
+
+  private assertPositiveInteger(value: number, label: string): void {
+    if (!Number.isInteger(value) || value < 1) {
+      throw new Error(`${label} must be a positive integer.`);
+    }
+  }
+
+  public async getLoginPageV2(params: { url?: string; communityId?: string } = {}): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', 'v2/general/login-page', {
+      authenticated: false,
+      query: {
+        url: params.url,
+        communityId: params.communityId ?? this.instance.cadCommunityId
+      }
+    });
+  }
+
+  public async checkApiIdV2(apiId: string): Promise<globalTypes.CADStandardResponse> {
+    if (!apiId) {
+      throw new Error('apiId is required.');
+    }
+    return this.executeCadV2Request('GET', `v2/general/api-ids/${encodeURIComponent(apiId)}`);
+  }
+
+  public async applyPermissionKeyV2(data: { apiId: string; permissionKey: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/permission-keys/applications', { body: data });
+  }
+
+  public async banUserV2(data: { accountUuid?: string; apiId?: string; isBan?: boolean; isKick?: boolean }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/account-bans', { body: data });
+  }
+
+  public async setPenalCodesV2(codes: CADPenalCodeStruct[]): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('PUT', 'v2/general/penal-codes', { body: { codes } });
+  }
+
+  public async setApiIdsV2(data: { username?: string; accountUuid?: string; apiIds: string[]; sessionId?: string; pushNew?: boolean }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('PUT', 'v2/general/api-ids', { body: data });
+  }
+
+  public async getTemplatesV2(recordTypeId?: number): Promise<globalTypes.CADStandardResponse> {
+    if (recordTypeId !== undefined) {
+      this.assertPositiveInteger(recordTypeId, 'recordTypeId');
+      return this.executeCadV2Request('GET', `v2/general/templates/${recordTypeId}`);
+    }
+    return this.executeCadV2Request('GET', 'v2/general/templates');
+  }
+
+  public async createRecordV2(data: {
+    accountUuid?: string;
+    apiId?: string;
+    record?: unknown;
+    useDictionary?: boolean;
+    recordTypeId?: number;
+    replaceValues?: Record<string, string>;
+    deleteAfterMinutes?: number;
+  }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/records', { body: data });
+  }
+
+  public async updateRecordV2(
+    recordId: number,
+    data: {
+      accountUuid?: string;
+      apiId?: string;
+      record?: unknown;
+      useDictionary?: boolean;
+      templateId?: number;
+      replaceValues?: Record<string, string>;
+    }
+  ): Promise<globalTypes.CADStandardResponse> {
+    this.assertPositiveInteger(recordId, 'recordId');
+    return this.executeCadV2Request('PATCH', `v2/general/records/${recordId}`, { body: data });
+  }
+
+  public async removeRecordV2(recordId: number): Promise<globalTypes.CADStandardResponse> {
+    this.assertPositiveInteger(recordId, 'recordId');
+    return this.executeCadV2Request('DELETE', `v2/general/records/${recordId}`);
+  }
+
+  public async sendRecordDraftV2(data: { recordTypeId: number; replaceValues: Record<string, string>; accountUuid?: string; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/record-drafts', { body: data });
+  }
+
+  public async lookupV2(data: {
+    first: string;
+    last: string;
+    mi: string;
+    plate: string;
+    types: number[];
+    partial?: boolean;
+    agency?: string;
+    department?: string;
+    subdivision?: string;
+    limit?: number;
+    offset?: number;
+    notifyAccountUuid?: string;
+    notifyApiId?: string;
+  }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/lookups', { body: data });
+  }
+
+  public async lookupByValueV2(data: {
+    searchType: string;
+    value: string;
+    types: number[];
+    limit?: number;
+    offset?: number;
+    notifyAccountUuid?: string;
+    notifyApiId?: string;
+  }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/lookups/by-value', { body: data });
+  }
+
+  public async lookupCustomV2(data: { map: string; value: string; types: number[]; partial?: boolean; limit?: number; offset?: number }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/lookups/custom', { body: data });
+  }
+
+  public async getAccountV2(query: { accountUuid?: string; apiId?: string; username?: string } = {}): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', 'v2/general/accounts/account', { query });
+  }
+
+  public async getAccountsV2(query: { limit?: number; offset?: number; status?: string | number; username?: string } = {}): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', 'v2/general/accounts', { query });
+  }
+
+  public async setAccountPermissionsV2(data: {
+    accountUuid?: string;
+    apiId?: string;
+    username?: string;
+    active?: boolean;
+    add?: string[];
+    remove?: string[];
+    set?: string[];
+    join?: boolean;
+  }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('PATCH', 'v2/general/accounts/permissions', { body: data });
+  }
+
+  public async heartbeatV2(serverId: number | undefined, playerCount: number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    this.assertPositiveInteger(resolvedServerId, 'serverId');
+    return this.executeCadV2Request('POST', `v2/general/servers/${resolvedServerId}/heartbeat`, { body: { playerCount } });
+  }
+
+  public async getVersionV2(): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', 'v2/general/version');
+  }
+
+  public async getServersV2(): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', 'v2/general/servers');
+  }
+
+  public async setServersV2(servers: unknown[], deployMap = false): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('PUT', 'v2/general/servers', { body: { servers, deployMap } });
+  }
+
+  public async verifySecretV2(secret: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/secrets/verify', { body: { secret } });
+  }
+
+  public async authorizeStreetSignsV2(serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    this.assertPositiveInteger(resolvedServerId, 'serverId');
+    return this.executeCadV2Request('POST', `v2/general/servers/${resolvedServerId}/street-sign-auth`);
+  }
+
+  public async setPostalsV2(postals: CADSetPostalStruct[]): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('PUT', 'v2/general/postals', { body: { postals } });
+  }
+
+  public async sendPhotoV2(data: { apiId: string; url: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/photos', { body: data });
+  }
+
+  public async getInfoV2(): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', 'v2/general/info');
+  }
+
+  public async getCharactersV2(query: { accountUuid?: string; apiId?: string } = {}): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', 'v2/civilian/characters', { query });
+  }
+
+  public async removeCharacterV2(characterId: number): Promise<globalTypes.CADStandardResponse> {
+    this.assertPositiveInteger(characterId, 'characterId');
+    return this.executeCadV2Request('DELETE', `v2/civilian/characters/${characterId}`);
+  }
+
+  public async setSelectedCharacterV2(data: { characterId: string; accountUuid?: string; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('PUT', 'v2/civilian/selected-character', { body: data });
+  }
+
+  public async getCharacterLinksV2(query: { accountUuid?: string; apiId?: string } = {}): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', 'v2/civilian/character-links', { query });
+  }
+
+  public async addCharacterLinkV2(syncId: string, data: { accountUuid?: string; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('PUT', `v2/civilian/character-links/${encodeURIComponent(syncId)}`, { body: data });
+  }
+
+  public async removeCharacterLinkV2(syncId: string, data: { accountUuid?: string; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('DELETE', `v2/civilian/character-links/${encodeURIComponent(syncId)}`, { body: data });
+  }
+
+  public async getUnitsV2(query: { serverId?: number; includeOffline?: boolean; onlyUnits?: boolean; limit?: number; offset?: number } = {}): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(query.serverId);
+    return this.executeCadV2Request('GET', `v2/emergency/servers/${resolvedServerId}/units`, {
+      query: {
+        includeOffline: query.includeOffline,
+        onlyUnits: query.onlyUnits,
+        limit: query.limit,
+        offset: query.offset
+      }
+    });
+  }
+
+  public async getCallsV2(query: { serverId?: number; closedLimit?: number; closedOffset?: number; type?: string | number } = {}): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(query.serverId);
+    return this.executeCadV2Request('GET', `v2/emergency/servers/${resolvedServerId}/calls`, {
+      query: {
+        closedLimit: query.closedLimit,
+        closedOffset: query.closedOffset,
+        type: query.type
+      }
+    });
+  }
+
+  public async getCurrentCallV2(accountUuid: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', `v2/emergency/accounts/${encodeURIComponent(accountUuid)}/current-call`);
+  }
+
+  public async updateUnitLocationsV2(data: {
+    serverId?: number;
+    updates: Array<{
+      apiId: string;
+      location: string;
+      coordinates?: unknown;
+      position?: unknown;
+      peerId?: string;
+      vehicle?: unknown;
+    }>;
+  }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/unit-locations`, {
+      body: { updates: data.updates }
+    });
+  }
+
+  public async setUnitPanicV2(data: {
+    serverId?: number;
+    accountUuid?: string;
+    apiId?: string;
+    apiIds?: string[];
+    identIds?: number[];
+    isPanic: boolean;
+  }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    const body = { ...data };
+    delete body.serverId;
+    return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/units/panic`, { body });
+  }
+
+  public async setUnitStatusV2(data: {
+    serverId?: number;
+    accountUuid?: string;
+    apiId?: string;
+    apiIds?: string[];
+    identIds?: number[];
+    status: string | number;
+  }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    const body = { ...data };
+    delete body.serverId;
+    return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/units/status`, { body });
+  }
+
+  public async kickUnitV2(data: { serverId?: number; apiId: string; reason: string }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    return this.executeCadV2Request('DELETE', `v2/emergency/servers/${resolvedServerId}/units/kick`, {
+      body: {
+        apiId: data.apiId,
+        reason: data.reason
+      }
+    });
+  }
+
+  public async getIdentifiersV2(accountUuid: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', `v2/emergency/accounts/${encodeURIComponent(accountUuid)}/identifiers`);
+  }
+
+  public async getAccountUnitsV2(data: { serverId?: number; accountUuid: string; onlyOnline?: boolean; onlyUnits?: boolean; limit?: number; offset?: number }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    return this.executeCadV2Request('GET', `v2/emergency/servers/${resolvedServerId}/accounts/${encodeURIComponent(data.accountUuid)}/units`, {
+      query: {
+        onlyOnline: data.onlyOnline,
+        onlyUnits: data.onlyUnits,
+        limit: data.limit,
+        offset: data.offset
+      }
+    });
+  }
+
+  public async selectIdentifierV2(accountUuid: string, identId: number): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('PUT', `v2/emergency/accounts/${encodeURIComponent(accountUuid)}/selected-identifier`, {
+      body: { identId }
+    });
+  }
+
+  public async createIdentifierV2(accountUuid: string, data: {
+    status?: string | number;
+    aop?: string;
+    unitNum?: string;
+    name?: string;
+    district?: string;
+    department?: string;
+    subdivision?: string;
+    rank?: string;
+    group?: string;
+    page?: string | number;
+    isDispatch?: boolean;
+  }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', `v2/emergency/accounts/${encodeURIComponent(accountUuid)}/identifiers`, { body: data });
+  }
+
+  public async updateIdentifierV2(accountUuid: string, identId: number, data: {
+    status?: string | number;
+    aop?: string;
+    unitNum?: string;
+    name?: string;
+    district?: string;
+    department?: string;
+    subdivision?: string;
+    rank?: string;
+    group?: string;
+    page?: string | number;
+    isDispatch?: boolean;
+  }): Promise<globalTypes.CADStandardResponse> {
+    this.assertPositiveInteger(identId, 'identId');
+    return this.executeCadV2Request('PATCH', `v2/emergency/accounts/${encodeURIComponent(accountUuid)}/identifiers/${identId}`, { body: data });
+  }
+
+  public async deleteIdentifierV2(accountUuid: string, identId: number): Promise<globalTypes.CADStandardResponse> {
+    this.assertPositiveInteger(identId, 'identId');
+    return this.executeCadV2Request('DELETE', `v2/emergency/accounts/${encodeURIComponent(accountUuid)}/identifiers/${identId}`);
+  }
+
+  public async addIdentifiersToGroupV2(data: {
+    serverId?: number;
+    groupName: string;
+    accountUuid?: string;
+    apiId?: string;
+    apiIds?: string[];
+    identIds?: number[];
+  }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    const groupName = data.groupName;
+    const body = { ...data } as Record<string, unknown>;
+    delete body.serverId;
+    delete body.groupName;
+    return this.executeCadV2Request('PUT', `v2/emergency/servers/${resolvedServerId}/identifier-groups/${encodeURIComponent(groupName)}`, { body });
+  }
+
+  public async createEmergencyCallV2(data: {
+    serverId?: number;
+    isEmergency: boolean;
+    caller: string;
+    location: string;
+    description: string;
+    deleteAfterMinutes?: number;
+    metaData?: Record<string, string>;
+  }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    const body = { ...data };
+    delete body.serverId;
+    return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/calls/911`, { body });
+  }
+
+  public async deleteEmergencyCallV2(callId: number, serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    this.assertPositiveInteger(callId, 'callId');
+    return this.executeCadV2Request('DELETE', `v2/emergency/servers/${resolvedServerId}/calls/911/${callId}`);
+  }
+
+  public async createDispatchCallV2(data: {
+    serverId?: number;
+    origin: string | number;
+    status: string | number;
+    priority: number;
+    block: string;
+    address: string;
+    postal: string;
+    title: string;
+    code: string;
+    description: string;
+    notes: unknown[];
+    accounts?: string[];
+    apiIds?: string[];
+    metaData?: Record<string, string>;
+    deleteAfterMinutes?: number;
+  }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    const body = { ...data };
+    delete body.serverId;
+    return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/dispatch-calls`, { body });
+  }
+
+  public async updateDispatchCallV2(callId: number, data: {
+    serverId?: number;
+    origin?: string | number;
+    status?: string | number;
+    priority?: number;
+    block?: string;
+    address?: string;
+    postal?: string;
+    title?: string;
+    code?: string;
+    description?: string;
+    metaData?: Record<string, string>;
+    primary?: number;
+    trackPrimary?: boolean;
+  }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    this.assertPositiveInteger(callId, 'callId');
+    const body = { ...data };
+    delete body.serverId;
+    return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/dispatch-calls/${callId}`, { body });
+  }
+
+  public async attachUnitsToDispatchCallV2(callId: number, data: {
+    serverId?: number;
+    groupName?: string;
+    accountUuid?: string;
+    apiId?: string;
+    apiIds?: string[];
+    identIds?: number[];
+  }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    this.assertPositiveInteger(callId, 'callId');
+    const body = { ...data };
+    delete body.serverId;
+    return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/dispatch-calls/${callId}/attachments`, { body });
+  }
+
+  public async detachUnitsFromDispatchCallV2(data: {
+    serverId?: number;
+    groupName?: string;
+    accountUuid?: string;
+    apiId?: string;
+    apiIds?: string[];
+    identIds?: number[];
+  }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    const body = { ...data };
+    delete body.serverId;
+    return this.executeCadV2Request('DELETE', `v2/emergency/servers/${resolvedServerId}/dispatch-calls/attachments`, { body });
+  }
+
+  public async setDispatchPostalV2(callId: number, postal: string, serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    this.assertPositiveInteger(callId, 'callId');
+    return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/dispatch-calls/${callId}/postal`, {
+      body: { postal }
+    });
+  }
+
+  public async setDispatchPrimaryV2(callId: number, identId: number, trackPrimary = false, serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    this.assertPositiveInteger(callId, 'callId');
+    this.assertPositiveInteger(identId, 'identId');
+    return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/dispatch-calls/${callId}/primary`, {
+      body: { identId, trackPrimary }
+    });
+  }
+
+  public async addDispatchNoteV2(callId: number, data: { serverId?: number; note: string; noteType?: string; label?: string }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    this.assertPositiveInteger(callId, 'callId');
+    const body = { ...data };
+    delete body.serverId;
+    return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/dispatch-calls/${callId}/notes`, { body });
+  }
+
+  public async closeDispatchCallsV2(callIds: number[], serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/dispatch-calls/close`, {
+      body: { callIds }
+    });
+  }
+
+  public async updateStreetSignsV2(data: { serverId?: number; ids: number[]; text1?: string; text2?: string; text3?: string }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    const body = { ...data };
+    delete body.serverId;
+    return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/street-signs`, { body });
+  }
+
+  public async setStreetSignConfigV2(signs: unknown[], serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    return this.executeCadV2Request('PUT', `v2/emergency/servers/${resolvedServerId}/street-sign-config`, {
+      body: { signs }
+    });
+  }
+
+  public async setAvailableCalloutsV2(callouts: unknown[], serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    return this.executeCadV2Request('PUT', `v2/emergency/servers/${resolvedServerId}/callouts`, {
+      body: { callouts }
+    });
+  }
+
+  public async setStationsV2(config: unknown, serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    return this.executeCadV2Request('PUT', `v2/emergency/servers/${resolvedServerId}/stations`, {
+      body: { config }
+    });
+  }
+
+  public async getBlipsV2(serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    return this.executeCadV2Request('GET', `v2/emergency/servers/${resolvedServerId}/blips`);
+  }
+
+  public async createBlipV2(data: {
+    serverId?: number;
+    coordinates: unknown;
+    subType: string;
+    icon: string;
+    color: string;
+    tooltip: string;
+    data?: unknown[];
+    radius?: number;
+  }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    const body = { ...data };
+    delete body.serverId;
+    return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/blips`, { body });
+  }
+
+  public async updateBlipV2(blipId: number, data: {
+    serverId?: number;
+    coordinates?: unknown;
+    subType?: string;
+    icon?: string;
+    color?: string;
+    tooltip?: string;
+    data?: unknown[];
+    radius?: number;
+  }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    this.assertPositiveInteger(blipId, 'blipId');
+    const body = { ...data };
+    delete body.serverId;
+    return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/blips/${blipId}`, { body });
+  }
+
+  public async deleteBlipsV2(ids: number[], serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    return this.executeCadV2Request('DELETE', `v2/emergency/servers/${resolvedServerId}/blips`, {
+      body: { ids }
+    });
   }
 
   private normalizeAccountEntries(input: string | { account: string } | Array<string | { account: string }>): { account: string }[] {

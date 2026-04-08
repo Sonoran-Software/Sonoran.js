@@ -203,6 +203,89 @@ if (activeUnits.success) {
 }
 ```
 
+## CAD V2 Functions
+The library now includes dedicated `...V2()` helpers that call the `/v2` backend directly with bearer auth. These do not replace or modify any legacy CAD helpers.
+
+General:
+- **`getLoginPageV2({ url?, communityId? })`**
+- **`getVersionV2()`** / **`getInfoV2()`**
+- **`checkApiIdV2(apiId)`**
+- **`getAccountV2({ accountUuid?, apiId?, username? })`**
+- **`getAccountsV2({ limit?, offset?, status?, username? })`**
+- **`applyPermissionKeyV2({ apiId, permissionKey })`**
+- **`banUserV2({ accountUuid?, apiId?, isBan?, isKick? })`**
+- **`setPenalCodesV2(codes)`**
+- **`setApiIdsV2({ username?, accountUuid?, apiIds, sessionId?, pushNew? })`**
+- **`getTemplatesV2(recordTypeId?)`**
+- **`createRecordV2(data)`** / **`updateRecordV2(recordId, data)`** / **`removeRecordV2(recordId)`**
+- **`sendRecordDraftV2(data)`**
+- **`lookupV2(data)`** / **`lookupByValueV2(data)`** / **`lookupCustomV2(data)`**
+- **`setAccountPermissionsV2(data)`**
+- **`heartbeatV2(serverId?, playerCount)`**
+- **`getServersV2()`** / **`setServersV2(servers, deployMap?)`**
+- **`verifySecretV2(secret)`**
+- **`authorizeStreetSignsV2(serverId?)`**
+- **`setPostalsV2(postals)`**
+- **`sendPhotoV2({ apiId, url })`**
+
+Civilian:
+- **`getCharactersV2({ accountUuid?, apiId? })`**
+- **`removeCharacterV2(characterId)`**
+- **`setSelectedCharacterV2({ characterId, accountUuid?, apiId? })`**
+- **`getCharacterLinksV2({ accountUuid?, apiId? })`**
+- **`addCharacterLinkV2(syncId, { accountUuid?, apiId? })`**
+- **`removeCharacterLinkV2(syncId, { accountUuid?, apiId? })`**
+
+Emergency:
+- **`getUnitsV2({ serverId?, includeOffline?, onlyUnits?, limit?, offset? })`**
+- **`getCallsV2({ serverId?, closedLimit?, closedOffset?, type? })`**
+- **`getCurrentCallV2(accountUuid)`**
+- **`updateUnitLocationsV2({ serverId?, updates })`**
+- **`setUnitPanicV2({ serverId?, accountUuid?, apiId?, apiIds?, identIds?, isPanic })`**
+- **`setUnitStatusV2({ serverId?, accountUuid?, apiId?, apiIds?, identIds?, status })`**
+- **`kickUnitV2({ serverId?, apiId, reason })`**
+- **`getIdentifiersV2(accountUuid)`**
+- **`getAccountUnitsV2({ serverId?, accountUuid, onlyOnline?, onlyUnits?, limit?, offset? })`**
+- **`selectIdentifierV2(accountUuid, identId)`**
+- **`createIdentifierV2(accountUuid, data)`** / **`updateIdentifierV2(accountUuid, identId, data)`** / **`deleteIdentifierV2(accountUuid, identId)`**
+- **`addIdentifiersToGroupV2({ serverId?, groupName, accountUuid?, apiId?, apiIds?, identIds? })`**
+- **`createEmergencyCallV2(data)`** / **`deleteEmergencyCallV2(callId, serverId?)`**
+- **`createDispatchCallV2(data)`** / **`updateDispatchCallV2(callId, data)`**
+- **`attachUnitsToDispatchCallV2(callId, data)`** / **`detachUnitsFromDispatchCallV2(data)`**
+- **`setDispatchPostalV2(callId, postal, serverId?)`**
+- **`setDispatchPrimaryV2(callId, identId, trackPrimary?, serverId?)`**
+- **`addDispatchNoteV2(callId, { serverId?, note, noteType?, label? })`**
+- **`closeDispatchCallsV2(callIds, serverId?)`**
+- **`updateStreetSignsV2({ serverId?, ids, text1?, text2?, text3? })`**
+- **`setStreetSignConfigV2(signs, serverId?)`**
+- **`setAvailableCalloutsV2(callouts, serverId?)`**
+- **`setStationsV2(config, serverId?)`**
+- **`getBlipsV2(serverId?)`**
+- **`createBlipV2(data)`** / **`updateBlipV2(blipId, data)`** / **`deleteBlipsV2(ids, serverId?)`**
+
+```js
+await instance.cad.setUnitStatusV2({
+  serverId: 1,
+  accountUuid: '91de0ce8-c571-11e9-9714-5600023b2434',
+  status: 2
+});
+
+await instance.cad.createDispatchCallV2({
+  serverId: 1,
+  origin: Sonoran.CADDispatchOriginEnums.Caller,
+  status: Sonoran.CADDispatchStatusEnums.Active,
+  priority: 1,
+  block: '123',
+  address: 'Main St',
+  postal: '100',
+  title: 'Traffic Stop',
+  code: 'TS',
+  description: 'Blue sedan headed north',
+  notes: [],
+  apiIds: ['1234567890']
+});
+```
+
 ## CMS Functions
 ### getSubscriptionVersion()
 Returns the community's CMS subscription version.
