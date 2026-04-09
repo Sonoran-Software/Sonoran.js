@@ -259,7 +259,9 @@ Emergency:
 - **`updateStreetSignsV2({ serverId?, ids, text1?, text2?, text3? })`**
 - **`setStreetSignConfigV2(signs, serverId?)`**
 - **`setAvailableCalloutsV2(callouts, serverId?)`**
+- **`triggerPagerSystemV2(callout, serverId?)`**
 - **`setStationsV2(config, serverId?)`**
+- **`triggerStationAlertV2(alert, serverId?)`**
 - **`getBlipsV2(serverId?)`**
 - **`createBlipV2(data)`** / **`updateBlipV2(blipId, data)`** / **`deleteBlipsV2(ids, serverId?)`**
 

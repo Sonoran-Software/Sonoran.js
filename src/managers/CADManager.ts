@@ -1474,10 +1474,24 @@ export class CADManager extends BaseManager {
     });
   }
 
+  public async triggerPagerSystemV2(callout: unknown, serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/callouts/trigger`, {
+      body: { callout }
+    });
+  }
+
   public async setStationsV2(config: unknown, serverId?: number): Promise<globalTypes.CADStandardResponse> {
     const resolvedServerId = this.resolveCadServerId(serverId);
     return this.executeCadV2Request('PUT', `v2/emergency/servers/${resolvedServerId}/stations`, {
       body: { config }
+    });
+  }
+
+  public async triggerStationAlertV2(alert: unknown, serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/stations/alert`, {
+      body: { alert }
     });
   }
 
