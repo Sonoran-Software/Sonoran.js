@@ -913,6 +913,12 @@ class CADManager extends BaseManager_1.BaseManager {
     async getAccountsV2(query = {}) {
         return this.executeCadV2Request('GET', 'v2/general/accounts', { query });
     }
+    async createCommunityLinkV2(data) {
+        return this.executeCadV2Request('POST', 'v2/general/links', { body: data });
+    }
+    async checkCommunityLinkV2(data) {
+        return this.executeCadV2Request('POST', 'v2/general/links/check', { body: data });
+    }
     async setAccountPermissionsV2(data) {
         return this.executeCadV2Request('PATCH', 'v2/general/accounts/permissions', { body: data });
     }
@@ -1138,22 +1144,22 @@ class CADManager extends BaseManager_1.BaseManager {
             body: { callouts }
         });
     }
-    async triggerPagerSystemV2(callout, serverId) {
+    async getPagerConfigV2(serverId) {
         const resolvedServerId = this.resolveCadServerId(serverId);
-        return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/callouts/trigger`, {
-            body: { callout }
+        return this.executeCadV2Request('GET', `v2/emergency/servers/${resolvedServerId}/pager-config`);
+    }
+    async setPagerConfigV2(data) {
+        const resolvedServerId = this.resolveCadServerId(data.serverId);
+        const body = { ...data };
+        delete body.serverId;
+        return this.executeCadV2Request('PUT', `v2/emergency/servers/${resolvedServerId}/pager-config`, {
+            body
         });
     }
     async setStationsV2(config, serverId) {
         const resolvedServerId = this.resolveCadServerId(serverId);
         return this.executeCadV2Request('PUT', `v2/emergency/servers/${resolvedServerId}/stations`, {
             body: { config }
-        });
-    }
-    async triggerStationAlertV2(alert, serverId) {
-        const resolvedServerId = this.resolveCadServerId(serverId);
-        return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/stations/alert`, {
-            body: { alert }
         });
     }
     async getBlipsV2(serverId) {

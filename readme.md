@@ -212,6 +212,8 @@ General:
 - **`checkApiIdV2(apiId)`**
 - **`getAccountV2({ accountUuid?, apiId?, username? })`**
 - **`getAccountsV2({ limit?, offset?, status?, username? })`**
+- **`createCommunityLinkV2({ communityUserId })`**
+- **`checkCommunityLinkV2({ communityUserId })`**
 - **`applyPermissionKeyV2({ apiId, permissionKey })`**
 - **`banUserV2({ accountUuid?, apiId?, isBan?, isKick? })`**
 - **`setPenalCodesV2(codes)`**
@@ -259,9 +261,9 @@ Emergency:
 - **`updateStreetSignsV2({ serverId?, ids, text1?, text2?, text3? })`**
 - **`setStreetSignConfigV2(signs, serverId?)`**
 - **`setAvailableCalloutsV2(callouts, serverId?)`**
-- **`triggerPagerSystemV2(callout, serverId?)`**
+- **`getPagerConfigV2(serverId?)`**
+- **`setPagerConfigV2({ serverId?, natureWords, maxAddresses, maxBodyLength, nodes? })`**
 - **`setStationsV2(config, serverId?)`**
-- **`triggerStationAlertV2(alert, serverId?)`**
 - **`getBlipsV2(serverId?)`**
 - **`createBlipV2(data)`** / **`updateBlipV2(blipId, data)`** / **`deleteBlipsV2(ids, serverId?)`**
 

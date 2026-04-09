@@ -1090,6 +1090,14 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('GET', 'v2/general/accounts', { query });
   }
 
+  public async createCommunityLinkV2(data: { communityUserId: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/links', { body: data });
+  }
+
+  public async checkCommunityLinkV2(data: { communityUserId: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/links/check', { body: data });
+  }
+
   public async setAccountPermissionsV2(data: {
     accountUuid?: string;
     apiId?: string;
@@ -1474,10 +1482,23 @@ export class CADManager extends BaseManager {
     });
   }
 
-  public async triggerPagerSystemV2(callout: unknown, serverId?: number): Promise<globalTypes.CADStandardResponse> {
+  public async getPagerConfigV2(serverId?: number): Promise<globalTypes.CADStandardResponse> {
     const resolvedServerId = this.resolveCadServerId(serverId);
-    return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/callouts/trigger`, {
-      body: { callout }
+    return this.executeCadV2Request('GET', `v2/emergency/servers/${resolvedServerId}/pager-config`);
+  }
+
+  public async setPagerConfigV2(data: {
+    natureWords: unknown;
+    maxAddresses: number;
+    maxBodyLength: number;
+    nodes?: unknown;
+    serverId?: number;
+  }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    const body = { ...data };
+    delete body.serverId;
+    return this.executeCadV2Request('PUT', `v2/emergency/servers/${resolvedServerId}/pager-config`, {
+      body
     });
   }
 
@@ -1485,13 +1506,6 @@ export class CADManager extends BaseManager {
     const resolvedServerId = this.resolveCadServerId(serverId);
     return this.executeCadV2Request('PUT', `v2/emergency/servers/${resolvedServerId}/stations`, {
       body: { config }
-    });
-  }
-
-  public async triggerStationAlertV2(alert: unknown, serverId?: number): Promise<globalTypes.CADStandardResponse> {
-    const resolvedServerId = this.resolveCadServerId(serverId);
-    return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/stations/alert`, {
-      body: { alert }
     });
   }
 

@@ -375,6 +375,12 @@ export declare class CADManager extends BaseManager {
         status?: string | number;
         username?: string;
     }): Promise<globalTypes.CADStandardResponse>;
+    createCommunityLinkV2(data: {
+        communityUserId: string;
+    }): Promise<globalTypes.CADStandardResponse>;
+    checkCommunityLinkV2(data: {
+        communityUserId: string;
+    }): Promise<globalTypes.CADStandardResponse>;
     setAccountPermissionsV2(data: {
         accountUuid?: string;
         apiId?: string;
@@ -586,9 +592,15 @@ export declare class CADManager extends BaseManager {
     }): Promise<globalTypes.CADStandardResponse>;
     setStreetSignConfigV2(signs: unknown[], serverId?: number): Promise<globalTypes.CADStandardResponse>;
     setAvailableCalloutsV2(callouts: unknown[], serverId?: number): Promise<globalTypes.CADStandardResponse>;
-    triggerPagerSystemV2(callout: unknown, serverId?: number): Promise<globalTypes.CADStandardResponse>;
+    getPagerConfigV2(serverId?: number): Promise<globalTypes.CADStandardResponse>;
+    setPagerConfigV2(data: {
+        natureWords: unknown;
+        maxAddresses: number;
+        maxBodyLength: number;
+        nodes?: unknown;
+        serverId?: number;
+    }): Promise<globalTypes.CADStandardResponse>;
     setStationsV2(config: unknown, serverId?: number): Promise<globalTypes.CADStandardResponse>;
-    triggerStationAlertV2(alert: unknown, serverId?: number): Promise<globalTypes.CADStandardResponse>;
     getBlipsV2(serverId?: number): Promise<globalTypes.CADStandardResponse>;
     createBlipV2(data: {
         serverId?: number;
