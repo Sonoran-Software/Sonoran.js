@@ -686,6 +686,16 @@ export interface RadioTonePlayTarget {
 	color?: string;
 }
 
+export interface RadioTone {
+	id: number;
+	color: string;
+	textColor: string;
+	label: string;
+	icon: string;
+	src?: string;
+	tts?: string;
+}
+
 export interface RadioSetUserChannelsOptions {
 	transmit?: number[];
 	scan?: number[];

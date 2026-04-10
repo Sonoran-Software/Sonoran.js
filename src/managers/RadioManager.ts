@@ -284,10 +284,10 @@ export class RadioManager extends BaseManager {
   /**
    * Plays one or more tones to radio channels, groups, or in-game speakers.
    * @param {number} roomId Multi-server room id for tone playback.
-   * @param {number[]} tones Tone identifiers to play.
+   * @param {(number | globalTypes.RadioTone)[]} tones Tone identifiers or tone payloads to play.
    * @param {globalTypes.RadioTonePlayTarget[]} playTo Targets that should receive the tones.
    */
-  public async playTone(roomId: number, tones: number[], playTo: globalTypes.RadioTonePlayTarget[]): Promise<globalTypes.RadioPlayTonePromiseResult> {
+  public async playTone(roomId: number, tones: Array<number | globalTypes.RadioTone>, playTo: globalTypes.RadioTonePlayTarget[]): Promise<globalTypes.RadioPlayTonePromiseResult> {
     return new Promise(async (resolve, reject) => {
       try {
         const response: any = await this.rest?.request('PLAY_TONE', roomId, tones, playTo);

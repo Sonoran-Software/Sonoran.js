@@ -16,6 +16,7 @@ export {
   RadioChannelGroup,
   RadioConnectedUser,
   RadioSpeakerLocation,
+  RadioTone,
   RadioGetCommunityChannelsPromiseResult,
   RadioGetConnectedUsersPromiseResult,
   RadioGetConnectedUserPromiseResult,

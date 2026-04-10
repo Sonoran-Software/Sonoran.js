@@ -705,5 +705,57 @@ await instance.radio.playTone(1, [1001, 1002], [
 ]);
 ```
 
+`tones` can be either saved tone IDs or full tone payload objects.
+
+Supported tone payload options:
+
+- `src` as an audio file URL such as `https://example.com/tone.mp3`
+- `src` as a `data:audio/...;base64,...` string
+- `src` as a raw base64-encoded audio string
+- `tts` as a local text-to-speech string for supported radio clients
+
+Examples:
+
+```js
+await instance.radio.playTone(1, [
+  {
+    id: -1,
+    color: '#647492',
+    textColor: 'text-white',
+    label: 'Custom Tone',
+    icon: 'fas fa-volume-high',
+    src: 'https://example.com/custom-tone.mp3'
+  }
+], [
+  { label: 'Primary Dispatch', type: 'channel', value: 10, group: 2 }
+]);
+
+await instance.radio.playTone(1, [
+  {
+    id: -1,
+    color: '#647492',
+    textColor: 'text-white',
+    label: 'Base64 Tone',
+    icon: 'fas fa-volume-high',
+    src: 'data:audio/mpeg;base64,SUQzBAAAAAAA...'
+  }
+], [
+  { label: 'Primary Dispatch', type: 'channel', value: 10, group: 2 }
+]);
+
+await instance.radio.playTone(1, [
+  {
+    id: -1,
+    color: '#647492',
+    textColor: 'text-white',
+    label: 'Dispatch TTS',
+    icon: 'fas fa-wand-magic-sparkles',
+    tts: 'Engine 51 respond code 3'
+  }
+], [
+  { label: 'Primary Dispatch', type: 'channel', value: 10, group: 2 }
+]);
+```
+
 ## Further Documentation
 More documentation for Sonoran CAD specific methods and usage can be found [here](/docs/CAD-Methods-and-Usage.md), Sonoran CMS specific methods and usage can be found [here](/docs/CMS-Methods-and-Usage.md), and usage information for the REST class [here](/docs/REST-Methods-and-Usage.md).

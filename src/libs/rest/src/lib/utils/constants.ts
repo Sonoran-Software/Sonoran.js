@@ -1,4 +1,4 @@
-import { productEnums, RadioSetUserChannelsOptions, RadioSpeakerLocation, RadioTonePlayTarget, RadioMemberDisplayNameChange, RadioMemberPermissionChange, CMSProfileFieldUpdate, CMSSetGameServerStruct, CMSTriggerPromotionFlowPayload, CMSERLCExecuteCommandPayload, ERLCTeams } from '../../../../../constants';
+import { productEnums, RadioSetUserChannelsOptions, RadioSpeakerLocation, RadioTone, RadioTonePlayTarget, RadioMemberDisplayNameChange, RadioMemberPermissionChange, CMSProfileFieldUpdate, CMSSetGameServerStruct, CMSTriggerPromotionFlowPayload, CMSERLCExecuteCommandPayload, ERLCTeams } from '../../../../../constants';
 import type { RESTOptions } from '../REST';
 
 export const DefaultUserAgent = 'Sonoran.js NPM Module';
@@ -1527,7 +1527,7 @@ export interface RESTTypedAPIDataStructs {
 	];
 	PLAY_TONE: [
 		roomId: number,
-		tones: number[],
+		tones: Array<number | RadioTone>,
 		playTo: RadioTonePlayTarget[]
 	];
 }
