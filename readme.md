@@ -206,6 +206,8 @@ if (activeUnits.success) {
 ## CAD V2 Functions
 The library now includes dedicated `...V2()` helpers that call the `/v2` backend directly with bearer auth. These do not replace or modify any legacy CAD helpers.
 
+For v2 CAD endpoints, `Sonoran.js` will automatically retry `429 Too Many Requests` responses up to 2 times. The retry logic honors the server's `Retry-After` header when present and otherwise falls back to a short exponential backoff. This is intentionally limited, so callers should still avoid spamming high-frequency endpoints.
+
 General:
 - **`getLoginPageV2({ url?, communityId? })`**
 - **`getVersionV2()`** / **`getInfoV2()`**

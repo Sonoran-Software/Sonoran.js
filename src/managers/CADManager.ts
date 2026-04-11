@@ -40,6 +40,10 @@ import { CADServerManager } from './CADServerManager';
 
 type CADV2HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
+const CAD_V2_RATE_LIMIT_MAX_RETRIES = 2;
+const CAD_V2_RATE_LIMIT_DEFAULT_DELAY_MS = 1000;
+const CAD_V2_RATE_LIMIT_MAX_DELAY_MS = 10000;
+
 /**
  * Manages all Sonoran CAD data and methods to interact with the public API.
  */
@@ -907,24 +911,36 @@ export class CADManager extends BaseManager {
       fetchOptions.body = JSON.stringify(body);
     }
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000).unref();
+    for (let attempt = 0; attempt <= CAD_V2_RATE_LIMIT_MAX_RETRIES; attempt++) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
+      timeout.unref();
 
-    try {
-      const response = await fetch(url.toString(), {
-        ...(fetchOptions as Parameters<typeof fetch>[1]),
-        signal: controller.signal as any
-      });
-      const parsedResponse = await this.parseCadV2Response(response);
+      try {
+        const response = await fetch(url.toString(), {
+          ...(fetchOptions as Parameters<typeof fetch>[1]),
+          signal: controller.signal as any
+        });
+        const parsedResponse = await this.parseCadV2Response(response);
 
-      if (response.ok) {
-        return { success: true, data: parsedResponse as T };
+        if (response.ok) {
+          return { success: true, data: parsedResponse as T };
+        }
+
+        if (response.status === 429 && attempt < CAD_V2_RATE_LIMIT_MAX_RETRIES) {
+          const retryDelayMs = this.resolveCadV2RetryDelayMs(response, attempt);
+          this.instance._debugLog(`CAD v2 request rate limited, retrying in ${retryDelayMs}ms (${attempt + 1}/${CAD_V2_RATE_LIMIT_MAX_RETRIES}).`);
+          await this.waitForCadV2Retry(retryDelayMs);
+          continue;
+        }
+
+        return { success: false, reason: parsedResponse };
+      } finally {
+        clearTimeout(timeout);
       }
-
-      return { success: false, reason: parsedResponse };
-    } finally {
-      clearTimeout(timeout);
     }
+
+    return { success: false, reason: 'Request was rate limited.' };
   }
 
   private headersInitToRecord(headersInit: HeadersInit | undefined): Record<string, string> {
@@ -959,6 +975,30 @@ export class CADManager extends BaseManager {
       return response.json();
     }
     return response.text();
+  }
+
+  private resolveCadV2RetryDelayMs(response: Response, attempt: number): number {
+    const retryAfterHeader = response.headers.get('retry-after');
+    if (retryAfterHeader) {
+      const retryAfterSeconds = Number(retryAfterHeader);
+      if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds >= 0) {
+        return Math.min(Math.ceil(retryAfterSeconds * 1000), CAD_V2_RATE_LIMIT_MAX_DELAY_MS);
+      }
+
+      const retryAt = Date.parse(retryAfterHeader);
+      if (!Number.isNaN(retryAt)) {
+        return Math.min(Math.max(retryAt - Date.now(), 0), CAD_V2_RATE_LIMIT_MAX_DELAY_MS);
+      }
+    }
+
+    return Math.min(CAD_V2_RATE_LIMIT_DEFAULT_DELAY_MS * (2 ** attempt), CAD_V2_RATE_LIMIT_MAX_DELAY_MS);
+  }
+
+  private async waitForCadV2Retry(delayMs: number): Promise<void> {
+    await new Promise<void>((resolve) => {
+      const timer = setTimeout(resolve, delayMs);
+      timer.unref();
+    });
   }
 
   private resolveCadServerId(serverId?: number): number {
