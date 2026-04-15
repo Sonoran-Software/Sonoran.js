@@ -21,6 +21,7 @@ export class Instance extends EventEmitter {
   public radioCommunityId: string | undefined;
   public radioApiKey: string | undefined;
   public radioApiUrl: string = 'https://api.sonoranradio.com';
+  public radioDefaultServerId: number = 1;
   public isRadioSuccessful: boolean = false;
 
   public cad: CADManager | undefined;
@@ -73,6 +74,10 @@ export class Instance extends EventEmitter {
           case globalTypes.productEnums.RADIO: {
             this.radioCommunityId = options.communityId;
             this.radioApiKey = options.apiKey;
+            if (options.serverId !== undefined) {
+              this._debugLog(`Overriding default Radio server id... ${options.serverId}`);
+              this.radioDefaultServerId = options.serverId;
+            }
             if (Object.prototype.hasOwnProperty.call(options, 'radioApiUrl') && typeof options.radioApiUrl === 'string') {
               this._debugLog(`Overriding Radio API URL... ${options.radioApiUrl}`);
               this.radioApiUrl = options.radioApiUrl;
@@ -115,6 +120,10 @@ export class Instance extends EventEmitter {
       if (Object.prototype.hasOwnProperty.call(options, 'radioApiUrl') && typeof options.radioApiUrl === 'string') {
         this._debugLog(`Overriding Radio API URL... ${options.radioApiUrl}`);
         this.radioApiUrl = options.radioApiUrl;
+      }
+      if (options.radioDefaultServerId !== undefined) {
+        this._debugLog(`Overriding default Radio server id... ${options.radioDefaultServerId}`);
+        this.radioDefaultServerId = options.radioDefaultServerId;
       }
       this.initialize();
     }

@@ -282,6 +282,8 @@ export declare class CADManager extends BaseManager {
     private headersInitToRecord;
     private appendCadV2QueryValue;
     private parseCadV2Response;
+    private resolveCadV2RetryDelayMs;
+    private waitForCadV2Retry;
     private resolveCadServerId;
     private assertPositiveInteger;
     getLoginPageV2(params?: {

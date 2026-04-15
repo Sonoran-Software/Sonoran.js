@@ -16,6 +16,7 @@ export type InstanceOptions = {
   radioCommunityId?: string;
   radioApiKey?: string;
   radioApiUrl?: string;
+  radioDefaultServerId?: number;
   debug?: boolean;
   apiHeaders?: HeadersInit ;
 };
