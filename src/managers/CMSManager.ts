@@ -1,9 +1,17 @@
 import { Instance } from '../instance/Instance';
 import { CMSSubscriptionVersionEnum } from '../constants';
 import { APIError, DefaultCMSRestOptions, REST } from '../libs/rest/src';
+import fetch, { Response } from 'node-fetch';
 import { BaseManager } from './BaseManager';
 import * as globalTypes from '../constants';
 import { CMSServerManager } from './CMSServerManager';
+
+type CMSV2HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+const CMS_V2_RATE_LIMIT_MAX_RETRIES = 2;
+const CMS_V2_RATE_LIMIT_DEFAULT_DELAY_MS = 1000;
+const CMS_V2_RATE_LIMIT_MAX_DELAY_MS = 10000;
+const CMS_V2_REQUEST_TIMEOUT_MS = 30000;
 
 /**
  * Manages all Sonoran CMS data and methods to interact with the public API.
@@ -20,6 +28,138 @@ export class CMSManager extends BaseManager {
 
     this.rest = new REST(instance, this, globalTypes.productEnums.CMS, DefaultCMSRestOptions);
     this.buildManager(instance);
+  }
+
+  private resolveCmsServerId(serverId?: number): number {
+    const resolvedServerId = serverId ?? this.instance.cmsDefaultServerId;
+    this.assertPositiveInteger(resolvedServerId, 'serverId');
+    return resolvedServerId;
+  }
+
+  private assertPositiveInteger(value: number, label: string): void {
+    if (!Number.isInteger(value) || value < 1) {
+      throw new Error(`${label} must be a positive integer.`);
+    }
+  }
+
+  private buildCmsUrl(path: string, query?: Record<string, unknown>): string {
+    const url = new URL(`${this.instance.cmsApiUrl.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`);
+    if (query) {
+      Object.keys(query)
+        .sort((a, b) => a.localeCompare(b))
+        .forEach((key) => {
+          const value = query[key];
+          if (value === undefined || value === null) {
+            return;
+          }
+          if (Array.isArray(value)) {
+            value.forEach((entry) => {
+              if (entry !== undefined && entry !== null) {
+                url.searchParams.append(key, String(entry));
+              }
+            });
+            return;
+          }
+          url.searchParams.append(key, typeof value === 'boolean' ? String(value) : String(value));
+        });
+    }
+
+    return url.toString();
+  }
+
+  private parseCmsResponseBody(body: string): unknown {
+    if (!body || !body.trim()) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(body);
+    } catch {
+      return body;
+    }
+  }
+
+  private resolveCmsRetryDelayMs(response: Response, attempt: number): number {
+    const retryAfter = response.headers.get('retry-after');
+    if (retryAfter) {
+      const retryAfterSeconds = Number(retryAfter);
+      if (!Number.isNaN(retryAfterSeconds) && retryAfterSeconds >= 0) {
+        return Math.min(Math.round(retryAfterSeconds * 1000), CMS_V2_RATE_LIMIT_MAX_DELAY_MS);
+      }
+    }
+
+    return Math.min(CMS_V2_RATE_LIMIT_DEFAULT_DELAY_MS * (2 ** attempt), CMS_V2_RATE_LIMIT_MAX_DELAY_MS);
+  }
+
+  private async waitForCmsV2Retry(delayMs: number): Promise<void> {
+    if (delayMs <= 0) {
+      return;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  }
+
+  private async executeCmsV2Request<T = unknown>(
+    method: CMSV2HttpMethod,
+    path: string,
+    options: {
+      query?: Record<string, unknown>;
+      body?: unknown;
+      authenticated?: boolean;
+    } = {}
+  ): Promise<globalTypes.CADStandardResponse<T>> {
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+      ...(this.instance.apiHeaders as Record<string, string>)
+    };
+
+    const authenticated = options.authenticated ?? true;
+    if (authenticated) {
+      if (!this.instance.cmsApiKey) {
+        throw new Error('cmsApiKey is required for authenticated CMS requests.');
+      }
+
+      headers.Authorization = `Bearer ${this.instance.cmsApiKey}`;
+    }
+
+    let body: string | undefined;
+    if (options.body !== undefined) {
+      headers['Content-Type'] = 'application/json';
+      body = JSON.stringify(options.body);
+    }
+
+    const url = this.buildCmsUrl(path, options.query);
+
+    for (let attempt = 0; attempt <= CMS_V2_RATE_LIMIT_MAX_RETRIES; attempt += 1) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), CMS_V2_REQUEST_TIMEOUT_MS);
+
+      try {
+        const response = await fetch(url, {
+          method,
+          headers,
+          body,
+          signal: controller.signal
+        });
+
+        const responseBody = await response.text();
+        const parsed = this.parseCmsResponseBody(responseBody);
+        if (response.ok) {
+          return { success: true, data: parsed as T };
+        }
+
+        if (response.status === 429 && attempt < CMS_V2_RATE_LIMIT_MAX_RETRIES) {
+          await this.waitForCmsV2Retry(this.resolveCmsRetryDelayMs(response, attempt));
+          continue;
+        }
+
+        return { success: false, reason: parsed };
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    return { success: false, reason: 'Request was rate limited.' };
   }
 
   protected async buildManager(instance: Instance) {
@@ -968,5 +1108,233 @@ export class CMSManager extends BaseManager {
         }
       }
     });
+  }
+
+  public async getCommunityV2(): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community');
+  }
+
+  public async getSubVersionV2(): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/sub-version');
+  }
+
+  public async lookupCommunityV2(query?: Record<string, unknown>): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/lookup', { query });
+  }
+
+  public async getDepartmentsV2(): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/departments');
+  }
+
+  public async getProfileFieldsV2(): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/profile-fields');
+  }
+
+  public async getClockInTypesV2(): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/clockin-types');
+  }
+
+  public async getCustomLogTypesV2(): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/custom-log-types');
+  }
+
+  public async getPromotionFlowsV2(): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/promotion-flows');
+  }
+
+  public async triggerPromotionFlowsV2(data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', 'v2/community/promotion-flows/trigger', { body: data });
+  }
+
+  public async undoRankChangeV2(undoId: string, data?: Record<string, unknown>): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', `v2/community/rank-changes/${encodeURIComponent(undoId)}/undo`, { body: data ?? {} });
+  }
+
+  public async createShortUrlV2(data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', 'v2/community/short-urls', { body: data });
+  }
+
+  public async getAccountsV2(query?: Record<string, unknown>): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/accounts', { query });
+  }
+
+  public async searchAccountsV2(query?: Record<string, unknown>): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/accounts/search', { query });
+  }
+
+  public async getAccountV2(accountId: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/accounts/${encodeURIComponent(accountId)}`);
+  }
+
+  public async getAccountRanksV2(accountId: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/accounts/${encodeURIComponent(accountId)}/ranks`);
+  }
+
+  public async getAccountIdentifiersV2(accountId: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/accounts/${encodeURIComponent(accountId)}/identifiers`);
+  }
+
+  public async registerAccountIdentifiersV2(accountId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', `v2/community/accounts/${encodeURIComponent(accountId)}/identifiers`, { body: data });
+  }
+
+  public async setAccountNameV2(accountId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('PATCH', `v2/community/accounts/${encodeURIComponent(accountId)}/name`, { body: data });
+  }
+
+  public async setAccountRanksV2(accountId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('PATCH', `v2/community/accounts/${encodeURIComponent(accountId)}/ranks`, { body: data });
+  }
+
+  public async editProfileFieldsV2(accountId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('PATCH', `v2/community/accounts/${encodeURIComponent(accountId)}/profile-fields`, { body: data });
+  }
+
+  public async clockAccountV2(accountId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', `v2/community/accounts/${encodeURIComponent(accountId)}/clock`, { body: data });
+  }
+
+  public async getCurrentClockInV2(accountId: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/accounts/${encodeURIComponent(accountId)}/clock/current`);
+  }
+
+  public async getLatestActivityV2(accountId: string, query?: Record<string, unknown>): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/accounts/${encodeURIComponent(accountId)}/activity/latest`, { query });
+  }
+
+  public async forceSyncV2(accountId: string, data?: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', `v2/community/accounts/${encodeURIComponent(accountId)}/sync`, { body: data ?? {} });
+  }
+
+  public async getServersV2(): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/servers');
+  }
+
+  public async setServersV2(data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('PUT', 'v2/community/servers', { body: data });
+  }
+
+  public async addServersV2(data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', 'v2/community/servers', { body: data });
+  }
+
+  public async getAceConfigV2(serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/servers/${this.resolveCmsServerId(serverId)}/ace-config`);
+  }
+
+  public async setAceConfigV2(serverId: number | undefined, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('PATCH', `v2/community/servers/${this.resolveCmsServerId(serverId)}/ace-config`, { body: data });
+  }
+
+  public async setServerTypeV2(serverId: number | undefined, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('PATCH', `v2/community/servers/${this.resolveCmsServerId(serverId)}/type`, { body: data });
+  }
+
+  public async verifyWhitelistV2(serverId: number | undefined, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', `v2/community/servers/${this.resolveCmsServerId(serverId)}/whitelist/check`, { body: data });
+  }
+
+  public async getWhitelistV2(serverId: number | undefined): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/servers/${this.resolveCmsServerId(serverId)}/whitelist`);
+  }
+
+  public async createActivityV2(serverId: number | undefined, data?: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', `v2/community/servers/${this.resolveCmsServerId(serverId)}/activity`, { body: data ?? {} });
+  }
+
+  public async startActivityV2(serverId: number | undefined, data?: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', `v2/community/servers/${this.resolveCmsServerId(serverId)}/activity/start`, { body: data ?? {} });
+  }
+
+  public async rsvpEventV2(eventId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', `v2/community/events/${encodeURIComponent(eventId)}/rsvps`, { body: data });
+  }
+
+  public async changeFormStageV2(formId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('PATCH', `v2/community/forms/${encodeURIComponent(formId)}/stage`, { body: data });
+  }
+
+  public async getFormSubmissionsV2(templateId: string, query?: Record<string, unknown>): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/forms/${encodeURIComponent(templateId)}/submissions`, { query });
+  }
+
+  public async getFormLockV2(templateId: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/forms/${encodeURIComponent(templateId)}/lock`);
+  }
+
+  public async setFormLockV2(templateId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('PATCH', `v2/community/forms/${encodeURIComponent(templateId)}/lock`, { body: data });
+  }
+
+  public async getSubmissionV2(submissionId: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/forms/submissions/${encodeURIComponent(submissionId)}`);
+  }
+
+  public async getRosterV2(rosterId: string, query?: Record<string, unknown>): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/rosters/${encodeURIComponent(rosterId)}`, { query });
+  }
+
+  public async getDisciplinaryPointsV2(accountId: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/disciplinary/accounts/${encodeURIComponent(accountId)}/points`);
+  }
+
+  public async getDisciplinaryRecordsV2(accountId: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/disciplinary/accounts/${encodeURIComponent(accountId)}/records`);
+  }
+
+  public async addDisciplinaryRecordV2(accountId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', `v2/community/disciplinary/accounts/${encodeURIComponent(accountId)}/records`, { body: data });
+  }
+
+  public async setDisciplinaryRecordPointsV2(recordId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('PATCH', `v2/community/disciplinary/records/${encodeURIComponent(recordId)}/points`, { body: data });
+  }
+
+  public async setDisciplinaryRecordReasonV2(recordId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('PATCH', `v2/community/disciplinary/records/${encodeURIComponent(recordId)}/reason`, { body: data });
+  }
+
+  public async setDisciplinaryRecordStatusV2(recordId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('PATCH', `v2/community/disciplinary/records/${encodeURIComponent(recordId)}/status`, { body: data });
+  }
+
+  public async getOnlinePlayersV2(query?: Record<string, unknown>): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/erlc/players/online', { query });
+  }
+
+  public async getPlayerQueueV2(query?: Record<string, unknown>): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/erlc/players/queue', { query });
+  }
+
+  public async addErlcRecordV2(data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', 'v2/community/erlc/records', { body: data });
+  }
+
+  public async executeErlcCommandV2(data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', 'v2/community/erlc/commands', { body: data });
+  }
+
+  public async lockTeamV2(data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', 'v2/community/erlc/teams/lock', { body: data });
+  }
+
+  public async unlockTeamV2(data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', 'v2/community/erlc/teams/unlock', { body: data });
+  }
+
+  public async getCurrentSessionV2(serverId?: number): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/sessions/current', { query: { serverId: serverId ?? this.instance.cmsDefaultServerId } });
+  }
+
+  public async startSessionV2(data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', 'v2/community/sessions', { body: data });
+  }
+
+  public async stopSessionV2(data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('PATCH', 'v2/community/sessions', { body: data });
+  }
+
+  public async cancelSessionV2(data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('DELETE', 'v2/community/sessions', { body: data });
   }
 }
