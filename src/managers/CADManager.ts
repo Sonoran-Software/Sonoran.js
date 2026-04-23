@@ -1089,10 +1089,10 @@ export class CADManager extends BaseManager {
   }
 
   public async lookupV2(data: {
-    first: string;
-    last: string;
-    mi: string;
-    plate: string;
+    first?: string;
+    last?: string;
+    mi?: string;
+    plate?: string;
     types: number[];
     partial?: boolean;
     agency?: string;
@@ -1101,6 +1101,7 @@ export class CADManager extends BaseManager {
     limit?: number;
     offset?: number;
     notifyAccountUuid?: string;
+    notifyCommunityUserId?: string;
     notifyApiId?: string;
   }): Promise<globalTypes.CADStandardResponse> {
     return this.executeCadV2Request('POST', 'v2/general/lookups', { body: data });

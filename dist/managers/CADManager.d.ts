@@ -335,10 +335,10 @@ export declare class CADManager extends BaseManager {
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     lookupV2(data: {
-        first: string;
-        last: string;
-        mi: string;
-        plate: string;
+        first?: string;
+        last?: string;
+        mi?: string;
+        plate?: string;
         types: number[];
         partial?: boolean;
         agency?: string;
@@ -347,6 +347,7 @@ export declare class CADManager extends BaseManager {
         limit?: number;
         offset?: number;
         notifyAccountUuid?: string;
+        notifyCommunityUserId?: string;
         notifyApiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     lookupByValueV2(data: {
