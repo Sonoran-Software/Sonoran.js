@@ -67,7 +67,7 @@ export class CMSManager extends BaseManager {
     return url.toString();
   }
 
-  private parseCmsResponseBody(body: string): unknown {
+  private parseCmsResponseBody(body: string): any {
     if (!body || !body.trim()) {
       return null;
     }
@@ -99,7 +99,7 @@ export class CMSManager extends BaseManager {
     await new Promise((resolve) => setTimeout(resolve, delayMs));
   }
 
-  private async executeCmsV2Request<T = unknown>(
+  private async executeCmsV2Request<T = any>(
     method: CMSV2HttpMethod,
     path: string,
     options: {
@@ -145,7 +145,7 @@ export class CMSManager extends BaseManager {
         const responseBody = await response.text();
         const parsed = this.parseCmsResponseBody(responseBody);
         if (response.ok) {
-          return { success: true, data: parsed as T };
+          return { success: true, data: parsed?.data as T };
         }
 
         if (response.status === 429 && attempt < CMS_V2_RATE_LIMIT_MAX_RETRIES) {
@@ -153,7 +153,7 @@ export class CMSManager extends BaseManager {
           continue;
         }
 
-        return { success: false, reason: parsed };
+        return { success: false, reason: parsed?.message ?? parsed };
       } finally {
         clearTimeout(timeout);
       }
