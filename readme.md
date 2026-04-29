@@ -212,12 +212,12 @@ General:
 - **`getLoginPageV2({ url?, communityId? })`**
 - **`getVersionV2()`** / **`getInfoV2()`**
 - **`checkApiIdV2(apiId)`**
-- **`getAccountV2({ accountUuid?, apiId?, username? })`**
+- **`getAccountV2({ accountUuid?, communityUserId?, roblox?, apiId?, username? })`**
 - **`getAccountsV2({ limit?, offset?, status?, username? })`**
 - **`createCommunityLinkV2({ communityUserId })`**
 - **`checkCommunityLinkV2({ communityUserId })`**
-- **`applyPermissionKeyV2({ apiId, permissionKey })`**
-- **`banUserV2({ accountUuid?, apiId?, isBan?, isKick? })`**
+- **`applyPermissionKeyV2({ communityUserId?, roblox?, apiId?, permissionKey })`**
+- **`banUserV2({ accountUuid?, communityUserId?, roblox?, apiId?, isBan?, isKick? })`**
 - **`setPenalCodesV2(codes)`**
 - **`setApiIdsV2({ username?, accountUuid?, apiIds, sessionId?, pushNew? })`**
 - **`getTemplatesV2(recordTypeId?)`**
@@ -230,32 +230,33 @@ General:
 - **`verifySecretV2(secret)`**
 - **`authorizeStreetSignsV2(serverId?)`**
 - **`setPostalsV2(postals)`**
-- **`sendPhotoV2({ apiId, url })`**
+- **`sendPhotoV2({ communityUserId?, roblox?, apiId?, url })`**
 
 Civilian:
-- **`getCharactersV2({ accountUuid?, apiId? })`**
+- **`getCharactersV2({ accountUuid?, communityUserId?, roblox?, apiId? })`**
 - **`removeCharacterV2(characterId)`**
-- **`setSelectedCharacterV2({ characterId, accountUuid?, apiId? })`**
-- **`getCharacterLinksV2({ accountUuid?, apiId? })`**
-- **`addCharacterLinkV2(syncId, { accountUuid?, apiId? })`**
-- **`removeCharacterLinkV2(syncId, { accountUuid?, apiId? })`**
+- **`setSelectedCharacterV2({ characterId, accountUuid?, communityUserId?, roblox?, apiId? })`**
+- **`getCharacterLinksV2({ accountUuid?, communityUserId?, roblox?, apiId? })`**
+- **`addCharacterLinkV2(syncId, { accountUuid?, communityUserId?, roblox?, apiId? })`**
+- **`removeCharacterLinkV2(syncId, { accountUuid?, communityUserId?, roblox?, apiId? })`**
 
 Emergency:
 - **`getUnitsV2({ serverId?, includeOffline?, onlyUnits?, limit?, offset? })`**
 - **`getCallsV2({ serverId?, closedLimit?, closedOffset?, type? })`**
 - **`getCurrentCallV2(accountUuid)`**
 - **`updateUnitLocationsV2({ serverId?, updates })`**
-- **`setUnitPanicV2({ serverId?, accountUuid?, apiId?, apiIds?, identIds?, isPanic })`**
-- **`setUnitStatusV2({ serverId?, accountUuid?, apiId?, apiIds?, identIds?, status })`**
-- **`kickUnitV2({ serverId?, apiId, reason })`**
+- **`setUnitPanicV2({ serverId?, accountUuid?, communityUserId?, communityUserIds?, roblox?, apiId?, apiIds?, identIds?, isPanic })`**
+- **`setUnitStatusV2({ serverId?, accountUuid?, communityUserId?, communityUserIds?, roblox?, apiId?, apiIds?, identIds?, status })`**
+- **`kickUnitV2({ serverId?, communityUserId?, roblox?, apiId?, reason })`**
 - **`getIdentifiersV2(accountUuid)`**
 - **`getAccountUnitsV2({ serverId?, accountUuid, onlyOnline?, onlyUnits?, limit?, offset? })`**
 - **`selectIdentifierV2(accountUuid, identId)`**
 - **`createIdentifierV2(accountUuid, data)`** / **`updateIdentifierV2(accountUuid, identId, data)`** / **`deleteIdentifierV2(accountUuid, identId)`**
-- **`addIdentifiersToGroupV2({ serverId?, groupName, accountUuid?, apiId?, apiIds?, identIds? })`**
+- **`addIdentifiersToGroupV2({ serverId?, groupName, accountUuid?, communityUserId?, communityUserIds?, roblox?, apiId?, apiIds?, identIds? })`**
 - **`createEmergencyCallV2(data)`** / **`deleteEmergencyCallV2(callId, serverId?)`**
 - **`createDispatchCallV2(data)`** / **`updateDispatchCallV2(callId, data)`**
-- **`attachUnitsToDispatchCallV2(callId, data)`** / **`detachUnitsFromDispatchCallV2(data)`**
+- **`attachUnitsToDispatchCallV2(callId, { serverId?, groupName?, accountUuid?, communityUserId?, communityUserIds?, roblox?, apiId?, apiIds?, identIds? })`**
+- **`detachUnitsFromDispatchCallV2({ serverId?, groupName?, accountUuid?, communityUserId?, communityUserIds?, roblox?, apiId?, apiIds?, identIds? })`**
 - **`setDispatchPostalV2(callId, postal, serverId?)`**
 - **`setDispatchPrimaryV2(callId, identId, trackPrimary?, serverId?)`**
 - **`addDispatchNoteV2(callId, { serverId?, note, noteType?, label? })`**
@@ -272,7 +273,7 @@ Emergency:
 ```js
 await instance.cad.setUnitStatusV2({
   serverId: 1,
-  accountUuid: '91de0ce8-c571-11e9-9714-5600023b2434',
+  roblox: 123456789,
   status: 2
 });
 

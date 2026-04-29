@@ -577,6 +577,34 @@ class CADManager extends BaseManager_1.BaseManager {
             replaceValues
         };
     }
+    normalizeV2TargetAliases(data) {
+        if (!data || typeof data !== 'object' || Array.isArray(data)) {
+            return data;
+        }
+        const normalized = { ...data };
+        if (normalized.communityUserId === undefined && normalized.apiId !== undefined) {
+            normalized.communityUserId = normalized.apiId;
+        }
+        if (normalized.communityUserIds === undefined && normalized.apiIds !== undefined) {
+            normalized.communityUserIds = normalized.apiIds;
+        }
+        if (normalized.notifyCommunityUserId === undefined && normalized.notifyApiId !== undefined) {
+            normalized.notifyCommunityUserId = normalized.notifyApiId;
+        }
+        delete normalized.apiId;
+        delete normalized.apiIds;
+        delete normalized.notifyApiId;
+        return normalized;
+    }
+    normalizeV2UnitLocationUpdates(data) {
+        if (!data || typeof data !== 'object' || !Array.isArray(data.updates)) {
+            return data;
+        }
+        return {
+            ...data,
+            updates: data.updates.map((update) => this.normalizeV2TargetAliases(update))
+        };
+    }
     /**
      * Retrieves dispatch calls with optional pagination.
      */
@@ -919,10 +947,10 @@ class CADManager extends BaseManager_1.BaseManager {
         return this.executeCadV2Request('GET', `v2/general/api-ids/${encodeURIComponent(apiId)}`);
     }
     async applyPermissionKeyV2(data) {
-        return this.executeCadV2Request('POST', 'v2/general/permission-keys/applications', { body: data });
+        return this.executeCadV2Request('POST', 'v2/general/permission-keys/applications', { body: this.normalizeV2TargetAliases(data) });
     }
     async banUserV2(data) {
-        return this.executeCadV2Request('POST', 'v2/general/account-bans', { body: data });
+        return this.executeCadV2Request('POST', 'v2/general/account-bans', { body: this.normalizeV2TargetAliases(data) });
     }
     async setPenalCodesV2(codes) {
         return this.executeCadV2Request('PUT', 'v2/general/penal-codes', { body: { codes } });
@@ -938,30 +966,30 @@ class CADManager extends BaseManager_1.BaseManager {
         return this.executeCadV2Request('GET', 'v2/general/templates');
     }
     async createRecordV2(data) {
-        return this.executeCadV2Request('POST', 'v2/general/records', { body: this.normalizeRecordReplaceValues(data) });
+        return this.executeCadV2Request('POST', 'v2/general/records', { body: this.normalizeV2TargetAliases(this.normalizeRecordReplaceValues(data)) });
     }
     async updateRecordV2(recordId, data) {
         this.assertPositiveInteger(recordId, 'recordId');
-        return this.executeCadV2Request('PATCH', `v2/general/records/${recordId}`, { body: this.normalizeRecordReplaceValues(data) });
+        return this.executeCadV2Request('PATCH', `v2/general/records/${recordId}`, { body: this.normalizeV2TargetAliases(this.normalizeRecordReplaceValues(data)) });
     }
     async removeRecordV2(recordId) {
         this.assertPositiveInteger(recordId, 'recordId');
         return this.executeCadV2Request('DELETE', `v2/general/records/${recordId}`);
     }
     async sendRecordDraftV2(data) {
-        return this.executeCadV2Request('POST', 'v2/general/record-drafts', { body: this.normalizeRecordReplaceValues(data) });
+        return this.executeCadV2Request('POST', 'v2/general/record-drafts', { body: this.normalizeV2TargetAliases(this.normalizeRecordReplaceValues(data)) });
     }
     async lookupV2(data) {
-        return this.executeCadV2Request('POST', 'v2/general/lookups', { body: data });
+        return this.executeCadV2Request('POST', 'v2/general/lookups', { body: this.normalizeV2TargetAliases(data) });
     }
     async lookupByValueV2(data) {
-        return this.executeCadV2Request('POST', 'v2/general/lookups/by-value', { body: data });
+        return this.executeCadV2Request('POST', 'v2/general/lookups/by-value', { body: this.normalizeV2TargetAliases(data) });
     }
     async lookupCustomV2(data) {
         return this.executeCadV2Request('POST', 'v2/general/lookups/custom', { body: data });
     }
     async getAccountV2(query = {}) {
-        return this.executeCadV2Request('GET', 'v2/general/accounts/account', { query });
+        return this.executeCadV2Request('GET', 'v2/general/accounts/account', { query: this.normalizeV2TargetAliases(query) });
     }
     async getAccountsV2(query = {}) {
         return this.executeCadV2Request('GET', 'v2/general/accounts', { query });
@@ -973,7 +1001,7 @@ class CADManager extends BaseManager_1.BaseManager {
         return this.executeCadV2Request('POST', 'v2/general/links/check', { body: data });
     }
     async setAccountPermissionsV2(data) {
-        return this.executeCadV2Request('PATCH', 'v2/general/accounts/permissions', { body: data });
+        return this.executeCadV2Request('PATCH', 'v2/general/accounts/permissions', { body: this.normalizeV2TargetAliases(data) });
     }
     async heartbeatV2(serverId, playerCount) {
         const resolvedServerId = this.resolveCadServerId(serverId);
@@ -1001,29 +1029,29 @@ class CADManager extends BaseManager_1.BaseManager {
         return this.executeCadV2Request('PUT', 'v2/general/postals', { body: { postals } });
     }
     async sendPhotoV2(data) {
-        return this.executeCadV2Request('POST', 'v2/general/photos', { body: data });
+        return this.executeCadV2Request('POST', 'v2/general/photos', { body: this.normalizeV2TargetAliases(data) });
     }
     async getInfoV2() {
         return this.executeCadV2Request('GET', 'v2/general/info');
     }
     async getCharactersV2(query = {}) {
-        return this.executeCadV2Request('GET', 'v2/civilian/characters', { query });
+        return this.executeCadV2Request('GET', 'v2/civilian/characters', { query: this.normalizeV2TargetAliases(query) });
     }
     async removeCharacterV2(characterId) {
         this.assertPositiveInteger(characterId, 'characterId');
         return this.executeCadV2Request('DELETE', `v2/civilian/characters/${characterId}`);
     }
     async setSelectedCharacterV2(data) {
-        return this.executeCadV2Request('PUT', 'v2/civilian/selected-character', { body: data });
+        return this.executeCadV2Request('PUT', 'v2/civilian/selected-character', { body: this.normalizeV2TargetAliases(data) });
     }
     async getCharacterLinksV2(query = {}) {
-        return this.executeCadV2Request('GET', 'v2/civilian/character-links', { query });
+        return this.executeCadV2Request('GET', 'v2/civilian/character-links', { query: this.normalizeV2TargetAliases(query) });
     }
     async addCharacterLinkV2(syncId, data) {
-        return this.executeCadV2Request('PUT', `v2/civilian/character-links/${encodeURIComponent(syncId)}`, { body: data });
+        return this.executeCadV2Request('PUT', `v2/civilian/character-links/${encodeURIComponent(syncId)}`, { body: this.normalizeV2TargetAliases(data) });
     }
     async removeCharacterLinkV2(syncId, data) {
-        return this.executeCadV2Request('DELETE', `v2/civilian/character-links/${encodeURIComponent(syncId)}`, { body: data });
+        return this.executeCadV2Request('DELETE', `v2/civilian/character-links/${encodeURIComponent(syncId)}`, { body: this.normalizeV2TargetAliases(data) });
     }
     async getUnitsV2(query = {}) {
         const resolvedServerId = this.resolveCadServerId(query.serverId);
@@ -1052,26 +1080,28 @@ class CADManager extends BaseManager_1.BaseManager {
     async updateUnitLocationsV2(data) {
         const resolvedServerId = this.resolveCadServerId(data.serverId);
         return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/unit-locations`, {
-            body: { updates: data.updates }
+            body: this.normalizeV2UnitLocationUpdates({ updates: data.updates })
         });
     }
     async setUnitPanicV2(data) {
         const resolvedServerId = this.resolveCadServerId(data.serverId);
-        const body = { ...data };
+        const body = this.normalizeV2TargetAliases({ ...data });
         delete body.serverId;
         return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/units/panic`, { body });
     }
     async setUnitStatusV2(data) {
         const resolvedServerId = this.resolveCadServerId(data.serverId);
-        const body = { ...data };
+        const body = this.normalizeV2TargetAliases({ ...data });
         delete body.serverId;
         return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/units/status`, { body });
     }
     async kickUnitV2(data) {
         const resolvedServerId = this.resolveCadServerId(data.serverId);
+        const target = this.normalizeV2TargetAliases(data);
         return this.executeCadV2Request('DELETE', `v2/emergency/servers/${resolvedServerId}/units/kick`, {
             body: {
-                apiId: data.apiId,
+                communityUserId: target.communityUserId,
+                roblox: target.roblox,
                 reason: data.reason
             }
         });
@@ -1109,7 +1139,7 @@ class CADManager extends BaseManager_1.BaseManager {
     async addIdentifiersToGroupV2(data) {
         const resolvedServerId = this.resolveCadServerId(data.serverId);
         const groupName = data.groupName;
-        const body = { ...data };
+        const body = this.normalizeV2TargetAliases({ ...data });
         delete body.serverId;
         delete body.groupName;
         return this.executeCadV2Request('PUT', `v2/emergency/servers/${resolvedServerId}/identifier-groups/${encodeURIComponent(groupName)}`, { body });
@@ -1127,7 +1157,7 @@ class CADManager extends BaseManager_1.BaseManager {
     }
     async createDispatchCallV2(data) {
         const resolvedServerId = this.resolveCadServerId(data.serverId);
-        const body = { ...data };
+        const body = this.normalizeV2TargetAliases({ ...data });
         delete body.serverId;
         return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/dispatch-calls`, { body });
     }
@@ -1141,13 +1171,13 @@ class CADManager extends BaseManager_1.BaseManager {
     async attachUnitsToDispatchCallV2(callId, data) {
         const resolvedServerId = this.resolveCadServerId(data.serverId);
         this.assertPositiveInteger(callId, 'callId');
-        const body = { ...data };
+        const body = this.normalizeV2TargetAliases({ ...data });
         delete body.serverId;
         return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/dispatch-calls/${callId}/attachments`, { body });
     }
     async detachUnitsFromDispatchCallV2(data) {
         const resolvedServerId = this.resolveCadServerId(data.serverId);
-        const body = { ...data };
+        const body = this.normalizeV2TargetAliases({ ...data });
         delete body.serverId;
         return this.executeCadV2Request('DELETE', `v2/emergency/servers/${resolvedServerId}/dispatch-calls/attachments`, { body });
     }

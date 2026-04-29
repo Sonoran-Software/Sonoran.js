@@ -210,6 +210,8 @@ export declare class CADManager extends BaseManager {
     remove911Call(serverId: number, callId: number): Promise<globalTypes.CADStandardResponse>;
     remove911Call(params: CADRemove911Struct): Promise<globalTypes.CADStandardResponse>;
     private normalizeRecordReplaceValues;
+    private normalizeV2TargetAliases;
+    private normalizeV2UnitLocationUpdates;
     /**
      * Retrieves dispatch calls with optional pagination.
      */
@@ -293,11 +295,15 @@ export declare class CADManager extends BaseManager {
     }): Promise<globalTypes.CADStandardResponse>;
     checkApiIdV2(apiId: string): Promise<globalTypes.CADStandardResponse>;
     applyPermissionKeyV2(data: {
-        apiId: string;
+        communityUserId?: string;
+        roblox?: number;
+        apiId?: string;
         permissionKey: string;
     }): Promise<globalTypes.CADStandardResponse>;
     banUserV2(data: {
         accountUuid?: string;
+        communityUserId?: string;
+        roblox?: number;
         apiId?: string;
         isBan?: boolean;
         isKick?: boolean;
@@ -313,6 +319,8 @@ export declare class CADManager extends BaseManager {
     getTemplatesV2(recordTypeId?: number): Promise<globalTypes.CADStandardResponse>;
     createRecordV2(data: {
         accountUuid?: string;
+        communityUserId?: string;
+        roblox?: number;
         apiId?: string;
         record?: unknown;
         useDictionary?: boolean;
@@ -322,6 +330,8 @@ export declare class CADManager extends BaseManager {
     }): Promise<globalTypes.CADStandardResponse>;
     updateRecordV2(recordId: number, data: {
         accountUuid?: string;
+        communityUserId?: string;
+        roblox?: number;
         apiId?: string;
         record?: unknown;
         useDictionary?: boolean;
@@ -333,6 +343,8 @@ export declare class CADManager extends BaseManager {
         recordTypeId: number;
         replaceValues: Record<string, unknown>;
         accountUuid?: string;
+        communityUserId?: string;
+        roblox?: number;
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     lookupV2(data: {
@@ -349,6 +361,7 @@ export declare class CADManager extends BaseManager {
         offset?: number;
         notifyAccountUuid?: string;
         notifyCommunityUserId?: string;
+        notifyRoblox?: number;
         notifyApiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     lookupByValueV2(data: {
@@ -358,6 +371,8 @@ export declare class CADManager extends BaseManager {
         limit?: number;
         offset?: number;
         notifyAccountUuid?: string;
+        notifyCommunityUserId?: string;
+        notifyRoblox?: number;
         notifyApiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     lookupCustomV2(data: {
@@ -370,6 +385,8 @@ export declare class CADManager extends BaseManager {
     }): Promise<globalTypes.CADStandardResponse>;
     getAccountV2(query?: {
         accountUuid?: string;
+        communityUserId?: string;
+        roblox?: number;
         apiId?: string;
         username?: string;
     }): Promise<globalTypes.CADStandardResponse>;
@@ -387,6 +404,8 @@ export declare class CADManager extends BaseManager {
     }): Promise<globalTypes.CADStandardResponse>;
     setAccountPermissionsV2(data: {
         accountUuid?: string;
+        communityUserId?: string;
+        roblox?: number;
         apiId?: string;
         username?: string;
         active?: boolean;
@@ -403,30 +422,42 @@ export declare class CADManager extends BaseManager {
     authorizeStreetSignsV2(serverId?: number): Promise<globalTypes.CADStandardResponse>;
     setPostalsV2(postals: CADSetPostalStruct[]): Promise<globalTypes.CADStandardResponse>;
     sendPhotoV2(data: {
-        apiId: string;
+        communityUserId?: string;
+        roblox?: number;
+        apiId?: string;
         url: string;
     }): Promise<globalTypes.CADStandardResponse>;
     getInfoV2(): Promise<globalTypes.CADStandardResponse>;
     getCharactersV2(query?: {
         accountUuid?: string;
+        communityUserId?: string;
+        roblox?: number;
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     removeCharacterV2(characterId: number): Promise<globalTypes.CADStandardResponse>;
     setSelectedCharacterV2(data: {
         characterId: string;
         accountUuid?: string;
+        communityUserId?: string;
+        roblox?: number;
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     getCharacterLinksV2(query?: {
         accountUuid?: string;
+        communityUserId?: string;
+        roblox?: number;
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     addCharacterLinkV2(syncId: string, data: {
         accountUuid?: string;
+        communityUserId?: string;
+        roblox?: number;
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     removeCharacterLinkV2(syncId: string, data: {
         accountUuid?: string;
+        communityUserId?: string;
+        roblox?: number;
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     getUnitsV2(query?: {
@@ -446,7 +477,9 @@ export declare class CADManager extends BaseManager {
     updateUnitLocationsV2(data: {
         serverId?: number;
         updates: Array<{
-            apiId: string;
+            communityUserId?: string;
+            roblox?: number;
+            apiId?: string;
             location: string;
             coordinates?: unknown;
             position?: unknown;
@@ -457,6 +490,9 @@ export declare class CADManager extends BaseManager {
     setUnitPanicV2(data: {
         serverId?: number;
         accountUuid?: string;
+        communityUserId?: string;
+        communityUserIds?: string[];
+        roblox?: number;
         apiId?: string;
         apiIds?: string[];
         identIds?: number[];
@@ -465,6 +501,9 @@ export declare class CADManager extends BaseManager {
     setUnitStatusV2(data: {
         serverId?: number;
         accountUuid?: string;
+        communityUserId?: string;
+        communityUserIds?: string[];
+        roblox?: number;
         apiId?: string;
         apiIds?: string[];
         identIds?: number[];
@@ -472,7 +511,9 @@ export declare class CADManager extends BaseManager {
     }): Promise<globalTypes.CADStandardResponse>;
     kickUnitV2(data: {
         serverId?: number;
-        apiId: string;
+        communityUserId?: string;
+        roblox?: number;
+        apiId?: string;
         reason: string;
     }): Promise<globalTypes.CADStandardResponse>;
     getIdentifiersV2(accountUuid: string): Promise<globalTypes.CADStandardResponse>;
@@ -516,6 +557,9 @@ export declare class CADManager extends BaseManager {
         serverId?: number;
         groupName: string;
         accountUuid?: string;
+        communityUserId?: string;
+        communityUserIds?: string[];
+        roblox?: number;
         apiId?: string;
         apiIds?: string[];
         identIds?: number[];
@@ -543,6 +587,8 @@ export declare class CADManager extends BaseManager {
         description: string;
         notes: unknown[];
         accounts?: string[];
+        communityUserIds?: string[];
+        roblox?: number;
         apiIds?: string[];
         metaData?: Record<string, string>;
         deleteAfterMinutes?: number;
@@ -566,6 +612,9 @@ export declare class CADManager extends BaseManager {
         serverId?: number;
         groupName?: string;
         accountUuid?: string;
+        communityUserId?: string;
+        communityUserIds?: string[];
+        roblox?: number;
         apiId?: string;
         apiIds?: string[];
         identIds?: number[];
@@ -574,6 +623,9 @@ export declare class CADManager extends BaseManager {
         serverId?: number;
         groupName?: string;
         accountUuid?: string;
+        communityUserId?: string;
+        communityUserIds?: string[];
+        roblox?: number;
         apiId?: string;
         apiIds?: string[];
         identIds?: number[];

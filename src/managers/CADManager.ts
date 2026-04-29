@@ -637,6 +637,41 @@ export class CADManager extends BaseManager {
     };
   }
 
+  private normalizeV2TargetAliases<T>(data: T): T {
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      return data;
+    }
+
+    const normalized = { ...(data as Record<string, unknown>) };
+
+    if (normalized.communityUserId === undefined && normalized.apiId !== undefined) {
+      normalized.communityUserId = normalized.apiId;
+    }
+    if (normalized.communityUserIds === undefined && normalized.apiIds !== undefined) {
+      normalized.communityUserIds = normalized.apiIds;
+    }
+    if (normalized.notifyCommunityUserId === undefined && normalized.notifyApiId !== undefined) {
+      normalized.notifyCommunityUserId = normalized.notifyApiId;
+    }
+
+    delete normalized.apiId;
+    delete normalized.apiIds;
+    delete normalized.notifyApiId;
+
+    return normalized as T;
+  }
+
+  private normalizeV2UnitLocationUpdates<T extends { updates?: Array<Record<string, unknown>> }>(data: T): T {
+    if (!data || typeof data !== 'object' || !Array.isArray(data.updates)) {
+      return data;
+    }
+
+    return {
+      ...data,
+      updates: data.updates.map((update) => this.normalizeV2TargetAliases(update))
+    };
+  }
+
   /**
    * Retrieves dispatch calls with optional pagination.
    */
@@ -1052,12 +1087,12 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('GET', `v2/general/api-ids/${encodeURIComponent(apiId)}`);
   }
 
-  public async applyPermissionKeyV2(data: { apiId: string; permissionKey: string }): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('POST', 'v2/general/permission-keys/applications', { body: data });
+  public async applyPermissionKeyV2(data: { communityUserId?: string; roblox?: number; apiId?: string; permissionKey: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/permission-keys/applications', { body: this.normalizeV2TargetAliases(data) });
   }
 
-  public async banUserV2(data: { accountUuid?: string; apiId?: string; isBan?: boolean; isKick?: boolean }): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('POST', 'v2/general/account-bans', { body: data });
+  public async banUserV2(data: { accountUuid?: string; communityUserId?: string; roblox?: number; apiId?: string; isBan?: boolean; isKick?: boolean }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/account-bans', { body: this.normalizeV2TargetAliases(data) });
   }
 
   public async setPenalCodesV2(codes: CADPenalCodeStruct[]): Promise<globalTypes.CADStandardResponse> {
@@ -1078,6 +1113,8 @@ export class CADManager extends BaseManager {
 
   public async createRecordV2(data: {
     accountUuid?: string;
+    communityUserId?: string;
+    roblox?: number;
     apiId?: string;
     record?: unknown;
     useDictionary?: boolean;
@@ -1085,13 +1122,15 @@ export class CADManager extends BaseManager {
     replaceValues?: Record<string, unknown>;
     deleteAfterMinutes?: number;
   }): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('POST', 'v2/general/records', { body: this.normalizeRecordReplaceValues(data) });
+    return this.executeCadV2Request('POST', 'v2/general/records', { body: this.normalizeV2TargetAliases(this.normalizeRecordReplaceValues(data)) });
   }
 
   public async updateRecordV2(
     recordId: number,
     data: {
       accountUuid?: string;
+      communityUserId?: string;
+      roblox?: number;
       apiId?: string;
       record?: unknown;
       useDictionary?: boolean;
@@ -1100,7 +1139,7 @@ export class CADManager extends BaseManager {
     }
   ): Promise<globalTypes.CADStandardResponse> {
     this.assertPositiveInteger(recordId, 'recordId');
-    return this.executeCadV2Request('PATCH', `v2/general/records/${recordId}`, { body: this.normalizeRecordReplaceValues(data) });
+    return this.executeCadV2Request('PATCH', `v2/general/records/${recordId}`, { body: this.normalizeV2TargetAliases(this.normalizeRecordReplaceValues(data)) });
   }
 
   public async removeRecordV2(recordId: number): Promise<globalTypes.CADStandardResponse> {
@@ -1108,8 +1147,8 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('DELETE', `v2/general/records/${recordId}`);
   }
 
-  public async sendRecordDraftV2(data: { recordTypeId: number; replaceValues: Record<string, unknown>; accountUuid?: string; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('POST', 'v2/general/record-drafts', { body: this.normalizeRecordReplaceValues(data) });
+  public async sendRecordDraftV2(data: { recordTypeId: number; replaceValues: Record<string, unknown>; accountUuid?: string; communityUserId?: string; roblox?: number; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/record-drafts', { body: this.normalizeV2TargetAliases(this.normalizeRecordReplaceValues(data)) });
   }
 
   public async lookupV2(data: {
@@ -1126,9 +1165,10 @@ export class CADManager extends BaseManager {
     offset?: number;
     notifyAccountUuid?: string;
     notifyCommunityUserId?: string;
+    notifyRoblox?: number;
     notifyApiId?: string;
   }): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('POST', 'v2/general/lookups', { body: data });
+    return this.executeCadV2Request('POST', 'v2/general/lookups', { body: this.normalizeV2TargetAliases(data) });
   }
 
   public async lookupByValueV2(data: {
@@ -1138,17 +1178,19 @@ export class CADManager extends BaseManager {
     limit?: number;
     offset?: number;
     notifyAccountUuid?: string;
+    notifyCommunityUserId?: string;
+    notifyRoblox?: number;
     notifyApiId?: string;
   }): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('POST', 'v2/general/lookups/by-value', { body: data });
+    return this.executeCadV2Request('POST', 'v2/general/lookups/by-value', { body: this.normalizeV2TargetAliases(data) });
   }
 
   public async lookupCustomV2(data: { map: string; value: string; types: number[]; partial?: boolean; limit?: number; offset?: number }): Promise<globalTypes.CADStandardResponse> {
     return this.executeCadV2Request('POST', 'v2/general/lookups/custom', { body: data });
   }
 
-  public async getAccountV2(query: { accountUuid?: string; apiId?: string; username?: string } = {}): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('GET', 'v2/general/accounts/account', { query });
+  public async getAccountV2(query: { accountUuid?: string; communityUserId?: string; roblox?: number; apiId?: string; username?: string } = {}): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', 'v2/general/accounts/account', { query: this.normalizeV2TargetAliases(query) });
   }
 
   public async getAccountsV2(query: { limit?: number; offset?: number; status?: string | number; username?: string } = {}): Promise<globalTypes.CADStandardResponse> {
@@ -1165,6 +1207,8 @@ export class CADManager extends BaseManager {
 
   public async setAccountPermissionsV2(data: {
     accountUuid?: string;
+    communityUserId?: string;
+    roblox?: number;
     apiId?: string;
     username?: string;
     active?: boolean;
@@ -1173,7 +1217,7 @@ export class CADManager extends BaseManager {
     set?: string[];
     join?: boolean;
   }): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('PATCH', 'v2/general/accounts/permissions', { body: data });
+    return this.executeCadV2Request('PATCH', 'v2/general/accounts/permissions', { body: this.normalizeV2TargetAliases(data) });
   }
 
   public async heartbeatV2(serverId: number | undefined, playerCount: number): Promise<globalTypes.CADStandardResponse> {
@@ -1208,16 +1252,16 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('PUT', 'v2/general/postals', { body: { postals } });
   }
 
-  public async sendPhotoV2(data: { apiId: string; url: string }): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('POST', 'v2/general/photos', { body: data });
+  public async sendPhotoV2(data: { communityUserId?: string; roblox?: number; apiId?: string; url: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/photos', { body: this.normalizeV2TargetAliases(data) });
   }
 
   public async getInfoV2(): Promise<globalTypes.CADStandardResponse> {
     return this.executeCadV2Request('GET', 'v2/general/info');
   }
 
-  public async getCharactersV2(query: { accountUuid?: string; apiId?: string } = {}): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('GET', 'v2/civilian/characters', { query });
+  public async getCharactersV2(query: { accountUuid?: string; communityUserId?: string; roblox?: number; apiId?: string } = {}): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', 'v2/civilian/characters', { query: this.normalizeV2TargetAliases(query) });
   }
 
   public async removeCharacterV2(characterId: number): Promise<globalTypes.CADStandardResponse> {
@@ -1225,20 +1269,20 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('DELETE', `v2/civilian/characters/${characterId}`);
   }
 
-  public async setSelectedCharacterV2(data: { characterId: string; accountUuid?: string; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('PUT', 'v2/civilian/selected-character', { body: data });
+  public async setSelectedCharacterV2(data: { characterId: string; accountUuid?: string; communityUserId?: string; roblox?: number; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('PUT', 'v2/civilian/selected-character', { body: this.normalizeV2TargetAliases(data) });
   }
 
-  public async getCharacterLinksV2(query: { accountUuid?: string; apiId?: string } = {}): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('GET', 'v2/civilian/character-links', { query });
+  public async getCharacterLinksV2(query: { accountUuid?: string; communityUserId?: string; roblox?: number; apiId?: string } = {}): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', 'v2/civilian/character-links', { query: this.normalizeV2TargetAliases(query) });
   }
 
-  public async addCharacterLinkV2(syncId: string, data: { accountUuid?: string; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('PUT', `v2/civilian/character-links/${encodeURIComponent(syncId)}`, { body: data });
+  public async addCharacterLinkV2(syncId: string, data: { accountUuid?: string; communityUserId?: string; roblox?: number; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('PUT', `v2/civilian/character-links/${encodeURIComponent(syncId)}`, { body: this.normalizeV2TargetAliases(data) });
   }
 
-  public async removeCharacterLinkV2(syncId: string, data: { accountUuid?: string; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('DELETE', `v2/civilian/character-links/${encodeURIComponent(syncId)}`, { body: data });
+  public async removeCharacterLinkV2(syncId: string, data: { accountUuid?: string; communityUserId?: string; roblox?: number; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('DELETE', `v2/civilian/character-links/${encodeURIComponent(syncId)}`, { body: this.normalizeV2TargetAliases(data) });
   }
 
   public async getUnitsV2(query: { serverId?: number; includeOffline?: boolean; onlyUnits?: boolean; limit?: number; offset?: number } = {}): Promise<globalTypes.CADStandardResponse> {
@@ -1271,7 +1315,9 @@ export class CADManager extends BaseManager {
   public async updateUnitLocationsV2(data: {
     serverId?: number;
     updates: Array<{
-      apiId: string;
+      communityUserId?: string;
+      roblox?: number;
+      apiId?: string;
       location: string;
       coordinates?: unknown;
       position?: unknown;
@@ -1281,20 +1327,23 @@ export class CADManager extends BaseManager {
   }): Promise<globalTypes.CADStandardResponse> {
     const resolvedServerId = this.resolveCadServerId(data.serverId);
     return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/unit-locations`, {
-      body: { updates: data.updates }
+      body: this.normalizeV2UnitLocationUpdates({ updates: data.updates })
     });
   }
 
   public async setUnitPanicV2(data: {
     serverId?: number;
     accountUuid?: string;
+    communityUserId?: string;
+    communityUserIds?: string[];
+    roblox?: number;
     apiId?: string;
     apiIds?: string[];
     identIds?: number[];
     isPanic: boolean;
   }): Promise<globalTypes.CADStandardResponse> {
     const resolvedServerId = this.resolveCadServerId(data.serverId);
-    const body = { ...data };
+    const body = this.normalizeV2TargetAliases({ ...data });
     delete body.serverId;
     return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/units/panic`, { body });
   }
@@ -1302,22 +1351,27 @@ export class CADManager extends BaseManager {
   public async setUnitStatusV2(data: {
     serverId?: number;
     accountUuid?: string;
+    communityUserId?: string;
+    communityUserIds?: string[];
+    roblox?: number;
     apiId?: string;
     apiIds?: string[];
     identIds?: number[];
     status: string | number;
   }): Promise<globalTypes.CADStandardResponse> {
     const resolvedServerId = this.resolveCadServerId(data.serverId);
-    const body = { ...data };
+    const body = this.normalizeV2TargetAliases({ ...data });
     delete body.serverId;
     return this.executeCadV2Request('PATCH', `v2/emergency/servers/${resolvedServerId}/units/status`, { body });
   }
 
-  public async kickUnitV2(data: { serverId?: number; apiId: string; reason: string }): Promise<globalTypes.CADStandardResponse> {
+  public async kickUnitV2(data: { serverId?: number; communityUserId?: string; roblox?: number; apiId?: string; reason: string }): Promise<globalTypes.CADStandardResponse> {
     const resolvedServerId = this.resolveCadServerId(data.serverId);
+    const target = this.normalizeV2TargetAliases(data);
     return this.executeCadV2Request('DELETE', `v2/emergency/servers/${resolvedServerId}/units/kick`, {
       body: {
-        apiId: data.apiId,
+        communityUserId: target.communityUserId,
+        roblox: target.roblox,
         reason: data.reason
       }
     });
@@ -1387,13 +1441,16 @@ export class CADManager extends BaseManager {
     serverId?: number;
     groupName: string;
     accountUuid?: string;
+    communityUserId?: string;
+    communityUserIds?: string[];
+    roblox?: number;
     apiId?: string;
     apiIds?: string[];
     identIds?: number[];
   }): Promise<globalTypes.CADStandardResponse> {
     const resolvedServerId = this.resolveCadServerId(data.serverId);
     const groupName = data.groupName;
-    const body = { ...data } as Record<string, unknown>;
+    const body = this.normalizeV2TargetAliases({ ...data }) as Record<string, unknown>;
     delete body.serverId;
     delete body.groupName;
     return this.executeCadV2Request('PUT', `v2/emergency/servers/${resolvedServerId}/identifier-groups/${encodeURIComponent(groupName)}`, { body });
@@ -1433,12 +1490,14 @@ export class CADManager extends BaseManager {
     description: string;
     notes: unknown[];
     accounts?: string[];
+    communityUserIds?: string[];
+    roblox?: number;
     apiIds?: string[];
     metaData?: Record<string, string>;
     deleteAfterMinutes?: number;
   }): Promise<globalTypes.CADStandardResponse> {
     const resolvedServerId = this.resolveCadServerId(data.serverId);
-    const body = { ...data };
+    const body = this.normalizeV2TargetAliases({ ...data });
     delete body.serverId;
     return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/dispatch-calls`, { body });
   }
@@ -1469,13 +1528,16 @@ export class CADManager extends BaseManager {
     serverId?: number;
     groupName?: string;
     accountUuid?: string;
+    communityUserId?: string;
+    communityUserIds?: string[];
+    roblox?: number;
     apiId?: string;
     apiIds?: string[];
     identIds?: number[];
   }): Promise<globalTypes.CADStandardResponse> {
     const resolvedServerId = this.resolveCadServerId(data.serverId);
     this.assertPositiveInteger(callId, 'callId');
-    const body = { ...data };
+    const body = this.normalizeV2TargetAliases({ ...data });
     delete body.serverId;
     return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/dispatch-calls/${callId}/attachments`, { body });
   }
@@ -1484,12 +1546,15 @@ export class CADManager extends BaseManager {
     serverId?: number;
     groupName?: string;
     accountUuid?: string;
+    communityUserId?: string;
+    communityUserIds?: string[];
+    roblox?: number;
     apiId?: string;
     apiIds?: string[];
     identIds?: number[];
   }): Promise<globalTypes.CADStandardResponse> {
     const resolvedServerId = this.resolveCadServerId(data.serverId);
-    const body = { ...data };
+    const body = this.normalizeV2TargetAliases({ ...data });
     delete body.serverId;
     return this.executeCadV2Request('DELETE', `v2/emergency/servers/${resolvedServerId}/dispatch-calls/attachments`, { body });
   }
