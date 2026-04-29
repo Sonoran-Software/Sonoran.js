@@ -1214,7 +1214,7 @@ class CADManager extends BaseManager_1.BaseManager {
     }
     async deleteBlipsV2(ids, serverId) {
         const resolvedServerId = this.resolveCadServerId(serverId);
-        return this.executeCadV2Request('DELETE', `v2/emergency/servers/${resolvedServerId}/blips`, {
+        return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/blips/delete`, {
             body: { ids }
         });
     }

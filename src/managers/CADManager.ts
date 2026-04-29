@@ -1590,7 +1590,7 @@ export class CADManager extends BaseManager {
 
   public async deleteBlipsV2(ids: number[], serverId?: number): Promise<globalTypes.CADStandardResponse> {
     const resolvedServerId = this.resolveCadServerId(serverId);
-    return this.executeCadV2Request('DELETE', `v2/emergency/servers/${resolvedServerId}/blips`, {
+    return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/blips/delete`, {
       body: { ids }
     });
   }
