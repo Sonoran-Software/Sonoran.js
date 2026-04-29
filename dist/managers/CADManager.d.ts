@@ -416,6 +416,9 @@ export declare class CADManager extends BaseManager {
     }): Promise<globalTypes.CADStandardResponse>;
     heartbeatV2(serverId: number | undefined, playerCount: number): Promise<globalTypes.CADStandardResponse>;
     getVersionV2(): Promise<globalTypes.CADStandardResponse>;
+    getTurnCredentialsV2(query?: {
+        userId?: string;
+    }): Promise<globalTypes.CADStandardResponse>;
     getServersV2(): Promise<globalTypes.CADStandardResponse>;
     setServersV2(servers: unknown[], deployMap?: boolean): Promise<globalTypes.CADStandardResponse>;
     verifySecretV2(secret: string): Promise<globalTypes.CADStandardResponse>;

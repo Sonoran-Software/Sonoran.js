@@ -1230,6 +1230,10 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('GET', 'v2/general/version');
   }
 
+  public async getTurnCredentialsV2(query: { userId?: string } = {}): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', 'v2/general/turn', { query });
+  }
+
   public async getServersV2(): Promise<globalTypes.CADStandardResponse> {
     return this.executeCadV2Request('GET', 'v2/general/servers');
   }

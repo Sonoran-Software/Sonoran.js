@@ -1011,6 +1011,9 @@ class CADManager extends BaseManager_1.BaseManager {
     async getVersionV2() {
         return this.executeCadV2Request('GET', 'v2/general/version');
     }
+    async getTurnCredentialsV2(query = {}) {
+        return this.executeCadV2Request('GET', 'v2/general/turn', { query });
+    }
     async getServersV2() {
         return this.executeCadV2Request('GET', 'v2/general/servers');
     }
