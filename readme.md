@@ -244,7 +244,7 @@ Emergency:
 - **`getUnitsV2({ serverId?, includeOffline?, onlyUnits?, limit?, offset? })`**
 - **`getCallsV2({ serverId?, closedLimit?, closedOffset?, type? })`**
 - **`getCurrentCallV2(accountUuid)`**
-- **`updateUnitLocationsV2({ serverId?, updates })`**
+- **`updateUnitLocationsV2({ serverId?, updates })`** where each update may target `communityUserId?`, `roblox?`, or legacy `apiId?`
 - **`setUnitPanicV2({ serverId?, accountUuid?, communityUserId?, communityUserIds?, roblox?, apiId?, apiIds?, identIds?, isPanic })`**
 - **`setUnitStatusV2({ serverId?, accountUuid?, communityUserId?, communityUserIds?, roblox?, apiId?, apiIds?, identIds?, status })`**
 - **`kickUnitV2({ serverId?, communityUserId?, roblox?, apiId?, reason })`**
