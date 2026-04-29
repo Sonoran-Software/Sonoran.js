@@ -209,6 +209,7 @@ export declare class CADManager extends BaseManager {
      */
     remove911Call(serverId: number, callId: number): Promise<globalTypes.CADStandardResponse>;
     remove911Call(params: CADRemove911Struct): Promise<globalTypes.CADStandardResponse>;
+    private normalizeRecordReplaceValues;
     /**
      * Retrieves dispatch calls with optional pagination.
      */
@@ -316,7 +317,7 @@ export declare class CADManager extends BaseManager {
         record?: unknown;
         useDictionary?: boolean;
         recordTypeId?: number;
-        replaceValues?: Record<string, string>;
+        replaceValues?: Record<string, unknown>;
         deleteAfterMinutes?: number;
     }): Promise<globalTypes.CADStandardResponse>;
     updateRecordV2(recordId: number, data: {
@@ -325,12 +326,12 @@ export declare class CADManager extends BaseManager {
         record?: unknown;
         useDictionary?: boolean;
         templateId?: number;
-        replaceValues?: Record<string, string>;
+        replaceValues?: Record<string, unknown>;
     }): Promise<globalTypes.CADStandardResponse>;
     removeRecordV2(recordId: number): Promise<globalTypes.CADStandardResponse>;
     sendRecordDraftV2(data: {
         recordTypeId: number;
-        replaceValues: Record<string, string>;
+        replaceValues: Record<string, unknown>;
         accountUuid?: string;
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;

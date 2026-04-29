@@ -557,6 +557,26 @@ class CADManager extends BaseManager_1.BaseManager {
         }
         return this.executeCadRequest('REMOVE_911', { serverId, callId: resolvedCallId });
     }
+    normalizeRecordReplaceValues(data) {
+        if (!data || typeof data !== 'object' || !data.replaceValues || typeof data.replaceValues !== 'object' || Array.isArray(data.replaceValues)) {
+            return data;
+        }
+        const replaceValues = {};
+        for (const [key, value] of Object.entries(data.replaceValues)) {
+            if (value === undefined || value === null) {
+                continue;
+            }
+            replaceValues[key] = typeof value === 'string'
+                ? value
+                : typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint'
+                    ? String(value)
+                    : JSON.stringify(value);
+        }
+        return {
+            ...data,
+            replaceValues
+        };
+    }
     /**
      * Retrieves dispatch calls with optional pagination.
      */
@@ -918,18 +938,18 @@ class CADManager extends BaseManager_1.BaseManager {
         return this.executeCadV2Request('GET', 'v2/general/templates');
     }
     async createRecordV2(data) {
-        return this.executeCadV2Request('POST', 'v2/general/records', { body: data });
+        return this.executeCadV2Request('POST', 'v2/general/records', { body: this.normalizeRecordReplaceValues(data) });
     }
     async updateRecordV2(recordId, data) {
         this.assertPositiveInteger(recordId, 'recordId');
-        return this.executeCadV2Request('PATCH', `v2/general/records/${recordId}`, { body: data });
+        return this.executeCadV2Request('PATCH', `v2/general/records/${recordId}`, { body: this.normalizeRecordReplaceValues(data) });
     }
     async removeRecordV2(recordId) {
         this.assertPositiveInteger(recordId, 'recordId');
         return this.executeCadV2Request('DELETE', `v2/general/records/${recordId}`);
     }
     async sendRecordDraftV2(data) {
-        return this.executeCadV2Request('POST', 'v2/general/record-drafts', { body: data });
+        return this.executeCadV2Request('POST', 'v2/general/record-drafts', { body: this.normalizeRecordReplaceValues(data) });
     }
     async lookupV2(data) {
         return this.executeCadV2Request('POST', 'v2/general/lookups', { body: data });

@@ -613,6 +613,30 @@ export class CADManager extends BaseManager {
     return this.executeCadRequest('REMOVE_911', { serverId, callId: resolvedCallId });
   }
 
+  private normalizeRecordReplaceValues<T extends { replaceValues?: Record<string, unknown> }>(data: T): T {
+    if (!data || typeof data !== 'object' || !data.replaceValues || typeof data.replaceValues !== 'object' || Array.isArray(data.replaceValues)) {
+      return data;
+    }
+
+    const replaceValues: Record<string, string> = {};
+    for (const [key, value] of Object.entries(data.replaceValues)) {
+      if (value === undefined || value === null) {
+        continue;
+      }
+
+      replaceValues[key] = typeof value === 'string'
+        ? value
+        : typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint'
+          ? String(value)
+          : JSON.stringify(value);
+    }
+
+    return {
+      ...data,
+      replaceValues
+    };
+  }
+
   /**
    * Retrieves dispatch calls with optional pagination.
    */
@@ -1058,10 +1082,10 @@ export class CADManager extends BaseManager {
     record?: unknown;
     useDictionary?: boolean;
     recordTypeId?: number;
-    replaceValues?: Record<string, string>;
+    replaceValues?: Record<string, unknown>;
     deleteAfterMinutes?: number;
   }): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('POST', 'v2/general/records', { body: data });
+    return this.executeCadV2Request('POST', 'v2/general/records', { body: this.normalizeRecordReplaceValues(data) });
   }
 
   public async updateRecordV2(
@@ -1072,11 +1096,11 @@ export class CADManager extends BaseManager {
       record?: unknown;
       useDictionary?: boolean;
       templateId?: number;
-      replaceValues?: Record<string, string>;
+      replaceValues?: Record<string, unknown>;
     }
   ): Promise<globalTypes.CADStandardResponse> {
     this.assertPositiveInteger(recordId, 'recordId');
-    return this.executeCadV2Request('PATCH', `v2/general/records/${recordId}`, { body: data });
+    return this.executeCadV2Request('PATCH', `v2/general/records/${recordId}`, { body: this.normalizeRecordReplaceValues(data) });
   }
 
   public async removeRecordV2(recordId: number): Promise<globalTypes.CADStandardResponse> {
@@ -1084,8 +1108,8 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('DELETE', `v2/general/records/${recordId}`);
   }
 
-  public async sendRecordDraftV2(data: { recordTypeId: number; replaceValues: Record<string, string>; accountUuid?: string; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
-    return this.executeCadV2Request('POST', 'v2/general/record-drafts', { body: data });
+  public async sendRecordDraftV2(data: { recordTypeId: number; replaceValues: Record<string, unknown>; accountUuid?: string; apiId?: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/record-drafts', { body: this.normalizeRecordReplaceValues(data) });
   }
 
   public async lookupV2(data: {
