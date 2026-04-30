@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { Instance } from '../instance/Instance';
 import { CADSubscriptionVersionEnum } from '../constants';
 import { REST } from '../libs/rest/src';
@@ -430,7 +431,21 @@ export declare class CADManager extends BaseManager {
         apiId?: string;
         url: string;
     }): Promise<globalTypes.CADStandardResponse>;
+    uploadBodycamRecordingV2(data: {
+        accountUuid?: string;
+        communityUserId?: string;
+        apiId?: string;
+        durationMs: number;
+        identId?: number;
+        unitNumber?: string;
+        unitLocation?: string;
+        fileName: string;
+        fileContent: Buffer | Uint8Array | ArrayBuffer | string;
+        contentType?: string;
+    }): Promise<globalTypes.CADStandardResponse>;
     getInfoV2(): Promise<globalTypes.CADStandardResponse>;
+    private buildCadV2MultipartBody;
+    private coerceCadV2MultipartFileContent;
     getCharactersV2(query?: {
         accountUuid?: string;
         communityUserId?: string;

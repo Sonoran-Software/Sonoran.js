@@ -231,6 +231,7 @@ General:
 - **`authorizeStreetSignsV2(serverId?)`**
 - **`setPostalsV2(postals)`**
 - **`sendPhotoV2({ communityUserId?, roblox?, apiId?, url })`**
+- **`uploadBodycamRecordingV2({ accountUuid?, communityUserId?, apiId?, durationMs, identId?, unitNumber?, unitLocation?, fileName, fileContent, contentType? })`**
 
 Civilian:
 - **`getCharactersV2({ accountUuid?, communityUserId?, roblox?, apiId? })`**

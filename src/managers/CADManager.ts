@@ -934,6 +934,8 @@ export class CADManager extends BaseManager {
     options: {
       query?: Record<string, unknown>;
       body?: unknown;
+      rawBody?: Buffer | string;
+      contentType?: string;
       authenticated?: boolean;
     } = {}
   ): Promise<globalTypes.CADStandardResponse<T>> {
@@ -944,7 +946,7 @@ export class CADManager extends BaseManager {
 
     const normalizedPath = path.replace(/^\/+/u, '');
     const url = new URL(`${baseUrl}/${normalizedPath}`);
-    const { query, body, authenticated = true } = options;
+    const { query, body, rawBody, contentType, authenticated = true } = options;
 
     if (query) {
       Object.entries(query).forEach(([key, value]) => this.appendCadV2QueryValue(url.searchParams, key, value));
@@ -965,7 +967,10 @@ export class CADManager extends BaseManager {
       headers
     };
 
-    if (body !== undefined) {
+    if (rawBody !== undefined) {
+      headers['Content-Type'] = contentType || 'application/octet-stream';
+      fetchOptions.body = rawBody;
+    } else if (body !== undefined) {
       headers['Content-Type'] = 'application/json';
       fetchOptions.body = JSON.stringify(body);
     }
@@ -1260,8 +1265,95 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('POST', 'v2/general/photos', { body: this.normalizeV2TargetAliases(data) });
   }
 
+  public async uploadBodycamRecordingV2(data: {
+    accountUuid?: string;
+    communityUserId?: string;
+    apiId?: string;
+    durationMs: number;
+    identId?: number;
+    unitNumber?: string;
+    unitLocation?: string;
+    fileName: string;
+    fileContent: Buffer | Uint8Array | ArrayBuffer | string;
+    contentType?: string;
+  }): Promise<globalTypes.CADStandardResponse> {
+    const normalized = this.normalizeV2TargetAliases({ ...data }) as Record<string, unknown>;
+    const fileName = String(normalized.fileName || '');
+    const fileContent = normalized.fileContent;
+    const multipartContentType = typeof normalized.contentType === 'string' && normalized.contentType
+      ? normalized.contentType
+      : 'video/webm';
+
+    delete normalized.fileName;
+    delete normalized.fileContent;
+    delete normalized.contentType;
+
+    if (!fileName) {
+      throw new Error('fileName is required when uploading a bodycam recording.');
+    }
+
+    const multipart = this.buildCadV2MultipartBody(normalized, fileName, fileContent, multipartContentType);
+    return this.executeCadV2Request('POST', 'v2/general/bodycam-recordings', {
+      rawBody: multipart.body,
+      contentType: multipart.contentType
+    });
+  }
+
   public async getInfoV2(): Promise<globalTypes.CADStandardResponse> {
     return this.executeCadV2Request('GET', 'v2/general/info');
+  }
+
+  private buildCadV2MultipartBody(
+    fields: Record<string, unknown>,
+    fileName: string,
+    fileContent: unknown,
+    contentType: string
+  ): { body: Buffer; contentType: string } {
+    const boundary = '----SonoranJsBodycamBoundary7MA4YWxkTrZu0gW';
+    const chunks: Buffer[] = [];
+
+    const append = (value: string | Buffer): void => {
+      chunks.push(typeof value === 'string' ? Buffer.from(value, 'utf8') : value);
+    };
+
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value === undefined || value === null) {
+        return;
+      }
+
+      append(`--${boundary}\r\n`);
+      append(`Content-Disposition: form-data; name="${key}"\r\n\r\n`);
+      append(`${String(value)}\r\n`);
+    });
+
+    append(`--${boundary}\r\n`);
+    append(`Content-Disposition: form-data; name="file"; filename="${fileName}"\r\n`);
+    append(`Content-Type: ${contentType}\r\n\r\n`);
+    append(this.coerceCadV2MultipartFileContent(fileContent));
+    append('\r\n');
+    append(`--${boundary}--\r\n`);
+
+    return {
+      body: Buffer.concat(chunks),
+      contentType: `multipart/form-data; boundary=${boundary}`
+    };
+  }
+
+  private coerceCadV2MultipartFileContent(fileContent: unknown): Buffer {
+    if (Buffer.isBuffer(fileContent)) {
+      return fileContent;
+    }
+    if (fileContent instanceof Uint8Array) {
+      return Buffer.from(fileContent);
+    }
+    if (fileContent instanceof ArrayBuffer) {
+      return Buffer.from(new Uint8Array(fileContent));
+    }
+    if (typeof fileContent === 'string') {
+      return Buffer.from(fileContent, 'utf8');
+    }
+
+    throw new Error('fileContent must be a Buffer, Uint8Array, ArrayBuffer, or string.');
   }
 
   public async getCharactersV2(query: { accountUuid?: string; communityUserId?: string; roblox?: number; apiId?: string } = {}): Promise<globalTypes.CADStandardResponse> {

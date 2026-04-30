@@ -823,7 +823,7 @@ class CADManager extends BaseManager_1.BaseManager {
         }
         const normalizedPath = path.replace(/^\/+/u, '');
         const url = new URL(`${baseUrl}/${normalizedPath}`);
-        const { query, body, authenticated = true } = options;
+        const { query, body, rawBody, contentType, authenticated = true } = options;
         if (query) {
             Object.entries(query).forEach(([key, value]) => this.appendCadV2QueryValue(url.searchParams, key, value));
         }
@@ -839,7 +839,11 @@ class CADManager extends BaseManager_1.BaseManager {
             method,
             headers
         };
-        if (body !== undefined) {
+        if (rawBody !== undefined) {
+            headers['Content-Type'] = contentType || 'application/octet-stream';
+            fetchOptions.body = rawBody;
+        }
+        else if (body !== undefined) {
             headers['Content-Type'] = 'application/json';
             fetchOptions.body = JSON.stringify(body);
         }
@@ -1034,8 +1038,67 @@ class CADManager extends BaseManager_1.BaseManager {
     async sendPhotoV2(data) {
         return this.executeCadV2Request('POST', 'v2/general/photos', { body: this.normalizeV2TargetAliases(data) });
     }
+    async uploadBodycamRecordingV2(data) {
+        const normalized = this.normalizeV2TargetAliases({ ...data });
+        const fileName = String(normalized.fileName || '');
+        const fileContent = normalized.fileContent;
+        const multipartContentType = typeof normalized.contentType === 'string' && normalized.contentType
+            ? normalized.contentType
+            : 'video/webm';
+        delete normalized.fileName;
+        delete normalized.fileContent;
+        delete normalized.contentType;
+        if (!fileName) {
+            throw new Error('fileName is required when uploading a bodycam recording.');
+        }
+        const multipart = this.buildCadV2MultipartBody(normalized, fileName, fileContent, multipartContentType);
+        return this.executeCadV2Request('POST', 'v2/general/bodycam-recordings', {
+            rawBody: multipart.body,
+            contentType: multipart.contentType
+        });
+    }
     async getInfoV2() {
         return this.executeCadV2Request('GET', 'v2/general/info');
+    }
+    buildCadV2MultipartBody(fields, fileName, fileContent, contentType) {
+        const boundary = '----SonoranJsBodycamBoundary7MA4YWxkTrZu0gW';
+        const chunks = [];
+        const append = (value) => {
+            chunks.push(typeof value === 'string' ? Buffer.from(value, 'utf8') : value);
+        };
+        Object.entries(fields).forEach(([key, value]) => {
+            if (value === undefined || value === null) {
+                return;
+            }
+            append(`--${boundary}\r\n`);
+            append(`Content-Disposition: form-data; name="${key}"\r\n\r\n`);
+            append(`${String(value)}\r\n`);
+        });
+        append(`--${boundary}\r\n`);
+        append(`Content-Disposition: form-data; name="file"; filename="${fileName}"\r\n`);
+        append(`Content-Type: ${contentType}\r\n\r\n`);
+        append(this.coerceCadV2MultipartFileContent(fileContent));
+        append('\r\n');
+        append(`--${boundary}--\r\n`);
+        return {
+            body: Buffer.concat(chunks),
+            contentType: `multipart/form-data; boundary=${boundary}`
+        };
+    }
+    coerceCadV2MultipartFileContent(fileContent) {
+        if (Buffer.isBuffer(fileContent)) {
+            return fileContent;
+        }
+        if (fileContent instanceof Uint8Array) {
+            return Buffer.from(fileContent);
+        }
+        if (fileContent instanceof ArrayBuffer) {
+            return Buffer.from(new Uint8Array(fileContent));
+        }
+        if (typeof fileContent === 'string') {
+            return Buffer.from(fileContent, 'utf8');
+        }
+        throw new Error('fileContent must be a Buffer, Uint8Array, ArrayBuffer, or string.');
     }
     async getCharactersV2(query = {}) {
         return this.executeCadV2Request('GET', 'v2/civilian/characters', { query: this.normalizeV2TargetAliases(query) });
