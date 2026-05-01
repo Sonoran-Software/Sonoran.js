@@ -268,6 +268,7 @@ Emergency:
 - **`getPagerConfigV2(serverId?)`**
 - **`setPagerConfigV2({ serverId?, natureWords, maxAddresses, maxBodyLength, nodes? })`**
 - **`setStationsV2(config, serverId?)`**
+  Sends `locations`, `tones`, and `unitColors` at the top level of the request body.
 - **`getBlipsV2(serverId?)`**
 - **`createBlipV2(data)`** / **`updateBlipV2(blipId, data)`** / **`deleteBlipsV2(ids, serverId?)`**
 

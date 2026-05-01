@@ -1731,7 +1731,7 @@ export class CADManager extends BaseManager {
   public async setStationsV2(config: unknown, serverId?: number): Promise<globalTypes.CADStandardResponse> {
     const resolvedServerId = this.resolveCadServerId(serverId);
     return this.executeCadV2Request('PUT', `v2/emergency/servers/${resolvedServerId}/stations`, {
-      body: { config }
+      body: config
     });
   }
 

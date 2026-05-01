@@ -1308,7 +1308,7 @@ class CADManager extends BaseManager_1.BaseManager {
     async setStationsV2(config, serverId) {
         const resolvedServerId = this.resolveCadServerId(serverId);
         return this.executeCadV2Request('PUT', `v2/emergency/servers/${resolvedServerId}/stations`, {
-            body: { config }
+            body: config
         });
     }
     async getBlipsV2(serverId) {
