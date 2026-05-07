@@ -13,7 +13,7 @@ export type InstanceOptions = {
   cmsApiKey?: string;
   cmsApiUrl?: string;
   cmsDefaultServerId?: number;
-  radioCommunityId?: string;
+  radioCommunityId?: string | number;
   radioApiKey?: string;
   radioApiUrl?: string;
   radioDefaultServerId?: number;

@@ -18,7 +18,7 @@ export class Instance extends EventEmitter {
   public cmsApiUrl: string = 'https://api.sonorancms.com';
   public cmsDefaultServerId: number = 1;
   public isCMSSuccessful: boolean = false;
-  public radioCommunityId: string | undefined;
+  public radioCommunityId: string | number | undefined;
   public radioApiKey: string | undefined;
   public radioApiUrl: string = 'https://api.sonoranradio.com';
   public radioDefaultServerId: number = 1;

@@ -717,6 +717,44 @@ export interface RadioMemberPermissionChange {
 	profilePerms?: RadioMemberProfilePermissionChange[];
 }
 
+export interface RadioGetMembersV2Query {
+	page?: number;
+	perPage?: number;
+	sortBy?: 'username' | 'displayName' | 'approved' | 'pending' | 'permission' | 'banned' | 'accId';
+	descending?: boolean;
+	status?: 'pending' | 'approved' | 'banned';
+	search?: string;
+}
+
+export interface RadioMemberProfilePermission {
+	id: number;
+	profileId: number;
+	canJoin: boolean;
+}
+
+export interface RadioMemberV2 {
+	accId: string;
+	username: string;
+	displayName: string;
+	permission: number;
+	profilePerms: RadioMemberProfilePermission[];
+	approved: boolean;
+	pending: boolean;
+	banned: boolean;
+}
+
+export interface RadioMembersV2Pagination {
+	page: number;
+	perPage: number;
+	total: number;
+	totalPages: number;
+}
+
+export interface RadioGetMembersV2Response {
+	members: RadioMemberV2[];
+	pagination: RadioMembersV2Pagination;
+}
+
 export type RadioSubscriptionLevel = 0 | 1 | 2;
 
 export interface RadioGetCommunityChannelsPromiseResult {

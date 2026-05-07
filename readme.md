@@ -639,6 +639,18 @@ Sets the user's radio display name.
 await instance.radio.setUserDisplayName('account-uuid', 'Dispatch 101');
 ```
 
+### getMembersV2(query, communityId?)
+Fetches paginated community members, including approval state, permission level, and per-profile access.
+```js
+const response = await instance.radio?.getMembersV2({
+  page: 1,
+  perPage: 25,
+  status: 'approved',
+  sortBy: 'username',
+  search: 'dispatch'
+}, 1);
+```
+
 ### approveMembers(accIds)
 Approves one or more pending community members.
 ```js

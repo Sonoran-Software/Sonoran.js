@@ -152,7 +152,10 @@ export class REST extends EventEmitter {
 				break;
 			}
 			case productEnums.RADIO: {
-				communityId = this.instance.radioCommunityId;
+				communityId =
+					typeof this.instance.radioCommunityId === 'undefined'
+						? undefined
+						: String(this.instance.radioCommunityId);
 				apiKey = this.instance.radioApiKey;
 				break;
 			}
