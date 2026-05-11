@@ -76,6 +76,19 @@ export class RadioManager extends BaseManager {
     return resolved;
   }
 
+  private withRadioRoomId(body: unknown): unknown {
+    if (body && typeof body === 'object' && !Array.isArray(body)) {
+      const normalizedBody = { ...(body as Record<string, unknown>) };
+      normalizedBody.roomId = this.resolveRadioRoomId();
+      return normalizedBody;
+    }
+
+    return {
+      roomId: this.resolveRadioRoomId(),
+      value: body,
+    };
+  }
+
   private async parseRadioV2Response(response: Response): Promise<unknown> {
     if (response.status === 204) {
       return null;
@@ -126,7 +139,7 @@ export class RadioManager extends BaseManager {
 
     if (options.body !== undefined) {
       headers['Content-Type'] = 'application/json';
-      fetchOptions.body = JSON.stringify(options.body);
+      fetchOptions.body = JSON.stringify(this.withRadioRoomId(options.body));
     }
 
     const response = await fetch(url.toString(), fetchOptions);
@@ -524,12 +537,11 @@ export class RadioManager extends BaseManager {
     communityId?: string | number;
   }): Promise<globalTypes.CADStandardResponse> {
     const resolvedCommunityId = this.resolveRadioCommunityId(data.communityId);
-    const roomId = this.resolveRadioRoomId();
     this.assertPositiveInteger(data.serverPort, 'serverPort');
     const { communityId: _legacyCommunityId, ...body } = data as typeof data & { roomId?: unknown; serverId?: unknown };
     delete body.roomId;
     delete body.serverId;
-    return this.executeRadioV2Request('POST', `v2/servers/${resolvedCommunityId}/server-ip`, { body: { roomId, ...body } });
+    return this.executeRadioV2Request('POST', `v2/servers/${resolvedCommunityId}/server-ip`, { body });
   }
 
   public async setInGameSpeakerLocationsV2(locations: globalTypes.RadioSpeakerLocation[], communityId?: string | number): Promise<globalTypes.CADStandardResponse> {
@@ -545,9 +557,8 @@ export class RadioManager extends BaseManager {
     communityId?: string | number,
   ): Promise<globalTypes.CADStandardResponse> {
     const resolvedCommunityId = this.resolveRadioCommunityId(communityId);
-    const roomId = this.resolveRadioRoomId();
     return this.executeRadioV2Request('POST', `v2/servers/${resolvedCommunityId}/tones/play`, {
-      body: { roomId, tones, playTo },
+      body: { tones, playTo },
     });
   }
 }
