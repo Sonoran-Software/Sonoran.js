@@ -15,9 +15,10 @@ const instance = Sonoran.instance({
   cadCommunityId: 'mycommunity',
   cadApiKey: 'DF58F1E-FD8A-44C5-BA',
   cmsCommunityId: 'mycommunity',
-  cmsApiKey: 'e6ba9d68-ca7a-4e59-a9e2-93e275b4e0bf'
-  radioCommunityId: 'mycommunity'
-  radioApiKey: 'e6ba9d68-ca7a-4e59-a9e2-93e275b4e0bf'
+  cmsApiKey: 'e6ba9d68-ca7a-4e59-a9e2-93e275b4e0bf',
+  radioCommunityId: 'mycommunity',
+  radioApiKey: 'e6ba9d68-ca7a-4e59-a9e2-93e275b4e0bf',
+  radioRoomId: 1
 });
 ```
 
@@ -648,8 +649,10 @@ const response = await instance.radio?.getMembersV2({
   status: 'approved',
   sortBy: 'username',
   search: 'dispatch'
-}, 1);
+});
 ```
+
+Radio v2 routes use the configured `communityId`. Room-scoped Radio v2 methods use the `roomId`/`radioRoomId` provided when creating the client.
 
 ### approveMembers(accIds)
 Approves one or more pending community members.

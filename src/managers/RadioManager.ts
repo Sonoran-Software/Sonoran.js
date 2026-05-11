@@ -52,8 +52,10 @@ export class RadioManager extends BaseManager {
   }
 
   private resolveRadioCommunityId(communityId?: string | number): string | number {
-    const resolved =
-      communityId ?? this.instance.radioCommunityId ?? this.instance.radioDefaultServerId;
+    const resolved = communityId ?? this.instance.radioCommunityId;
+    if (resolved === undefined || resolved === null) {
+      throw new Error('communityId is required.');
+    }
     if (typeof resolved === 'string') {
       const trimmed = resolved.trim();
       if (!trimmed) {
@@ -62,6 +64,15 @@ export class RadioManager extends BaseManager {
       return trimmed;
     }
     this.assertPositiveInteger(resolved, 'communityId');
+    return resolved;
+  }
+
+  private resolveRadioRoomId(): number {
+    const resolved = this.instance.radioRoomId;
+    if (resolved === undefined || resolved === null) {
+      throw new Error('roomId is required for Radio v2 room-scoped requests.');
+    }
+    this.assertPositiveInteger(resolved, 'roomId');
     return resolved;
   }
 
@@ -428,9 +439,9 @@ export class RadioManager extends BaseManager {
     });
   }
 
-  public async getConnectedUserV2(roomId: number, identity: string, communityId?: string | number): Promise<globalTypes.CADStandardResponse> {
+  public async getConnectedUserV2(identity: string, communityId?: string | number): Promise<globalTypes.CADStandardResponse> {
     const resolvedCommunityId = this.resolveRadioCommunityId(communityId);
-    this.assertPositiveInteger(roomId, 'roomId');
+    const roomId = this.resolveRadioRoomId();
     if (!identity) {
       throw new Error('identity is required.');
     }
@@ -438,13 +449,12 @@ export class RadioManager extends BaseManager {
   }
 
   public async setUserChannelsV2(
-    roomId: number,
     identity: string,
     options: globalTypes.RadioSetUserChannelsOptions = {},
     communityId?: string | number,
   ): Promise<globalTypes.CADStandardResponse> {
     const resolvedCommunityId = this.resolveRadioCommunityId(communityId);
-    this.assertPositiveInteger(roomId, 'roomId');
+    const roomId = this.resolveRadioRoomId();
     if (!identity) {
       throw new Error('identity is required.');
     }
@@ -457,9 +467,8 @@ export class RadioManager extends BaseManager {
     accId: string;
     displayName: string;
     communityId?: string | number;
-    serverId?: number;
   }): Promise<globalTypes.CADStandardResponse> {
-    const resolvedCommunityId = this.resolveRadioCommunityId(data.communityId ?? data.serverId);
+    const resolvedCommunityId = this.resolveRadioCommunityId(data.communityId);
     if (!data.accId) {
       throw new Error('accId is required.');
     }
@@ -508,19 +517,19 @@ export class RadioManager extends BaseManager {
   }
 
   public async setServerIpV2(data: {
-    roomId: number;
     serverPort: number;
     overridePushUrl?: string;
     pushUrl?: string;
     nickname?: string;
     communityId?: string | number;
-    serverId?: number;
   }): Promise<globalTypes.CADStandardResponse> {
-    const resolvedCommunityId = this.resolveRadioCommunityId(data.communityId ?? data.serverId);
-    this.assertPositiveInteger(data.roomId, 'roomId');
+    const resolvedCommunityId = this.resolveRadioCommunityId(data.communityId);
+    const roomId = this.resolveRadioRoomId();
     this.assertPositiveInteger(data.serverPort, 'serverPort');
-    const { serverId: _legacyServerId, communityId: _legacyCommunityId, ...body } = data;
-    return this.executeRadioV2Request('POST', `v2/servers/${resolvedCommunityId}/server-ip`, { body });
+    const { communityId: _legacyCommunityId, ...body } = data as typeof data & { roomId?: unknown; serverId?: unknown };
+    delete body.roomId;
+    delete body.serverId;
+    return this.executeRadioV2Request('POST', `v2/servers/${resolvedCommunityId}/server-ip`, { body: { roomId, ...body } });
   }
 
   public async setInGameSpeakerLocationsV2(locations: globalTypes.RadioSpeakerLocation[], communityId?: string | number): Promise<globalTypes.CADStandardResponse> {
@@ -531,13 +540,12 @@ export class RadioManager extends BaseManager {
   }
 
   public async playToneV2(
-    roomId: number,
     tones: Array<number | globalTypes.RadioTone>,
     playTo: globalTypes.RadioTonePlayTarget[],
     communityId?: string | number,
   ): Promise<globalTypes.CADStandardResponse> {
     const resolvedCommunityId = this.resolveRadioCommunityId(communityId);
-    this.assertPositiveInteger(roomId, 'roomId');
+    const roomId = this.resolveRadioRoomId();
     return this.executeRadioV2Request('POST', `v2/servers/${resolvedCommunityId}/tones/play`, {
       body: { roomId, tones, playTo },
     });

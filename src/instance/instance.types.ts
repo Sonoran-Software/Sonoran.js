@@ -5,6 +5,7 @@ export type InstanceOptions = {
   apiKey?: string;
   product?: globalTypes.productEnums;
   serverId?: number;
+  roomId?: number;
   cadCommunityId?: string;
   cadApiKey?: string;
   cadApiUrl?: string;
@@ -16,7 +17,7 @@ export type InstanceOptions = {
   radioCommunityId?: string | number;
   radioApiKey?: string;
   radioApiUrl?: string;
-  radioDefaultServerId?: number;
+  radioRoomId?: number;
   debug?: boolean;
   apiHeaders?: HeadersInit ;
 };
