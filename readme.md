@@ -18,8 +18,10 @@ const instance = Sonoran.instance({
   cmsApiKey: 'e6ba9d68-ca7a-4e59-a9e2-93e275b4e0bf',
   radioCommunityId: 'mycommunity',
   radioApiKey: 'e6ba9d68-ca7a-4e59-a9e2-93e275b4e0bf',
-  radioRoomId: 1
+  radioRoomId: 2
 });
+
+instance.setRoomId(1);
 ```
 
 Utilizing just Sonoran CMS or Sonoran CAD
@@ -652,7 +654,7 @@ const response = await instance.radio?.getMembersV2({
 });
 ```
 
-Radio v2 routes use the configured `communityId`. Room-scoped Radio v2 methods use the `roomId`/`radioRoomId` provided when creating the client.
+Radio v2 routes use the configured `communityId`. Room-scoped Radio v2 methods use the `roomId`/`radioRoomId` provided when creating the client. Use `instance.setRoomId(1)` to update the room used by later room-scoped requests without creating a new client.
 
 ### approveMembers(accIds)
 Approves one or more pending community members.

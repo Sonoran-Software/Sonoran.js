@@ -155,6 +155,15 @@ export class Instance extends EventEmitter {
     }
   }
 
+  public setRoomId(roomId: number): this {
+    if (!Number.isInteger(roomId) || roomId < 1) {
+      throw new Error('roomId must be a positive integer.');
+    }
+
+    this.radioRoomId = roomId;
+    return this;
+  }
+
   public _debugLog(message: string): void {
     if (this.debug) {
       debugLog(message);
