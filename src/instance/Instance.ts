@@ -74,7 +74,10 @@ export class Instance extends EventEmitter {
           case globalTypes.productEnums.RADIO: {
             this.radioCommunityId = options.communityId;
             this.radioApiKey = options.apiKey;
-            if (options.roomId !== undefined) {
+            if (options.radioRoomId !== undefined) {
+              this._debugLog(`Setting default Radio room id... ${options.radioRoomId}`);
+              this.radioRoomId = options.radioRoomId;
+            } else if (options.roomId !== undefined) {
               this._debugLog(`Setting default Radio room id... ${options.roomId}`);
               this.radioRoomId = options.roomId;
             }
