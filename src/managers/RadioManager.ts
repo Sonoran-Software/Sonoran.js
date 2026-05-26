@@ -511,6 +511,11 @@ export class RadioManager extends BaseManager {
     return this.executeRadioV2Request('POST', `v2/servers/${resolvedCommunityId}/members/ban`, { body: { accIds } });
   }
 
+  public async unbanMembersV2(accIds: string[], communityId?: string | number): Promise<globalTypes.CADStandardResponse> {
+    const resolvedCommunityId = this.resolveRadioCommunityId(communityId);
+    return this.executeRadioV2Request('POST', `v2/servers/${resolvedCommunityId}/members/unban`, { body: { accIds } });
+  }
+
   public async setMemberDisplayNamesV2(accNicknames: globalTypes.RadioMemberDisplayNameChange[], communityId?: string | number): Promise<globalTypes.CADStandardResponse> {
     const resolvedCommunityId = this.resolveRadioCommunityId(communityId);
     return this.executeRadioV2Request('PATCH', `v2/servers/${resolvedCommunityId}/members/display-names`, {
