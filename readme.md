@@ -215,14 +215,14 @@ General:
 - **`getLoginPageV2({ url?, communityId? })`**
 - **`getVersionV2()`** / **`getInfoV2()`**
 - **`checkApiIdV2(apiId)`**
-- **`getAccountV2({ accountUuid?, communityUserId?, roblox?, apiId?, username? })`**
+- **`getAccountV2({ accountUuid?, communityUserId?, roblox?, discord?, apiId?, username? })`**
 - **`getAccountsV2({ limit?, offset?, status?, username? })`**
 - **`createCommunityLinkV2({ communityUserId })`**
 - **`checkCommunityLinkV2({ communityUserId })`**
-- **`applyPermissionKeyV2({ communityUserId?, roblox?, apiId?, permissionKey })`**
-- **`banUserV2({ accountUuid?, communityUserId?, roblox?, apiId?, isBan?, isKick? })`**
+- **`applyPermissionKeyV2({ communityUserId?, roblox?, discord?, apiId?, permissionKey })`**
+- **`banUserV2({ accountUuid?, communityUserId?, roblox?, discord?, apiId?, isBan?, isKick? })`**
 - **`setPenalCodesV2(codes)`**
-- **`setApiIdsV2({ username?, accountUuid?, apiIds, sessionId?, pushNew? })`**
+- **`setApiIdsV2({ username?, accountUuid?, communityUserId?, roblox?, discord?, apiIds, sessionId?, pushNew? })`**
 - **`getTemplatesV2(recordTypeId?)`**
 - **`createRecordV2(data)`** / **`updateRecordV2(recordId, data)`** / **`removeRecordV2(recordId)`**
 - **`sendRecordDraftV2(data)`**
@@ -233,34 +233,34 @@ General:
 - **`verifySecretV2(secret)`**
 - **`authorizeStreetSignsV2(serverId?)`**
 - **`setPostalsV2(postals)`**
-- **`sendPhotoV2({ communityUserId?, roblox?, apiId?, url })`**
-- **`uploadBodycamRecordingV2({ accountUuid?, communityUserId?, apiId?, durationMs, identId?, unitNumber?, unitLocation?, fileName, fileContent, contentType? })`**
+- **`sendPhotoV2({ communityUserId?, roblox?, discord?, apiId?, url })`**
+- **`uploadBodycamRecordingV2({ accountUuid?, communityUserId?, roblox?, discord?, apiId?, durationMs, identId?, unitNumber?, unitLocation?, fileName, fileContent, contentType? })`**
 
 Civilian:
-- **`getCharactersV2({ accountUuid?, communityUserId?, roblox?, apiId? })`**
+- **`getCharactersV2({ accountUuid?, communityUserId?, roblox?, discord?, apiId? })`**
 - **`removeCharacterV2(characterId)`**
-- **`setSelectedCharacterV2({ characterId, accountUuid?, communityUserId?, roblox?, apiId? })`**
-- **`getCharacterLinksV2({ accountUuid?, communityUserId?, roblox?, apiId? })`**
-- **`addCharacterLinkV2(syncId, { accountUuid?, communityUserId?, roblox?, apiId? })`**
-- **`removeCharacterLinkV2(syncId, { accountUuid?, communityUserId?, roblox?, apiId? })`**
+- **`setSelectedCharacterV2({ characterId, accountUuid?, communityUserId?, roblox?, discord?, apiId? })`**
+- **`getCharacterLinksV2({ accountUuid?, communityUserId?, roblox?, discord?, apiId? })`**
+- **`addCharacterLinkV2(syncId, { accountUuid?, communityUserId?, roblox?, discord?, apiId? })`**
+- **`removeCharacterLinkV2(syncId, { accountUuid?, communityUserId?, roblox?, discord?, apiId? })`**
 
 Emergency:
 - **`getUnitsV2({ serverId?, includeOffline?, onlyUnits?, limit?, offset? })`**
 - **`getCallsV2({ serverId?, closedLimit?, closedOffset?, type? })`**
 - **`getCurrentCallV2(accountUuid)`**
-- **`updateUnitLocationsV2({ serverId?, updates })`** where each update may target `communityUserId?`, `roblox?`, or legacy `apiId?`
-- **`setUnitPanicV2({ serverId?, accountUuid?, communityUserId?, communityUserIds?, roblox?, apiId?, apiIds?, identIds?, isPanic })`**
-- **`setUnitStatusV2({ serverId?, accountUuid?, communityUserId?, communityUserIds?, roblox?, apiId?, apiIds?, identIds?, status })`**
-- **`kickUnitV2({ serverId?, communityUserId?, roblox?, apiId?, reason })`**
+- **`updateUnitLocationsV2({ serverId?, updates })`** where each update may target `communityUserId?`, `roblox?`, `discord?`, or legacy `apiId?`
+- **`setUnitPanicV2({ serverId?, accountUuid?, communityUserId?, communityUserIds?, roblox?, discord?, apiId?, apiIds?, identIds?, isPanic })`**
+- **`setUnitStatusV2({ serverId?, accountUuid?, communityUserId?, communityUserIds?, roblox?, discord?, apiId?, apiIds?, identIds?, status })`**
+- **`kickUnitV2({ serverId?, communityUserId?, roblox?, discord?, apiId?, reason })`**
 - **`getIdentifiersV2(accountUuid)`**
 - **`getAccountUnitsV2({ serverId?, accountUuid, onlyOnline?, onlyUnits?, limit?, offset? })`**
 - **`selectIdentifierV2(accountUuid, identId)`**
 - **`createIdentifierV2(accountUuid, data)`** / **`updateIdentifierV2(accountUuid, identId, data)`** / **`deleteIdentifierV2(accountUuid, identId)`**
-- **`addIdentifiersToGroupV2({ serverId?, groupName, accountUuid?, communityUserId?, communityUserIds?, roblox?, apiId?, apiIds?, identIds? })`**
+- **`addIdentifiersToGroupV2({ serverId?, groupName, accountUuid?, communityUserId?, communityUserIds?, roblox?, discord?, apiId?, apiIds?, identIds? })`**
 - **`createEmergencyCallV2(data)`** / **`deleteEmergencyCallV2(callId, serverId?)`**
 - **`createDispatchCallV2(data)`** / **`updateDispatchCallV2(callId, data)`**
-- **`attachUnitsToDispatchCallV2(callId, { serverId?, groupName?, accountUuid?, communityUserId?, communityUserIds?, roblox?, apiId?, apiIds?, identIds? })`**
-- **`detachUnitsFromDispatchCallV2({ serverId?, groupName?, accountUuid?, communityUserId?, communityUserIds?, roblox?, apiId?, apiIds?, identIds? })`**
+- **`attachUnitsToDispatchCallV2(callId, { serverId?, groupName?, accountUuid?, communityUserId?, communityUserIds?, roblox?, discord?, apiId?, apiIds?, identIds? })`**
+- **`detachUnitsFromDispatchCallV2({ serverId?, groupName?, accountUuid?, communityUserId?, communityUserIds?, roblox?, discord?, apiId?, apiIds?, identIds? })`**
 - **`setDispatchPostalV2(callId, postal, serverId?)`**
 - **`setDispatchPrimaryV2(callId, identId, trackPrimary?, serverId?)`**
 - **`addDispatchNoteV2(callId, { serverId?, note, noteType?, label? })`**

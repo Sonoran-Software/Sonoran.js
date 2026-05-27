@@ -1168,6 +1168,7 @@ class CADManager extends BaseManager_1.BaseManager {
             body: {
                 communityUserId: target.communityUserId,
                 roblox: target.roblox,
+                discord: target.discord,
                 reason: data.reason
             }
         });

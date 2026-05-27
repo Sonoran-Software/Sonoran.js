@@ -298,6 +298,7 @@ export declare class CADManager extends BaseManager {
     applyPermissionKeyV2(data: {
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
         permissionKey: string;
     }): Promise<globalTypes.CADStandardResponse>;
@@ -305,6 +306,7 @@ export declare class CADManager extends BaseManager {
         accountUuid?: string;
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
         isBan?: boolean;
         isKick?: boolean;
@@ -313,6 +315,9 @@ export declare class CADManager extends BaseManager {
     setApiIdsV2(data: {
         username?: string;
         accountUuid?: string;
+        communityUserId?: string;
+        roblox?: number;
+        discord?: string;
         apiIds: string[];
         sessionId?: string;
         pushNew?: boolean;
@@ -322,6 +327,7 @@ export declare class CADManager extends BaseManager {
         accountUuid?: string;
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
         record?: unknown;
         useDictionary?: boolean;
@@ -333,6 +339,7 @@ export declare class CADManager extends BaseManager {
         accountUuid?: string;
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
         record?: unknown;
         useDictionary?: boolean;
@@ -346,6 +353,7 @@ export declare class CADManager extends BaseManager {
         accountUuid?: string;
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     lookupV2(data: {
@@ -363,6 +371,7 @@ export declare class CADManager extends BaseManager {
         notifyAccountUuid?: string;
         notifyCommunityUserId?: string;
         notifyRoblox?: number;
+        notifyDiscord?: string;
         notifyApiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     lookupByValueV2(data: {
@@ -374,6 +383,7 @@ export declare class CADManager extends BaseManager {
         notifyAccountUuid?: string;
         notifyCommunityUserId?: string;
         notifyRoblox?: number;
+        notifyDiscord?: string;
         notifyApiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     lookupCustomV2(data: {
@@ -388,6 +398,7 @@ export declare class CADManager extends BaseManager {
         accountUuid?: string;
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
         username?: string;
     }): Promise<globalTypes.CADStandardResponse>;
@@ -407,6 +418,7 @@ export declare class CADManager extends BaseManager {
         accountUuid?: string;
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
         username?: string;
         active?: boolean;
@@ -428,12 +440,15 @@ export declare class CADManager extends BaseManager {
     sendPhotoV2(data: {
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
         url: string;
     }): Promise<globalTypes.CADStandardResponse>;
     uploadBodycamRecordingV2(data: {
         accountUuid?: string;
         communityUserId?: string;
+        roblox?: number;
+        discord?: string;
         apiId?: string;
         durationMs: number;
         identId?: number;
@@ -450,6 +465,7 @@ export declare class CADManager extends BaseManager {
         accountUuid?: string;
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     removeCharacterV2(characterId: number): Promise<globalTypes.CADStandardResponse>;
@@ -458,24 +474,28 @@ export declare class CADManager extends BaseManager {
         accountUuid?: string;
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     getCharacterLinksV2(query?: {
         accountUuid?: string;
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     addCharacterLinkV2(syncId: string, data: {
         accountUuid?: string;
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     removeCharacterLinkV2(syncId: string, data: {
         accountUuid?: string;
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
     getUnitsV2(query?: {
@@ -497,6 +517,7 @@ export declare class CADManager extends BaseManager {
         updates: Array<{
             communityUserId?: string;
             roblox?: number;
+            discord?: string;
             apiId?: string;
             location: string;
             coordinates?: unknown;
@@ -511,6 +532,7 @@ export declare class CADManager extends BaseManager {
         communityUserId?: string;
         communityUserIds?: string[];
         roblox?: number;
+        discord?: string;
         apiId?: string;
         apiIds?: string[];
         identIds?: number[];
@@ -522,6 +544,7 @@ export declare class CADManager extends BaseManager {
         communityUserId?: string;
         communityUserIds?: string[];
         roblox?: number;
+        discord?: string;
         apiId?: string;
         apiIds?: string[];
         identIds?: number[];
@@ -531,6 +554,7 @@ export declare class CADManager extends BaseManager {
         serverId?: number;
         communityUserId?: string;
         roblox?: number;
+        discord?: string;
         apiId?: string;
         reason: string;
     }): Promise<globalTypes.CADStandardResponse>;
@@ -578,6 +602,7 @@ export declare class CADManager extends BaseManager {
         communityUserId?: string;
         communityUserIds?: string[];
         roblox?: number;
+        discord?: string;
         apiId?: string;
         apiIds?: string[];
         identIds?: number[];
@@ -607,6 +632,7 @@ export declare class CADManager extends BaseManager {
         accounts?: string[];
         communityUserIds?: string[];
         roblox?: number;
+        discord?: string;
         apiIds?: string[];
         metaData?: Record<string, string>;
         deleteAfterMinutes?: number;
@@ -633,6 +659,7 @@ export declare class CADManager extends BaseManager {
         communityUserId?: string;
         communityUserIds?: string[];
         roblox?: number;
+        discord?: string;
         apiId?: string;
         apiIds?: string[];
         identIds?: number[];
@@ -644,6 +671,7 @@ export declare class CADManager extends BaseManager {
         communityUserId?: string;
         communityUserIds?: string[];
         roblox?: number;
+        discord?: string;
         apiId?: string;
         apiIds?: string[];
         identIds?: number[];
