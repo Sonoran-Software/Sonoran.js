@@ -22,6 +22,12 @@ export class RadioManager extends BaseManager {
   protected async buildManager(instance: Instance) {
     const mutableThis = this as Mutable<RadioManager>;
     try {
+      // Validate the configured community id and API key against the current
+      // v2 radio API before marking the manager as ready.
+      const response = await this.getCommunityChannelsV2();
+      if (!response.success) {
+        throw new Error(typeof response.reason === 'string' ? response.reason : JSON.stringify(response.reason));
+      }
       mutableThis.ready = true;
       instance.isRadioSuccessful = true;
       instance.emit('RADIO_SETUP_SUCCESSFUL');
