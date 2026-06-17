@@ -10,8 +10,8 @@ npm i @sonoransoftware/sonoran.js
 
 Utilizing Sonoran CMS, Sonoran CAD & Sonoran Radio
 ```js
-const Sonoran = require('sonoran.js');
-const instance = Sonoran.instance({
+const Sonoran = require('@sonoransoftware/sonoran.js');
+const instance = new Sonoran.Instance({
   cadCommunityId: 'mycommunity',
   cadApiKey: 'DF58F1E-FD8A-44C5-BA',
   cmsCommunityId: 'mycommunity',
@@ -26,8 +26,8 @@ instance.setRoomId(1);
 
 Utilizing just Sonoran CMS or Sonoran CAD
 ```js
-const Sonoran = require('sonoran.js');
-const instance = Sonoran.instance({
+const Sonoran = require('@sonoransoftware/sonoran.js');
+const instance = new Sonoran.Instance({
   communityId: 'mycommunity',
   apiKey: 'e6ba9d68-ca7a-4e59-a9e2-93e275b4e0bf',
   product: Sonoran.productEnums.CMS
@@ -36,8 +36,8 @@ const instance = Sonoran.instance({
 
 ## Example Method Usage
 ```js
-const Sonoran = require('sonoran.js');
-const instance = Sonoran.instance({
+const Sonoran = require('@sonoransoftware/sonoran.js');
+const instance = new Sonoran.Instance({
   communityId: 'mycommunity',
   apiKey: 'e6ba9d68-ca7a-4e59-a9e2-93e275b4e0bf',
   product: Sonoran.productEnums.CMS,
