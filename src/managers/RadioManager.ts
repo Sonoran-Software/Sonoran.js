@@ -458,6 +458,16 @@ export class RadioManager extends BaseManager {
     });
   }
 
+  public async getTransmissionsV2(
+    query: globalTypes.RadioGetTransmissionsV2Query = {},
+    communityId?: string | number,
+  ): Promise<globalTypes.CADStandardResponse<globalTypes.RadioGetTransmissionsV2Response>> {
+    const resolvedCommunityId = this.resolveRadioCommunityId(communityId);
+    return this.executeRadioV2Request('GET', `v2/servers/${resolvedCommunityId}/transmissions`, {
+      query: query as Record<string, unknown>,
+    });
+  }
+
   public async getConnectedUserV2(identity: string, communityId?: string | number): Promise<globalTypes.CADStandardResponse> {
     const resolvedCommunityId = this.resolveRadioCommunityId(communityId);
     const roomId = this.resolveRadioRoomId();

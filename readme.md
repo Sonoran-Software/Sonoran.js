@@ -654,6 +654,24 @@ const response = await instance.radio?.getMembersV2({
 });
 ```
 
+### getTransmissionsV2(query, communityId?)
+Fetches paginated recent transmission logs.
+```js
+const response = await instance.radio?.getTransmissionsV2({
+  page: 1,
+  perPage: 25
+});
+```
+
+### getTransmissionsV2(query, communityId?)
+Fetches paginated recent transmission logs.
+```js
+const response = await instance.radio?.getTransmissionsV2({
+  page: 1,
+  perPage: 25
+});
+```
+
 Radio v2 routes use the configured `communityId`. Room-scoped Radio v2 methods use the `roomId`/`radioRoomId` provided when creating the client. Use `instance.setRoomId(1)` to update the room used by later room-scoped requests without creating a new client.
 
 ### approveMembers(accIds)

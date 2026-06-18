@@ -755,6 +755,26 @@ export interface RadioGetMembersV2Response {
 	pagination: RadioMembersV2Pagination;
 }
 
+export interface RadioGetTransmissionsV2Query {
+	page?: number;
+	perPage?: number;
+}
+
+export interface RadioTransmissionV2 {
+	id: string;
+	serverId: number;
+	account: string;
+	channelId: number;
+	time: string;
+	audioUrl: string;
+	transcript: string;
+}
+
+export interface RadioGetTransmissionsV2Response {
+	transmissions: RadioTransmissionV2[];
+	pagination: RadioMembersV2Pagination;
+}
+
 export type RadioSubscriptionLevel = 0 | 1 | 2;
 
 export interface RadioGetCommunityChannelsPromiseResult {
