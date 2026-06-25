@@ -403,6 +403,45 @@ export interface CMSGetProfileFieldsPromiseResult {
 	data?: CMSProfileField[];
 }
 
+export interface CMSFormTemplateFieldSubmission {
+	fieldId: string;
+	value: unknown;
+}
+
+export interface CMSFormTemplateSubmissionAccount {
+	accId?: string;
+	discordId?: string;
+	username?: string;
+}
+
+export interface CMSFormTemplateSummary {
+	id: number;
+	label: string;
+	description: string;
+	disabled?: boolean;
+	locked?: boolean;
+	discordSubmissionEnabled?: boolean;
+	[key: string]: unknown;
+}
+
+export interface CMSGetFormTemplatesPromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSFormTemplateSummary[];
+}
+
+export interface CMSGetFormTemplatePromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: CMSFormTemplateSummary;
+}
+
+export interface CMSSubmitFormTemplatePromiseResult {
+	success: boolean;
+	reason?: string;
+	data?: unknown;
+}
+
 export interface CMSProfileFieldUpdate {
 	id: string;
 	value: unknown;

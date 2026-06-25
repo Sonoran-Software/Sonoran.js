@@ -1250,12 +1250,24 @@ export class CMSManager extends BaseManager {
     return this.executeCmsV2Request('POST', `v2/community/events/${encodeURIComponent(eventId)}/rsvps`, { body: data });
   }
 
+  public async getFormTemplatesV2(): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', 'v2/community/forms');
+  }
+
+  public async getFormTemplateV2(templateId: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/forms/${encodeURIComponent(templateId)}`);
+  }
+
   public async changeFormStageV2(formId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
     return this.executeCmsV2Request('PATCH', `v2/community/forms/${encodeURIComponent(formId)}/stage`, { body: data });
   }
 
   public async getFormSubmissionsV2(templateId: string, query?: Record<string, unknown>): Promise<globalTypes.CADStandardResponse> {
     return this.executeCmsV2Request('GET', `v2/community/forms/${encodeURIComponent(templateId)}/submissions`, { query });
+  }
+
+  public async submitFormTemplateV2(templateId: string, data: unknown): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('POST', `v2/community/forms/${encodeURIComponent(templateId)}/submissions`, { body: data });
   }
 
   public async getFormLockV2(templateId: string): Promise<globalTypes.CADStandardResponse> {

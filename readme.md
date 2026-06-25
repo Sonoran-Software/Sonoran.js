@@ -500,6 +500,30 @@ Toggles RSVP for an event for the provided account identifiers.
 await instance.cms.rsvp('event-id', { accId: 'account-uuid' });
 ```
 
+### getFormTemplates()
+Returns the community form templates available to the CMS API key.
+```js
+const forms = await instance.cms.getFormTemplates();
+```
+
+### getFormTemplate(templateId)
+Returns a single form template by ID.
+```js
+const form = await instance.cms.getFormTemplate(42);
+```
+
+### getFormTemplatesV2()
+Returns the community form templates from the CMS v2 API.
+```js
+const forms = await instance.cms.getFormTemplatesV2();
+```
+
+### getFormTemplateV2(templateId)
+Returns a single form template by ID from the CMS v2 API.
+```js
+const form = await instance.cms.getFormTemplateV2(42);
+```
+
 ### getFormSubmissions(templateId, options)
 Retrieves form submissions with optional pagination.
 ```js
@@ -517,6 +541,32 @@ const lockStatus = await instance.cms.getFormLockStatus(42);
 Sets the lock state for a form template.
 ```js
 const result = await instance.cms.setFormLockStatus(42, true); // lock form
+```
+
+### submitFormTemplate(templateId, payload)
+Submits a Discord-collected form payload.
+```js
+await instance.cms.submitFormTemplate(42, {
+  accId: 'account-uuid',
+  fields: [
+    { fieldId: 'field-id-1', value: 'Some answer' },
+    { fieldId: 'field-id-2', value: ['opt-a', 'opt-b'] }
+  ]
+});
+```
+
+### submitFormTemplateV2(templateId, payload)
+Submits a Discord-collected form payload through the CMS v2 API.
+```js
+await instance.cms.submitFormTemplateV2(42, {
+  accId: 'account-uuid',
+  discordId: '123456789012345678',
+  username: 'SomeUser',
+  fields: [
+    { fieldId: 'field-id-1', value: 'Some answer' },
+    { fieldId: 'field-id-2', value: ['opt-a', 'opt-b'] }
+  ]
+});
 ```
 
 ### changeFormStage(params)
