@@ -1270,6 +1270,10 @@ export class CMSManager extends BaseManager {
     return this.executeCmsV2Request('POST', `v2/community/forms/${encodeURIComponent(templateId)}/submissions`, { body: data });
   }
 
+  public async resolveDiscordAccountV2(discordId: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCmsV2Request('GET', `v2/community/accounts/discord/${encodeURIComponent(discordId)}`);
+  }
+
   public async getFormLockV2(templateId: string): Promise<globalTypes.CADStandardResponse> {
     return this.executeCmsV2Request('GET', `v2/community/forms/${encodeURIComponent(templateId)}/lock`);
   }
