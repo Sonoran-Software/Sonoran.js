@@ -1004,6 +1004,9 @@ class CADManager extends BaseManager_1.BaseManager {
     async checkCommunityLinkV2(data) {
         return this.executeCadV2Request('POST', 'v2/general/links/check', { body: data });
     }
+    async setCommunityLinkV2(data) {
+        return this.executeCadV2Request('POST', 'v2/general/links/set', { body: data });
+    }
     async setAccountPermissionsV2(data) {
         return this.executeCadV2Request('PATCH', 'v2/general/accounts/permissions', { body: this.normalizeV2TargetAliases(data) });
     }

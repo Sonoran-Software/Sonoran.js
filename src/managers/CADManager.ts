@@ -1214,6 +1214,10 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('POST', 'v2/general/links/check', { body: data });
   }
 
+  public async setCommunityLinkV2(data: { accountUuid: string; secretUuid: string; communityUserId: string }): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('POST', 'v2/general/links/set', { body: data });
+  }
+
   public async setAccountPermissionsV2(data: {
     accountUuid?: string;
     communityUserId?: string;

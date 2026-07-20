@@ -414,6 +414,11 @@ export declare class CADManager extends BaseManager {
     checkCommunityLinkV2(data: {
         communityUserId: string;
     }): Promise<globalTypes.CADStandardResponse>;
+    setCommunityLinkV2(data: {
+        accountUuid: string;
+        secretUuid: string;
+        communityUserId: string;
+    }): Promise<globalTypes.CADStandardResponse>;
     setAccountPermissionsV2(data: {
         accountUuid?: string;
         communityUserId?: string;

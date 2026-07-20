@@ -219,6 +219,7 @@ General:
 - **`getAccountsV2({ limit?, offset?, status?, username? })`**
 - **`createCommunityLinkV2({ communityUserId })`**
 - **`checkCommunityLinkV2({ communityUserId })`**
+- **`setCommunityLinkV2({ accountUuid, secretUuid, communityUserId })`**
 - **`applyPermissionKeyV2({ communityUserId?, roblox?, discord?, apiId?, permissionKey })`**
 - **`banUserV2({ accountUuid?, communityUserId?, roblox?, discord?, apiId?, isBan?, isKick? })`**
 - **`setPenalCodesV2(codes)`**
