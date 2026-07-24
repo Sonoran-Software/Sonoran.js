@@ -956,6 +956,9 @@ class CADManager extends BaseManager_1.BaseManager {
     async banUserV2(data) {
         return this.executeCadV2Request('POST', 'v2/general/account-bans', { body: this.normalizeV2TargetAliases(data) });
     }
+    async getPenalCodesV2() {
+        return this.executeCadV2Request('GET', 'v2/general/penal-codes');
+    }
     async setPenalCodesV2(codes) {
         return this.executeCadV2Request('PUT', 'v2/general/penal-codes', { body: { codes } });
     }

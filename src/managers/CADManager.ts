@@ -1100,6 +1100,10 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('POST', 'v2/general/account-bans', { body: this.normalizeV2TargetAliases(data) });
   }
 
+  public async getPenalCodesV2(): Promise<globalTypes.CADStandardResponse<CADPenalCodeStruct[]>> {
+    return this.executeCadV2Request<CADPenalCodeStruct[]>('GET', 'v2/general/penal-codes');
+  }
+
   public async setPenalCodesV2(codes: CADPenalCodeStruct[]): Promise<globalTypes.CADStandardResponse> {
     return this.executeCadV2Request('PUT', 'v2/general/penal-codes', { body: { codes } });
   }

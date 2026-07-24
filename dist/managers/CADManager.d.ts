@@ -311,6 +311,7 @@ export declare class CADManager extends BaseManager {
         isBan?: boolean;
         isKick?: boolean;
     }): Promise<globalTypes.CADStandardResponse>;
+    getPenalCodesV2(): Promise<globalTypes.CADStandardResponse<CADPenalCodeStruct[]>>;
     setPenalCodesV2(codes: CADPenalCodeStruct[]): Promise<globalTypes.CADStandardResponse>;
     setApiIdsV2(data: {
         username?: string;

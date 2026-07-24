@@ -222,7 +222,7 @@ General:
 - **`setCommunityLinkV2({ accountUuid, secretUuid, communityUserId })`**
 - **`applyPermissionKeyV2({ communityUserId?, roblox?, discord?, apiId?, permissionKey })`**
 - **`banUserV2({ accountUuid?, communityUserId?, roblox?, discord?, apiId?, isBan?, isKick? })`**
-- **`setPenalCodesV2(codes)`**
+- **`getPenalCodesV2()`** / **`setPenalCodesV2(codes)`**
 - **`setApiIdsV2({ username?, accountUuid?, communityUserId?, roblox?, discord?, apiIds, sessionId?, pushNew? })`**
 - **`getTemplatesV2(recordTypeId?)`**
 - **`createRecordV2(data)`** / **`updateRecordV2(recordId, data)`** / **`removeRecordV2(recordId)`**
