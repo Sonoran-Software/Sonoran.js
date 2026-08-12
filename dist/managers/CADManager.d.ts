@@ -623,6 +623,7 @@ export declare class CADManager extends BaseManager {
         metaData?: Record<string, string>;
     }): Promise<globalTypes.CADStandardResponse>;
     deleteEmergencyCallV2(callId: number, serverId?: number): Promise<globalTypes.CADStandardResponse>;
+    getDispatchTemplatesV2(templateId?: number): Promise<globalTypes.CADStandardResponse>;
     createDispatchCallV2(data: {
         serverId?: number;
         origin: string | number;
@@ -639,6 +640,23 @@ export declare class CADManager extends BaseManager {
         communityUserIds?: string[];
         roblox?: number;
         discord?: string;
+        apiIds?: string[];
+        metaData?: Record<string, string>;
+        deleteAfterMinutes?: number;
+    }): Promise<globalTypes.CADStandardResponse>;
+    createCustomDispatchCallV2(data: {
+        serverId?: number;
+        templateId: number;
+        values: Record<string, unknown>;
+        notes?: unknown[];
+        accountUuid?: string;
+        accounts?: string[];
+        communityUserId?: string;
+        communityUserIds?: string[];
+        identIds?: number[];
+        roblox?: number;
+        discord?: string;
+        apiId?: string;
         apiIds?: string[];
         metaData?: Record<string, string>;
         deleteAfterMinutes?: number;

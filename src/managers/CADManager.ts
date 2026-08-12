@@ -1593,6 +1593,14 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('DELETE', `v2/emergency/servers/${resolvedServerId}/calls/911/${callId}`);
   }
 
+  public async getDispatchTemplatesV2(templateId?: number): Promise<globalTypes.CADStandardResponse> {
+    if (templateId !== undefined) {
+      this.assertPositiveInteger(templateId, 'templateId');
+      return this.executeCadV2Request('GET', `v2/emergency/dispatch-templates/${templateId}`);
+    }
+    return this.executeCadV2Request('GET', 'v2/emergency/dispatch-templates');
+  }
+
   public async createDispatchCallV2(data: {
     serverId?: number;
     origin: string | number;
@@ -1617,6 +1625,29 @@ export class CADManager extends BaseManager {
     const body = this.normalizeV2TargetAliases({ ...data });
     delete body.serverId;
     return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/dispatch-calls`, { body });
+  }
+
+  public async createCustomDispatchCallV2(data: {
+    serverId?: number;
+    templateId: number;
+    values: Record<string, unknown>;
+    notes?: unknown[];
+    accountUuid?: string;
+    accounts?: string[];
+    communityUserId?: string;
+    communityUserIds?: string[];
+    identIds?: number[];
+    roblox?: number;
+    discord?: string;
+    apiId?: string;
+    apiIds?: string[];
+    metaData?: Record<string, string>;
+    deleteAfterMinutes?: number;
+  }): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    const body = this.normalizeV2TargetAliases({ ...data });
+    delete body.serverId;
+    return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/custom-dispatch-calls`, { body });
   }
 
   public async updateDispatchCallV2(callId: number, data: {

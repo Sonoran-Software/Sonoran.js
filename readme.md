@@ -259,7 +259,8 @@ Emergency:
 - **`createIdentifierV2(accountUuid, data)`** / **`updateIdentifierV2(accountUuid, identId, data)`** / **`deleteIdentifierV2(accountUuid, identId)`**
 - **`addIdentifiersToGroupV2({ serverId?, groupName, accountUuid?, communityUserId?, communityUserIds?, roblox?, discord?, apiId?, apiIds?, identIds? })`**
 - **`createEmergencyCallV2(data)`** / **`deleteEmergencyCallV2(callId, serverId?)`**
-- **`createDispatchCallV2(data)`** / **`updateDispatchCallV2(callId, data)`**
+- **`getDispatchTemplatesV2(templateId?)`**
+- **`createDispatchCallV2(data)`** / **`createCustomDispatchCallV2(data)`** / **`updateDispatchCallV2(callId, data)`**
 - **`attachUnitsToDispatchCallV2(callId, { serverId?, groupName?, accountUuid?, communityUserId?, communityUserIds?, roblox?, discord?, apiId?, apiIds?, identIds? })`**
 - **`detachUnitsFromDispatchCallV2({ serverId?, groupName?, accountUuid?, communityUserId?, communityUserIds?, roblox?, discord?, apiId?, apiIds?, identIds? })`**
 - **`setDispatchPostalV2(callId, postal, serverId?)`**

@@ -1228,11 +1228,24 @@ class CADManager extends BaseManager_1.BaseManager {
         this.assertPositiveInteger(callId, 'callId');
         return this.executeCadV2Request('DELETE', `v2/emergency/servers/${resolvedServerId}/calls/911/${callId}`);
     }
+    async getDispatchTemplatesV2(templateId) {
+        if (templateId !== undefined) {
+            this.assertPositiveInteger(templateId, 'templateId');
+            return this.executeCadV2Request('GET', `v2/emergency/dispatch-templates/${templateId}`);
+        }
+        return this.executeCadV2Request('GET', 'v2/emergency/dispatch-templates');
+    }
     async createDispatchCallV2(data) {
         const resolvedServerId = this.resolveCadServerId(data.serverId);
         const body = this.normalizeV2TargetAliases({ ...data });
         delete body.serverId;
         return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/dispatch-calls`, { body });
+    }
+    async createCustomDispatchCallV2(data) {
+        const resolvedServerId = this.resolveCadServerId(data.serverId);
+        const body = this.normalizeV2TargetAliases({ ...data });
+        delete body.serverId;
+        return this.executeCadV2Request('POST', `v2/emergency/servers/${resolvedServerId}/custom-dispatch-calls`, { body });
     }
     async updateDispatchCallV2(callId, data) {
         const resolvedServerId = this.resolveCadServerId(data.serverId);
