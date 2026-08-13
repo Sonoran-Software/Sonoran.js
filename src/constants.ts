@@ -714,6 +714,45 @@ export interface RadioSpeakerLocation {
 	id: string;
 }
 
+export type RadioMutableZoneType = 'geo' | 'degrade';
+
+export interface RadioZonePoint {
+	x: number;
+	y: number;
+}
+
+export interface RadioGeoZone {
+	points: RadioZonePoint[];
+	options: {
+		name: string;
+		minZ: number;
+		maxZ: number;
+		zoneType?: 'geo';
+		transmitChannels: number[];
+		scanChannels: number[];
+		acePerms: string[];
+	};
+}
+
+export interface RadioDegradeZone {
+	points: RadioZonePoint[];
+	options: {
+		name: string;
+		minZ: number;
+		maxZ: number;
+		zoneType?: 'degrade';
+		degradeStrength: number;
+	};
+}
+
+export type RadioMutableZone = RadioGeoZone | RadioDegradeZone;
+
+export interface RadioZonesV2Response {
+	roomId: number;
+	geoZones: RadioGeoZone[];
+	degradeZones: RadioDegradeZone[];
+}
+
 export type RadioTonePlayTargetType = 'channel' | 'group' | 'game';
 
 export interface RadioTonePlayTarget {

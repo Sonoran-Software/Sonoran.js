@@ -82,6 +82,12 @@ export class RadioManager extends BaseManager {
     return resolved;
   }
 
+  private assertMutableZoneType(zoneType: string): asserts zoneType is globalTypes.RadioMutableZoneType {
+    if (zoneType !== 'geo' && zoneType !== 'degrade') {
+      throw new Error('zoneType must be either geo or degrade.');
+    }
+  }
+
   private withRadioRoomId(body: unknown): unknown {
     if (body && typeof body === 'object' && !Array.isArray(body)) {
       const normalizedBody = { ...(body as Record<string, unknown>) };
@@ -441,6 +447,54 @@ export class RadioManager extends BaseManager {
   public async getCommunityChannelsV2(communityId?: string | number): Promise<globalTypes.CADStandardResponse> {
     const resolvedCommunityId = this.resolveRadioCommunityId(communityId);
     return this.executeRadioV2Request('GET', `v2/servers/${resolvedCommunityId}/channels`);
+  }
+
+  public async getZonesV2(
+    communityId?: string | number,
+  ): Promise<globalTypes.CADStandardResponse<globalTypes.RadioZonesV2Response>> {
+    const resolvedCommunityId = this.resolveRadioCommunityId(communityId);
+    const roomId = this.resolveRadioRoomId();
+    return this.executeRadioV2Request('GET', `v2/servers/${resolvedCommunityId}/rooms/${roomId}/zones`);
+  }
+
+  public async createZoneV2(
+    zoneType: globalTypes.RadioMutableZoneType,
+    zone: globalTypes.RadioMutableZone,
+    communityId?: string | number,
+  ): Promise<globalTypes.CADStandardResponse<globalTypes.RadioZonesV2Response>> {
+    this.assertMutableZoneType(zoneType);
+    const resolvedCommunityId = this.resolveRadioCommunityId(communityId);
+    const roomId = this.resolveRadioRoomId();
+    return this.executeRadioV2Request('POST', `v2/servers/${resolvedCommunityId}/rooms/${roomId}/zones/${zoneType}`, {
+      body: { zone },
+    });
+  }
+
+  public async updateZoneV2(
+    zoneType: globalTypes.RadioMutableZoneType,
+    zoneName: string,
+    zone: globalTypes.RadioMutableZone,
+    communityId?: string | number,
+  ): Promise<globalTypes.CADStandardResponse<globalTypes.RadioZonesV2Response>> {
+    this.assertMutableZoneType(zoneType);
+    const resolvedCommunityId = this.resolveRadioCommunityId(communityId);
+    const roomId = this.resolveRadioRoomId();
+    if (!zoneName?.trim()) throw new Error('zoneName is required.');
+    return this.executeRadioV2Request('PATCH', `v2/servers/${resolvedCommunityId}/rooms/${roomId}/zones/${zoneType}/${encodeURIComponent(zoneName)}`, {
+      body: { zone },
+    });
+  }
+
+  public async deleteZoneV2(
+    zoneType: globalTypes.RadioMutableZoneType,
+    zoneName: string,
+    communityId?: string | number,
+  ): Promise<globalTypes.CADStandardResponse<globalTypes.RadioZonesV2Response>> {
+    this.assertMutableZoneType(zoneType);
+    const resolvedCommunityId = this.resolveRadioCommunityId(communityId);
+    const roomId = this.resolveRadioRoomId();
+    if (!zoneName?.trim()) throw new Error('zoneName is required.');
+    return this.executeRadioV2Request('DELETE', `v2/servers/${resolvedCommunityId}/rooms/${roomId}/zones/${zoneType}/${encodeURIComponent(zoneName)}`);
   }
 
   public async getConnectedUsersV2(communityId?: string | number): Promise<globalTypes.CADStandardResponse> {
