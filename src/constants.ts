@@ -721,8 +721,11 @@ export interface RadioZonePoint {
 	y: number;
 }
 
-export interface RadioGeoZone {
-	points: RadioZonePoint[];
+export type RadioZoneShape =
+	| { points: RadioZonePoint[]; center?: never; radius?: never }
+	| { points?: never; center: RadioZonePoint; radius: number };
+
+export type RadioGeoZone = RadioZoneShape & {
 	options: {
 		name: string;
 		minZ: number;
@@ -732,10 +735,9 @@ export interface RadioGeoZone {
 		scanChannels: number[];
 		acePerms: string[];
 	};
-}
+};
 
-export interface RadioDegradeZone {
-	points: RadioZonePoint[];
+export type RadioDegradeZone = RadioZoneShape & {
 	options: {
 		name: string;
 		minZ: number;
@@ -743,7 +745,7 @@ export interface RadioDegradeZone {
 		zoneType?: 'degrade';
 		degradeStrength: number;
 	};
-}
+};
 
 export type RadioMutableZone = RadioGeoZone | RadioDegradeZone;
 
