@@ -1354,6 +1354,41 @@ class CADManager extends BaseManager_1.BaseManager {
             body: { ids }
         });
     }
+    /** Lists all active custom integration panels and their stored instances. */
+    async getIntegrationPanelsV2() {
+        return this.executeCadV2Request('GET', 'v2/integration-panels');
+    }
+    /** Gets one custom integration panel by key. */
+    async getIntegrationPanelV2(panelKey) {
+        return this.executeCadV2Request('GET', `v2/integration-panels/${encodeURIComponent(panelKey)}`);
+    }
+    /** Creates or replaces a custom integration panel definition. */
+    async setIntegrationPanelV2(panelKey, definition) {
+        return this.executeCadV2Request('PUT', `v2/integration-panels/${encodeURIComponent(panelKey)}`, {
+            body: { definition }
+        });
+    }
+    /** Disables a custom integration panel. */
+    async deleteIntegrationPanelV2(panelKey) {
+        return this.executeCadV2Request('DELETE', `v2/integration-panels/${encodeURIComponent(panelKey)}`);
+    }
+    /** Replaces one panel instance's state and pushes it live to connected CAD clients. */
+    async setIntegrationPanelStateV2(panelKey, instanceKey, state, serverId) {
+        const resolvedServerId = this.resolveCadServerId(serverId);
+        return this.executeCadV2Request('PUT', `v2/integration-panels/servers/${resolvedServerId}/panels/${encodeURIComponent(panelKey)}/instances/${encodeURIComponent(instanceKey)}/state`, { body: { state } });
+    }
+    /** Polls pending CAD user actions for a panel. */
+    async getIntegrationPanelActionsV2(panelKey, query = {}) {
+        const resolvedServerId = this.resolveCadServerId(query.serverId);
+        return this.executeCadV2Request('GET', `v2/integration-panels/servers/${resolvedServerId}/panels/${encodeURIComponent(panelKey)}/actions`, { query: { after: query.after, limit: query.limit } });
+    }
+    /** Acknowledges a processed CAD user action. */
+    async acknowledgeIntegrationPanelActionV2(panelKey, eventId, data) {
+        const resolvedServerId = this.resolveCadServerId(data.serverId);
+        const body = { ...data };
+        delete body.serverId;
+        return this.executeCadV2Request('POST', `v2/integration-panels/servers/${resolvedServerId}/panels/${encodeURIComponent(panelKey)}/actions/${encodeURIComponent(eventId)}/ack`, { body });
+    }
     normalizeAccountEntries(input) {
         const entries = Array.isArray(input) ? input : [input];
         return entries

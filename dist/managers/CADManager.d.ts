@@ -749,5 +749,19 @@ export declare class CADManager extends BaseManager {
         radius?: number;
     }): Promise<globalTypes.CADStandardResponse>;
     deleteBlipsV2(ids: number[], serverId?: number): Promise<globalTypes.CADStandardResponse>;
+    /** Lists all active custom integration panels and their stored instances. */
+    getIntegrationPanelsV2(): Promise<globalTypes.CADStandardResponse>;
+    /** Gets one custom integration panel by key. */
+    getIntegrationPanelV2(panelKey: string): Promise<globalTypes.CADStandardResponse>;
+    /** Creates or replaces a custom integration panel definition. */
+    setIntegrationPanelV2(panelKey: string, definition: globalTypes.IntegrationPanelDefinitionV2): Promise<globalTypes.CADStandardResponse>;
+    /** Disables a custom integration panel. */
+    deleteIntegrationPanelV2(panelKey: string): Promise<globalTypes.CADStandardResponse>;
+    /** Replaces one panel instance's state and pushes it live to connected CAD clients. */
+    setIntegrationPanelStateV2(panelKey: string, instanceKey: string, state: globalTypes.IntegrationPanelJsonObject, serverId?: number): Promise<globalTypes.CADStandardResponse>;
+    /** Polls pending CAD user actions for a panel. */
+    getIntegrationPanelActionsV2(panelKey: string, query?: globalTypes.GetIntegrationPanelActionsV2Query): Promise<globalTypes.CADStandardResponse>;
+    /** Acknowledges a processed CAD user action. */
+    acknowledgeIntegrationPanelActionV2(panelKey: string, eventId: string, data: globalTypes.AcknowledgeIntegrationPanelActionV2Request): Promise<globalTypes.CADStandardResponse>;
     private normalizeAccountEntries;
 }

@@ -1834,6 +1834,75 @@ export class CADManager extends BaseManager {
     });
   }
 
+  /** Lists all active custom integration panels and their stored instances. */
+  public async getIntegrationPanelsV2(): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', 'v2/integration-panels');
+  }
+
+  /** Gets one custom integration panel by key. */
+  public async getIntegrationPanelV2(panelKey: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('GET', `v2/integration-panels/${encodeURIComponent(panelKey)}`);
+  }
+
+  /** Creates or replaces a custom integration panel definition. */
+  public async setIntegrationPanelV2(
+    panelKey: string,
+    definition: globalTypes.IntegrationPanelDefinitionV2
+  ): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('PUT', `v2/integration-panels/${encodeURIComponent(panelKey)}`, {
+      body: { definition }
+    });
+  }
+
+  /** Disables a custom integration panel. */
+  public async deleteIntegrationPanelV2(panelKey: string): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('DELETE', `v2/integration-panels/${encodeURIComponent(panelKey)}`);
+  }
+
+  /** Replaces one panel instance's state and pushes it live to connected CAD clients. */
+  public async setIntegrationPanelStateV2(
+    panelKey: string,
+    instanceKey: string,
+    state: globalTypes.IntegrationPanelJsonObject,
+    serverId?: number
+  ): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(serverId);
+    return this.executeCadV2Request(
+      'PUT',
+      `v2/integration-panels/servers/${resolvedServerId}/panels/${encodeURIComponent(panelKey)}/instances/${encodeURIComponent(instanceKey)}/state`,
+      { body: { state } }
+    );
+  }
+
+  /** Polls pending CAD user actions for a panel. */
+  public async getIntegrationPanelActionsV2(
+    panelKey: string,
+    query: globalTypes.GetIntegrationPanelActionsV2Query = {}
+  ): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(query.serverId);
+    return this.executeCadV2Request(
+      'GET',
+      `v2/integration-panels/servers/${resolvedServerId}/panels/${encodeURIComponent(panelKey)}/actions`,
+      { query: { after: query.after, limit: query.limit } }
+    );
+  }
+
+  /** Acknowledges a processed CAD user action. */
+  public async acknowledgeIntegrationPanelActionV2(
+    panelKey: string,
+    eventId: string,
+    data: globalTypes.AcknowledgeIntegrationPanelActionV2Request
+  ): Promise<globalTypes.CADStandardResponse> {
+    const resolvedServerId = this.resolveCadServerId(data.serverId);
+    const body = { ...data };
+    delete body.serverId;
+    return this.executeCadV2Request(
+      'POST',
+      `v2/integration-panels/servers/${resolvedServerId}/panels/${encodeURIComponent(panelKey)}/actions/${encodeURIComponent(eventId)}/ack`,
+      { body }
+    );
+  }
+
   private normalizeAccountEntries(input: string | { account: string } | Array<string | { account: string }>): { account: string }[] {
     const entries = Array.isArray(input) ? input : [input];
     return entries

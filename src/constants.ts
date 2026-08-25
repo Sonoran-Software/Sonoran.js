@@ -714,6 +714,32 @@ export interface RadioSpeakerLocation {
 	id: string;
 }
 
+/** JSON object used by integration panel definitions, state, and action results. */
+export type IntegrationPanelJsonObject = Record<string, unknown>;
+
+export interface IntegrationPanelDefinitionV2 extends IntegrationPanelJsonObject {
+	schemaVersion: 1;
+	key?: string;
+	name: string;
+	icon?: string;
+	surfaces?: string[];
+	sounds?: IntegrationPanelJsonObject[];
+	body: IntegrationPanelJsonObject[];
+}
+
+export interface GetIntegrationPanelActionsV2Query {
+	serverId?: number;
+	after?: number;
+	limit?: number;
+}
+
+export interface AcknowledgeIntegrationPanelActionV2Request {
+	serverId?: number;
+	success: boolean;
+	message?: string;
+	result?: IntegrationPanelJsonObject;
+}
+
 export type RadioMutableZoneType = 'geo' | 'degrade';
 
 export interface RadioZonePoint {
