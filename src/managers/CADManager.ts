@@ -1104,6 +1104,10 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request<CADPenalCodeStruct[]>('GET', 'v2/general/penal-codes');
   }
 
+  public async getDatabaseSyncConfigurationV2(): Promise<globalTypes.CADStandardResponse<globalTypes.DatabaseSyncConfigurationV2>> {
+    return this.executeCadV2Request<globalTypes.DatabaseSyncConfigurationV2>('GET', 'v2/general/database-sync');
+  }
+
   public async setPenalCodesV2(codes: CADPenalCodeStruct[]): Promise<globalTypes.CADStandardResponse> {
     return this.executeCadV2Request('PUT', 'v2/general/penal-codes', { body: { codes } });
   }

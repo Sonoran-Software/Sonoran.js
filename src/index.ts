@@ -37,6 +37,7 @@ export {
   IntegrationPanelDefinitionV2,
   GetIntegrationPanelActionsV2Query,
   AcknowledgeIntegrationPanelActionV2Request,
+  DatabaseSyncConfigurationV2,
   CMSProfileField,
   CMSGetCurrentClockInPromiseResult,
   CMSAccountsPage,

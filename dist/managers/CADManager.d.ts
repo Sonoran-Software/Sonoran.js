@@ -312,6 +312,7 @@ export declare class CADManager extends BaseManager {
         isKick?: boolean;
     }): Promise<globalTypes.CADStandardResponse>;
     getPenalCodesV2(): Promise<globalTypes.CADStandardResponse<CADPenalCodeStruct[]>>;
+    getDatabaseSyncConfigurationV2(): Promise<globalTypes.CADStandardResponse<globalTypes.DatabaseSyncConfigurationV2>>;
     setPenalCodesV2(codes: CADPenalCodeStruct[]): Promise<globalTypes.CADStandardResponse>;
     setApiIdsV2(data: {
         username?: string;

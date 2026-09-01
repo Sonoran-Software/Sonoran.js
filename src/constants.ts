@@ -740,6 +740,13 @@ export interface AcknowledgeIntegrationPanelActionV2Request {
 	result?: IntegrationPanelJsonObject;
 }
 
+export interface DatabaseSyncConfigurationV2 {
+	enabled: boolean;
+	character: boolean;
+	licenses: boolean;
+	vehicleRegistrations: boolean;
+}
+
 export type RadioMutableZoneType = 'geo' | 'degrade';
 
 export interface RadioZonePoint {
