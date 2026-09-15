@@ -434,6 +434,11 @@ export declare class CADManager extends BaseManager {
         set?: string[];
         join?: boolean;
     }): Promise<globalTypes.CADStandardResponse>;
+    /** Community-specific granular permissions, including legacy role-map conversion. */
+    getPermissionCatalogV2(): Promise<globalTypes.CADStandardResponse<globalTypes.CADPermissionCatalogV2>>;
+    getAccountPermissionsV2(accountUuid: string): Promise<globalTypes.CADStandardResponse<globalTypes.CADAccountPermissionsV2>>;
+    /** Replaces all grants; an empty array clears permissions. Does not change bans. */
+    replaceAccountPermissionsV2(accountUuid: string, grants: string[]): Promise<globalTypes.CADStandardResponse>;
     heartbeatV2(serverId: number | undefined, playerCount: number): Promise<globalTypes.CADStandardResponse>;
     getVersionV2(): Promise<globalTypes.CADStandardResponse>;
     getTurnCredentialsV2(query?: {
