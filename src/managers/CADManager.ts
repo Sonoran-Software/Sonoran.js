@@ -1242,6 +1242,22 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('PATCH', 'v2/general/accounts/permissions', { body: this.normalizeV2TargetAliases(data) });
   }
 
+  /** Community-specific granular permissions, including legacy role-map conversion. */
+  public async getPermissionCatalogV2(): Promise<globalTypes.CADStandardResponse<globalTypes.CADPermissionCatalogV2>> {
+    return this.executeCadV2Request('GET', 'v2/general/permissions/catalog');
+  }
+
+  public async getAccountPermissionsV2(accountUuid: string): Promise<globalTypes.CADStandardResponse<globalTypes.CADAccountPermissionsV2>> {
+    return this.executeCadV2Request('GET', `v2/general/permissions/accounts/${encodeURIComponent(accountUuid)}`);
+  }
+
+  /** Replaces all grants; an empty array clears permissions. Does not change bans. */
+  public async replaceAccountPermissionsV2(accountUuid: string, grants: string[]): Promise<globalTypes.CADStandardResponse> {
+    return this.executeCadV2Request('PUT', `v2/general/permissions/accounts/${encodeURIComponent(accountUuid)}`, {
+      body: { version: 2, grants },
+    });
+  }
+
   public async heartbeatV2(serverId: number | undefined, playerCount: number): Promise<globalTypes.CADStandardResponse> {
     const resolvedServerId = this.resolveCadServerId(serverId);
     this.assertPositiveInteger(resolvedServerId, 'serverId');

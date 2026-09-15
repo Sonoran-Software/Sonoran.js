@@ -966,3 +966,23 @@ export interface RadioPlayTonePromiseResult {
 	reason?: string;
 	result?: string;
 }
+
+/** Stable grant IDs; record IDs are specific to the community. */
+export interface CADPermissionSetV2 {
+  version: 2;
+  grants: string[];
+}
+
+export interface CADPermissionCatalogV2 {
+  version: 2;
+  communityUuid: string;
+  permissions: { id: string; label: string; templateId?: number | null; templateName?: string | null; action: string }[];
+  legacyGrants: Record<string, string[]>;
+}
+
+export interface CADAccountPermissionsV2 {
+  permissions: CADPermissionSetV2;
+  owner: boolean;
+  migrated: boolean;
+  status: number;
+}

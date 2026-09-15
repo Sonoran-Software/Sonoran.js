@@ -1016,6 +1016,19 @@ class CADManager extends BaseManager_1.BaseManager {
     async setAccountPermissionsV2(data) {
         return this.executeCadV2Request('PATCH', 'v2/general/accounts/permissions', { body: this.normalizeV2TargetAliases(data) });
     }
+    /** Community-specific granular permissions, including legacy role-map conversion. */
+    async getPermissionCatalogV2() {
+        return this.executeCadV2Request('GET', 'v2/general/permissions/catalog');
+    }
+    async getAccountPermissionsV2(accountUuid) {
+        return this.executeCadV2Request('GET', `v2/general/permissions/accounts/${encodeURIComponent(accountUuid)}`);
+    }
+    /** Replaces all grants; an empty array clears permissions. Does not change bans. */
+    async replaceAccountPermissionsV2(accountUuid, grants) {
+        return this.executeCadV2Request('PUT', `v2/general/permissions/accounts/${encodeURIComponent(accountUuid)}`, {
+            body: { version: 2, grants },
+        });
+    }
     async heartbeatV2(serverId, playerCount) {
         const resolvedServerId = this.resolveCadServerId(serverId);
         this.assertPositiveInteger(resolvedServerId, 'serverId');
