@@ -1,4 +1,4 @@
-# Granular CAD permissions (release candidate)
+# Granular CAD permissions
 
 The existing `setAccountPermissionsV2` remains the legacy boolean/category adapter. New integrations use these methods:
 
@@ -23,4 +23,4 @@ Routes:
 
 The existing community API-key authentication applies. Unknown grants, owner edits, and edits to banned/removed/expired accounts are rejected. Nonempty grants make pending memberships Active, subject to the community member limit; empty grants make active memberships Pending.
 
-Deploy the corresponding CAD backend before these methods are used. Merging this library to master triggers the existing npm release workflow; no package has been published during preparation.
+These methods use the CAD v2 granular permissions API. Permission reads include the owner flag, migration state, and membership status. A granular replacement ends legacy category inheritance for future record templates; retrieve the catalog again when templates change.
