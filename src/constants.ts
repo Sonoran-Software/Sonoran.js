@@ -986,3 +986,20 @@ export interface CADAccountPermissionsV2 {
   migrated: boolean;
   status: number;
 }
+
+export interface FiveMConfigurationV2 {
+  revision: number;
+  schemaVersion: number;
+  templateRevision: string;
+  serverId: number;
+  values: { core: Record<string, unknown>; plugins: Record<string, unknown> };
+  appliedRevision: number | null;
+  appliedAt: string | null;
+}
+
+export interface FiveMConfigurationPushDataV2 {
+  serverId: number;
+  revision: number;
+  schemaVersion: number;
+  templateRevision: string;
+}

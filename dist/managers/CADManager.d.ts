@@ -444,6 +444,12 @@ export declare class CADManager extends BaseManager {
     getTurnCredentialsV2(query?: {
         userId?: string;
     }): Promise<globalTypes.CADStandardResponse>;
+    /** Fetch the resolved CAD-managed FiveM configuration. */
+    getFiveMConfigurationV2(serverId?: number): Promise<globalTypes.CADStandardResponse<globalTypes.FiveMConfigurationV2>>;
+    /** Report a saved revision loaded by the resource; a stale revision returns a conflict. */
+    acknowledgeFiveMConfigurationV2(serverId: number | undefined, revision: number): Promise<globalTypes.CADStandardResponse<{
+        success: boolean;
+    }>>;
     getServersV2(): Promise<globalTypes.CADStandardResponse>;
     setServersV2(servers: unknown[], deployMap?: boolean): Promise<globalTypes.CADStandardResponse>;
     verifySecretV2(secret: string): Promise<globalTypes.CADStandardResponse>;

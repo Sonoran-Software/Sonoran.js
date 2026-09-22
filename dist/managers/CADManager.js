@@ -1040,6 +1040,20 @@ class CADManager extends BaseManager_1.BaseManager {
     async getTurnCredentialsV2(query = {}) {
         return this.executeCadV2Request('GET', 'v2/general/turn', { query });
     }
+    /** Fetch the resolved CAD-managed FiveM configuration. */
+    async getFiveMConfigurationV2(serverId) {
+        const id = this.resolveCadServerId(serverId);
+        this.assertPositiveInteger(id, 'serverId');
+        return this.executeCadV2Request('GET', `v2/fivem/servers/${id}/configuration`);
+    }
+    /** Report a saved revision loaded by the resource; a stale revision returns a conflict. */
+    async acknowledgeFiveMConfigurationV2(serverId, revision) {
+        const id = this.resolveCadServerId(serverId);
+        this.assertPositiveInteger(id, 'serverId');
+        if (!Number.isSafeInteger(revision) || revision <= 0)
+            throw new Error('revision must be a positive safe integer.');
+        return this.executeCadV2Request('POST', `v2/fivem/servers/${id}/configuration/acknowledge/${revision}`);
+    }
     async getServersV2() {
         return this.executeCadV2Request('GET', 'v2/general/servers');
     }

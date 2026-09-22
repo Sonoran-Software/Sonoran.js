@@ -41,6 +41,8 @@ export {
   GetIntegrationPanelActionsV2Query,
   AcknowledgeIntegrationPanelActionV2Request,
   DatabaseSyncConfigurationV2,
+  FiveMConfigurationV2,
+  FiveMConfigurationPushDataV2,
   CMSProfileField,
   CMSGetCurrentClockInPromiseResult,
   CMSAccountsPage,

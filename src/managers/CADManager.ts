@@ -1272,6 +1272,21 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('GET', 'v2/general/turn', { query });
   }
 
+  /** Fetch the resolved CAD-managed FiveM configuration. */
+  public async getFiveMConfigurationV2(serverId?: number): Promise<globalTypes.CADStandardResponse<globalTypes.FiveMConfigurationV2>> {
+    const id = this.resolveCadServerId(serverId);
+    this.assertPositiveInteger(id, 'serverId');
+    return this.executeCadV2Request('GET', `v2/fivem/servers/${id}/configuration`);
+  }
+
+  /** Report a saved revision loaded by the resource; a stale revision returns a conflict. */
+  public async acknowledgeFiveMConfigurationV2(serverId: number | undefined, revision: number): Promise<globalTypes.CADStandardResponse<{ success: boolean }>> {
+    const id = this.resolveCadServerId(serverId);
+    this.assertPositiveInteger(id, 'serverId');
+    if (!Number.isSafeInteger(revision) || revision <= 0) throw new Error('revision must be a positive safe integer.');
+    return this.executeCadV2Request('POST', `v2/fivem/servers/${id}/configuration/acknowledge/${revision}`);
+  }
+
   public async getServersV2(): Promise<globalTypes.CADStandardResponse> {
     return this.executeCadV2Request('GET', 'v2/general/servers');
   }
