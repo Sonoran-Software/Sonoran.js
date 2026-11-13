@@ -1309,7 +1309,7 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('PUT', 'v2/general/postals', { body: { postals } });
   }
 
-  public async sendPhotoV2(data: { communityUserId?: string; roblox?: number; discord?: string; apiId?: string; url: string }): Promise<globalTypes.CADStandardResponse> {
+  public async sendPhotoV2(data: { communityUserId?: string; roblox?: number; discord?: string; apiId?: string; url?: string; urls?: string[]; fileType?: 'image' | 'video' | 'audio' | 'pdf' | 'link' }): Promise<globalTypes.CADStandardResponse> {
     return this.executeCadV2Request('POST', 'v2/general/photos', { body: this.normalizeV2TargetAliases(data) });
   }
 
