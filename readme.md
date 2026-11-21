@@ -10,9 +10,8 @@ npm i @sonoransoftware/sonoran.js
 
 Utilizing Sonoran CMS, Sonoran CAD & Sonoran Radio
 ```js
-const Sonoran = require('sonoran.js');
-const instance = Sonoran.instance({
-  cadCommunityId: 'mycommunity',
+const Sonoran = require('@sonoransoftware/sonoran.js');
+const instance = new Sonoran.Instance({
   cadApiKey: 'DF58F1E-FD8A-44C5-BA',
   cmsCommunityId: 'mycommunity',
   cmsApiKey: 'e6ba9d68-ca7a-4e59-a9e2-93e275b4e0bf',
@@ -24,7 +23,18 @@ const instance = Sonoran.instance({
 instance.setRoomId(1);
 ```
 
-Utilizing just Sonoran CMS or Sonoran CAD
+Sonoran CAD v2
+```js
+const Sonoran = require('@sonoransoftware/sonoran.js');
+const instance = new Sonoran.Instance({
+  product: Sonoran.productEnums.CAD,
+  apiKey: 'YOUR_API_KEY'
+});
+```
+
+For legacy CAD methods and the legacy `instance.cad.servers` cache, also set `communityId` (or `cadCommunityId` in the multi-product setup). You can also supply a community ID or URL directly to the public `getLoginPageV2()` lookup.
+
+Sonoran CMS
 ```js
 const Sonoran = require('sonoran.js');
 const instance = Sonoran.instance({

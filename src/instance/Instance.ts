@@ -39,7 +39,8 @@ export class Instance extends EventEmitter {
     if (Object.prototype.hasOwnProperty.call(options, 'apiHeaders') && options.apiHeaders !== undefined) {
       this.apiHeaders = options.apiHeaders;
     }
-    if (Object.prototype.hasOwnProperty.call(options, 'apiKey') && Object.prototype.hasOwnProperty.call(options, 'communityId')) {
+    if (Object.prototype.hasOwnProperty.call(options, 'apiKey') &&
+        (options.product === globalTypes.productEnums.CAD || Object.prototype.hasOwnProperty.call(options, 'communityId'))) {
       if (Object.prototype.hasOwnProperty.call(options, 'product')) {
         switch (options.product) {
           case globalTypes.productEnums.CAD: {
@@ -138,11 +139,11 @@ export class Instance extends EventEmitter {
 
 
   private initialize() {
-    if (this.cadCommunityId && this.cadApiKey && this.cadApiUrl) {
+    if (this.cadApiKey && this.cadApiUrl) {
       this._debugLog('About to initialize CAD Manager');
       this.cad = new CADManager(this);
     } else {
-      this._debugLog('Not initializing CAD Manager due to a missing community id, api key, or api url.');
+      this._debugLog('Not initializing CAD Manager due to a missing API key or API URL.');
     }
     if (this.cmsCommunityId && this.cmsApiKey && this.cmsApiUrl) {
       this._debugLog('About to initialize CMS Manager');

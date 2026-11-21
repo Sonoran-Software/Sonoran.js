@@ -58,7 +58,7 @@ export class CADManager extends BaseManager {
     super(instance);
 
     this.rest = new REST(instance, this, globalTypes.productEnums.CAD, DefaultCADRestOptions);
-    this.buildManager(instance);
+    void this.buildManager(instance);
   }
 
   protected async buildManager(instance: Instance) {
@@ -66,7 +66,7 @@ export class CADManager extends BaseManager {
     try {
       const version = await this.getVersion();
       mutableThis.version = version;
-      if (version >= globalTypes.CADSubscriptionVersionEnum.STANDARD) {
+      if (instance.cadCommunityId && version >= globalTypes.CADSubscriptionVersionEnum.STANDARD) {
         this.servers = new CADServerManager(instance, this);
       }
       instance.isCADSuccessful = true;
@@ -74,7 +74,6 @@ export class CADManager extends BaseManager {
     } catch (err) {
       mutableThis.failReason = err;
       instance.emit('CAD_SETUP_UNSUCCESSFUL', err);
-      throw err;
     }
   }
 
@@ -101,6 +100,15 @@ export class CADManager extends BaseManager {
    * Retrieves the community's CAD subscription version.
    */
   public async getVersion(): Promise<number> {
+    if (!this.instance.cadCommunityId) {
+      const response = await this.getVersionV2();
+      if (!response.success || typeof response.data?.version !== 'number') {
+        const detail = typeof response.reason === 'string' ? response.reason : undefined;
+        throw new Error(detail || 'Could not load the CAD subscription version.');
+      }
+      return response.data.version;
+    }
+
     const versionResp: any = await this.rest?.request('GET_VERSION');
     const versionString = String(versionResp);
     return Number.parseInt(versionString.replace(/(^\d+)(.+$)/i, '$1'), 10);
@@ -1264,7 +1272,7 @@ export class CADManager extends BaseManager {
     return this.executeCadV2Request('POST', `v2/general/servers/${resolvedServerId}/heartbeat`, { body: { playerCount } });
   }
 
-  public async getVersionV2(): Promise<globalTypes.CADStandardResponse> {
+  public async getVersionV2(): Promise<globalTypes.CADStandardResponse<{ version: number }>> {
     return this.executeCadV2Request('GET', 'v2/general/version');
   }
 

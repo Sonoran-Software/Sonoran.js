@@ -440,7 +440,9 @@ export declare class CADManager extends BaseManager {
     /** Replaces all grants; an empty array clears permissions. Does not change bans. */
     replaceAccountPermissionsV2(accountUuid: string, grants: string[]): Promise<globalTypes.CADStandardResponse>;
     heartbeatV2(serverId: number | undefined, playerCount: number): Promise<globalTypes.CADStandardResponse>;
-    getVersionV2(): Promise<globalTypes.CADStandardResponse>;
+    getVersionV2(): Promise<globalTypes.CADStandardResponse<{
+        version: number;
+    }>>;
     getTurnCredentialsV2(query?: {
         userId?: string;
     }): Promise<globalTypes.CADStandardResponse>;

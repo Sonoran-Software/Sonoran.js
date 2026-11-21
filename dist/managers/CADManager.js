@@ -46,14 +46,14 @@ class CADManager extends BaseManager_1.BaseManager {
         this.version = 0;
         this.failReason = null;
         this.rest = new src_1.REST(instance, this, globalTypes.productEnums.CAD, src_1.DefaultCADRestOptions);
-        this.buildManager(instance);
+        void this.buildManager(instance);
     }
     async buildManager(instance) {
         const mutableThis = this;
         try {
             const version = await this.getVersion();
             mutableThis.version = version;
-            if (version >= globalTypes.CADSubscriptionVersionEnum.STANDARD) {
+            if (instance.cadCommunityId && version >= globalTypes.CADSubscriptionVersionEnum.STANDARD) {
                 this.servers = new CADServerManager_1.CADServerManager(instance, this);
             }
             instance.isCADSuccessful = true;
@@ -62,7 +62,6 @@ class CADManager extends BaseManager_1.BaseManager {
         catch (err) {
             mutableThis.failReason = err;
             instance.emit('CAD_SETUP_UNSUCCESSFUL', err);
-            throw err;
         }
     }
     getRest() {
@@ -87,8 +86,16 @@ class CADManager extends BaseManager_1.BaseManager {
      * Retrieves the community's CAD subscription version.
      */
     async getVersion() {
-        var _a;
-        const versionResp = await ((_a = this.rest) === null || _a === void 0 ? void 0 : _a.request('GET_VERSION'));
+        var _a, _b;
+        if (!this.instance.cadCommunityId) {
+            const response = await this.getVersionV2();
+            if (!response.success || typeof ((_a = response.data) === null || _a === void 0 ? void 0 : _a.version) !== 'number') {
+                const detail = typeof response.reason === 'string' ? response.reason : undefined;
+                throw new Error(detail || 'Could not load the CAD subscription version.');
+            }
+            return response.data.version;
+        }
+        const versionResp = await ((_b = this.rest) === null || _b === void 0 ? void 0 : _b.request('GET_VERSION'));
         const versionString = String(versionResp);
         return Number.parseInt(versionString.replace(/(^\d+)(.+$)/i, '$1'), 10);
     }
